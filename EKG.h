@@ -4,6 +4,7 @@
  */
 #pragma once
 #include "EKG_core.h"
+#include "EKG_tessellator.h"
 
 /* Start of shader util functions. */
 void EKG_StartUseShader(GLuint ShaderId);
@@ -26,6 +27,7 @@ void EKG_SetShaderUniformMat4(unsigned int ShaderId, const std::string &Name, co
 
 // Global runtime variable.
 extern EKG_Core* const EKG_CORE;
+extern EKG_Tessellator* const EKG_TESSELLATOR;
 
 /**
  * Main class to call and build GUIs.
@@ -34,17 +36,19 @@ class EKG {
 protected:
     static bool ContextOkay;
 public:
-    /* Start of static instance fields. */
-    static EKG_ShaderManager Shader;
-    /* End of static instance fields. */
+    /* Start of static instance methods. */
+    static EKG_ShaderManager GetShaderManager();
+    static EKG_FontRenderer GetFontRenderer();
+    /* End of static instance methods. */
 
     /* Start of main EKG static methods (needed use). */
+    static void InitFont(const std::string &Path, unsigned int InitialSize);
     static void Init();
     static void Quit();
     /* End of main EKG static methods. */
 
     /* Start of setup/concurrent static methods. */
-    static void PerspectiveOrtho2D(float Matrix4x4[16]);
+    static void PrepareContext();
     static void OnEvent(SDL_Event Event);
     static void OnUpdate(float DeltaTicks);
     static void OnRender(float PartialTicks);

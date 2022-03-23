@@ -11,7 +11,7 @@
 class EKG_ShaderManager {
 protected:
     /* Check shader if is compiled. */
-    int CompileStatus(unsigned int &ShaderId, const std::string& Source, std::string Which);
+    int CompileStatus(unsigned int &ShaderId, const std::string& Source, const std::string& Which);
 
     /* Map wth all shaders loaded. */
     std::map<std::string, unsigned int> ShaderList;

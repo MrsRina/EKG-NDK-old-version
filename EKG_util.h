@@ -6,6 +6,11 @@
 #include "EKG_includes.h"
 
 /**
+ * Apply ortho view 2D.
+ */
+void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top);
+
+/**
  * Send log to console (remember before call this, invoke EKG::Init() to prevent errors using this function)
  * @param Log - The log.
  */

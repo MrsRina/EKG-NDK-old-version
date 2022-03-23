@@ -3,10 +3,9 @@
 #include "EKG_util.h"
 #include "EKG.h"
 
-EKG_Tessellator* const EKG_TESSELLATOR = new EKG_Tessellator();
-
 void EKG_Tessellator::Init() {
-    unsigned int TessellatorShaderId = EKG::Shader.FindShader("Tessellator");
+    unsigned int TessellatorShaderId = EKG_CORE->ShaderManager.FindShader("Tessellator");
+    EKG_StartUseShader(TessellatorShaderId);
 
     this->VertexList.push_back(0);
     this->VertexList.push_back(0);
@@ -33,14 +32,14 @@ void EKG_Tessellator::Init() {
     this->ColorAttribute = EKG_GetShaderAttribute("Tessellator", TessellatorShaderId, "VertexColor");
     this->VertexAttribute = EKG_GetShaderAttribute("Tessellator", TessellatorShaderId, "VertexPosition");
 
-    glUseProgram(0);
+    EKG_EndUseShader();
 
     this->VertexList.clear();
     this->ColorList.clear();
 }
 
 void EKG_Tessellator::Draw() {
-    unsigned int TessellatorShaderId = EKG::Shader.GetTessellatorShader();
+    unsigned int TessellatorShaderId = EKG_CORE->ShaderManager.GetTessellatorShader();
 
     // Use object shader.
     EKG_StartUseShader(TessellatorShaderId);
@@ -83,7 +82,7 @@ void EKG_Tessellator::Draw() {
     }
 
     // Un-use shader.
-    glUseProgram(0);
+    EKG_EndUseShader();
 }
 
 void EKG_Tessellator::Vertex(double X, double Y, double Z) {
@@ -196,11 +195,11 @@ void EKG_Tessellator::SetRectColor(EKG_Color Color) {
     this->SetRectColor(Color.R, Color.G, Color.B, Color.A);
 }
 
-void EKG_Tessellator::SetVertex(std::vector<GLfloat> NewVertexList) {
+void EKG_Tessellator::SetVertex(const std::vector<GLfloat> &NewVertexList) {
     this->VertexList = NewVertexList;
 }
 
-void EKG_Tessellator::SetUV(std::vector<GLfloat> UV) {
+void EKG_Tessellator::SetUV(const std::vector<GLfloat> &UV) {
     this->ColorList = UV;
 }
 
@@ -209,6 +208,8 @@ void EKG_FontRenderer::Init() {
         EKG_Log("FT font not initialized.");
         return;
     }
+
+    this->Reload();
 }
 
 void EKG_FontRenderer::SetFontPath(const std::string &Path) {
@@ -260,7 +261,6 @@ void EKG_FontRenderer::Reload() {
     this->GlyphSlot = this->Face->glyph;
 
     float OffsetX = 0;
-    float OffsetY = 0;
 
     // Generate bitmap using glTexSubImage2D.
     for (unsigned int I = 32; I < 128; I++) {
@@ -268,10 +268,9 @@ void EKG_FontRenderer::Reload() {
             continue;
         }
 
-        CharData Data;
+        EKG_CharData Data;
 
         Data.StoreX = float(OffsetX) / (float) this->TextureWidth;
-        Data.StoreY = 0;
 
         Data.W = (float) this->GlyphSlot->bitmap.width;
         Data.H = (float) this->GlyphSlot->bitmap.rows;
@@ -296,18 +295,17 @@ void EKG_FontRenderer::Reload() {
 
     // Unbind texture.
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Log that font renderer is successfully initialized.
+    EKG_Log("Font renderer generated bitmap ok.");
 }
 
 void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, float PositionY, const EKG_Color &Color) {
-    if (this->Face == NULL) {
-        return;
-    }
-
     std::vector<GLfloat> VertexVector, TextureVector;
     FT_Vector PreviousCharVector;
 
     float RenderX, RenderY, RenderW, RenderH;
-    float TextureX, TextureY, TextureW, TextureH;
+    float TextureX, TextureY = 0.0F, TextureW, TextureH;
 
     const char* CharString = String.c_str();
 
@@ -317,7 +315,7 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
             PositionX += (PreviousCharVector.x >> 6);
         }
 
-        CharData Data = Chars[*I];
+        EKG_CharData Data = Chars[*I];
 
         RenderX = PositionX + (float) Data.TextureLeft;
         RenderY = PositionY + (this->TextureHeight - (float) Data.TextureTop);
@@ -325,7 +323,6 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
         RenderH = Data.H;
 
         TextureX = Data.StoreX;
-        TextureY = Data.StoreY;
         TextureW = Data.W / (float) this->TextureWidth;
         TextureH = Data.H / (float) this->TextureHeight;
 
@@ -369,7 +366,7 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
     EKG_TESSELLATOR->Draw();
 }
 
-void EKG_FontRenderer::DrawStringClamped(std::string String, float X, float Y, float W,
+void EKG_FontRenderer::DrawStringClamped(const std::string &String, float X, float Y, float W,
                                          const EKG_Color &Color) {
 
 }
@@ -388,7 +385,7 @@ float EKG_FontRenderer::GetStringWidth(const std::string &String) {
             StartX += (Delta.x >> 6);
         }
 
-        CharData Data = Chars[*I];
+        EKG_CharData Data = Chars[*I];
 
         RenderX = StartX + (float) Data.TextureLeft;
         StartX += Data.TextureX;
@@ -408,7 +405,7 @@ float EKG_FontRenderer::GetStringHeight(const std::string &String) {
     float StringHeight = 0.0F;
 
     for (const char* I = String.c_str(); *I; I++) {
-        CharData Data = Chars[*I];
+        EKG_CharData Data = Chars[*I];
 
         RenderY = (this->TextureHeight);
         Previous = (int) *I;
@@ -421,4 +418,9 @@ float EKG_FontRenderer::GetStringHeight(const std::string &String) {
     }
 
     return StringHeight;
+}
+
+void EKG_FontRenderer::Quit() {
+    FT_Done_Face(this->Face);
+    FT_Done_FreeType(this->Library);
 }

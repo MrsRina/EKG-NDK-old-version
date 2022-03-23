@@ -9,9 +9,9 @@
 /**
  * Char data used in font renderer.
  */
-struct CharData {
+struct EKG_CharData {
     /* Values that reference positions in bitmap. */
-    float StoreX, StoreY, W, H, TextureX, TextureLeft, TextureTop;
+    float StoreX, W, H, TextureX, TextureLeft, TextureTop;
 };
 
 /**
@@ -53,7 +53,7 @@ public:
     void Color(unsigned int R, unsigned int G, unsigned int B, unsigned int A);
     void Color(EKG_Color Color);
     void BindTexture(GLuint Id);
-    void BindTexture(const EKG_Texture& Texture);
+    void BindTexture(const EKG_Texture &Texture);
     void NewDraw(int DrawType, int DrawSize);
     void Draw();
     /* End of actions methods. */
@@ -65,13 +65,10 @@ public:
     void SetRectColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A);
     void SetRectColor(EKG_Color Color);
 
-    void SetVertex(std::vector<GLfloat> NewVertexList);
-    void SetUV(std::vector<GLfloat> UV);
+    void SetVertex(const std::vector<GLfloat> &NewVertexList);
+    void SetUV(const std::vector<GLfloat> &UV);
     /* End of getters and setters. */
 };
-
-/* Used in EKG gui context to draw stuff. */
-extern EKG_Tessellator* const EKG_TESSELLATOR;
 
 /**
  * Render font used in EKG.
@@ -89,7 +86,7 @@ class EKG_FontRenderer {
     float TextureWidth, TextureHeight;
 
     /* Chars of bitmap list. */
-    CharData Chars[128];
+    EKG_CharData Chars[128];
 
     /* Bitmap texture id. */
     unsigned int BitmapTextureId;
@@ -101,9 +98,10 @@ public:
     /* Start of main methods. */
     void Init();
     void Reload();
+    void Quit();
 
     void DrawString(const std::string& String, float X, float Y, const EKG_Color &Color);
-    void DrawStringClamped(std::string String, float X, float Y, float W, const EKG_Color &Color);
+    void DrawStringClamped(const std::string &String, float X, float Y, float W, const EKG_Color &Color);
     /* End of main methods. */
 
     /* Start of setters and getters. */

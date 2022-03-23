@@ -1,6 +1,7 @@
 #include "EKG.h"
 
 EKG_Core* const EKG_CORE = new EKG_Core();
+EKG_Tessellator* const EKG_TESSELLATOR = new EKG_Tessellator();
 
 void EKG_StartUseShader(GLuint ShaderId) {
     glUseProgram(ShaderId);
@@ -160,10 +161,10 @@ void EKG_SetShaderUniformMat4(unsigned int ShaderId, const std::string &Name, co
 }
 
 bool EKG::ContextOkay = false;
-EKG_ShaderManager EKG::Shader = EKG_CORE->GetShaderManager();
 
 void EKG::Init() {
     EKG_CORE->Init();
+    EKG_TESSELLATOR->Init();
 
     // Call it was initialized property (or just initialized).
     EKG_Log("Core initialized.");
@@ -171,6 +172,7 @@ void EKG::Init() {
 
 void EKG::Quit() {
     EKG_CORE->Quit();
+    EKG_TESSELLATOR->Quit();
 
     // Say it was quited successfully or just quit.
     EKG_Log("Core quited successfully.");
@@ -181,13 +183,33 @@ void EKG::OnEvent(SDL_Event Event) {
 }
 
 void EKG::OnUpdate(float DeltaTicks) {
-
+    EKG_CORE->OnUpdate(DeltaTicks);
 }
 
 void EKG::OnRender(float PartialTicks) {
-
+    EKG_CORE->OnRender(PartialTicks);
 }
 
-void EKG::PerspectiveOrtho2D(float Matrix4x4[16]) {
-    unsigned int TessellatorShaderId = Shader.GetTessellatorShader();
+void EKG::InitFont(const std::string &Path, unsigned int InitialSize) {
+    EKG_CORE->FontRenderer.SetFontPath(Path);
+    EKG_CORE->FontRenderer.SetFontSize(InitialSize);
+}
+
+void EKG::PrepareContext() {
+    float Viewport[4];
+    glGetFloatv(GL_VIEWPORT, Viewport);
+
+    float ProjectionMatrix4x4[16];
+    EKG_Ortho2D(ProjectionMatrix4x4, 0.0F, Viewport[2], Viewport[3], 0.0F);
+
+    // We set projection ortho.
+    EKG_ShaderProjMatrix(EKG_CORE->ShaderManager.GetTessellatorShader(), ProjectionMatrix4x4);
+}
+
+EKG_FontRenderer EKG::GetFontRenderer() {
+    return EKG_CORE->FontRenderer;
+}
+
+EKG_ShaderManager EKG::GetShaderManager() {
+    return EKG_CORE->ShaderManager;
 }

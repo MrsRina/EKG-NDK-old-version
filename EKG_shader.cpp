@@ -43,13 +43,14 @@ void EKG_ShaderManager::Init() {
 
     TessellatorFragmentSource = "";
     TessellatorVertexSource = "";
+
 }
 
-int EKG_ShaderManager::CompileStatus(unsigned int &ShaderId, const std::string &Source, std::string Which) {
-    GLint Result = GL_FALSE;
-
-    if (Source == "vertex" || Source == "fragment") {
+int EKG_ShaderManager::CompileStatus(unsigned int &ShaderId, const std::string &Source, const std::string &Which) {
+    if (Which == "vertex" || Which == "fragment") {
         ShaderId = glCreateShader(Which == "vertex" ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+
+        GLint Result = GL_FALSE;
         const char* SourceCStr = Source.c_str();
 
         glShaderSource(ShaderId, 1, &SourceCStr, NULL);
@@ -72,15 +73,15 @@ unsigned int EKG_ShaderManager::LoadShader(const std::string &Name, const std::s
     int PhaseVertexCompileResult = this->CompileStatus(ShaderVertex, SourceVertexShader, "vertex");
     int PhaseFragmentCompileResult = this->CompileStatus(ShaderFragment, SourceFragmentShader, "fragment");
 
-    if (PhaseVertexCompileResult == -1 || PhaseFragmentCompileResult == -1) {
+    if (PhaseVertexCompileResult == 0 || PhaseFragmentCompileResult == 0) {
         char* Log = new char[1024];
 
-        if (PhaseVertexCompileResult == -1) {
+        if (PhaseVertexCompileResult == 0) {
             glGetShaderInfoLog(ShaderVertex, 1024, NULL, Log);
             EKG_Log("Occurred an error while compiled vertex shader: \n" + std::string(Log));
         }
 
-        if (PhaseFragmentCompileResult == -1) {
+        if (PhaseFragmentCompileResult == 0) {
             glGetShaderInfoLog(ShaderFragment, 1024, NULL, Log);
             EKG_Log("Occurred an error while compiled fragment shader: \n" + std::string(Log));
         }
@@ -97,10 +98,20 @@ unsigned int EKG_ShaderManager::LoadShader(const std::string &Name, const std::s
     glAttachShader(Shader, ShaderFragment);
     glLinkProgram(Shader);
 
+    GLint Result = GL_FALSE;
+    GLint InfoLogLength;
+
+    glGetProgramiv(Shader, GL_LINK_STATUS, &Result);
+    glGetProgramiv(Shader, GL_INFO_LOG_LENGTH, &InfoLogLength);
+
     glDeleteShader(ShaderVertex);
     glDeleteShader(ShaderFragment);
 
-    this->ShaderList[Name] = Shader;
+    if (Result == 1) {
+        this->ShaderList[Name] = Shader;
+    }
+
+    EKG_Log(Name + " program compile status: " + (Result == 1 ? "compiled." : "not compiled."));
     return Shader;
 }
 
@@ -113,7 +124,6 @@ void EKG_ShaderManager::Quit() {
 }
 
 unsigned int EKG_ShaderManager::FindShader(const std::string &Shader) {
-    unsigned int Id = this->ShaderList.at(Shader);
-
+    unsigned int Id = this->ShaderList[Shader];
     return Id;
 }
