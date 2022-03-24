@@ -258,8 +258,6 @@ void EKG_FontRenderer::Reload() {
     // Define image.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (int) this->TextureWidth, (int) this->TextureHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0);
 
-    this->GlyphSlot = this->Face->glyph;
-
     float OffsetX = 0;
 
     // Generate bitmap using glTexSubImage2D.
@@ -268,7 +266,7 @@ void EKG_FontRenderer::Reload() {
             continue;
         }
 
-        EKG_CharData Data;
+        EKG_CharData Data {};
 
         Data.StoreX = float(OffsetX) / (float) this->TextureWidth;
 
@@ -277,7 +275,6 @@ void EKG_FontRenderer::Reload() {
 
         Data.TextureLeft = this->GlyphSlot->bitmap_left;
         Data.TextureTop = this->GlyphSlot->bitmap_top;
-
         Data.TextureX = this->GlyphSlot->advance.x >> 6;
 
         glTexSubImage2D(GL_TEXTURE_2D, 0, OffsetX, 0, Data.W, Data.H, GL_ALPHA, GL_UNSIGNED_BYTE, this->GlyphSlot->bitmap.buffer);
@@ -390,7 +387,7 @@ float EKG_FontRenderer::GetStringWidth(const std::string &String) {
         RenderX = StartX + (float) Data.TextureLeft;
         StartX += Data.TextureX;
 
-        Previous = (int) *I;
+        this->Previous = (int) *I;
         StringWidth = RenderX + Data.W;
     }
 
@@ -405,10 +402,11 @@ float EKG_FontRenderer::GetStringHeight(const std::string &String) {
     float StringHeight = 0.0F;
 
     for (const char* I = String.c_str(); *I; I++) {
-        EKG_CharData Data = Chars[*I];
+        EKG_CharData Data;
+        Data = Chars[*I];
 
         RenderY = (this->TextureHeight);
-        Previous = (int) *I;
+        this->Previous = (int) *I;
 
         StringHeight = RenderY + Data.H;
 

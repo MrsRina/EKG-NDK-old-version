@@ -12,22 +12,39 @@
  * The core of EKG, where everything is processed.
  */
 class EKG_Core {
-private:
+protected:
     /* Buffers element used in context gui. */
     std::vector<EKG_AbstractElement*> BufferUpdate, BufferRender;
+
+    /* Stacks. */
+    EKG_Stack StackedIdsSelected;
+
+    /* The current element focused. */
+    unsigned int FocusedId, HighId;
+
+    /* Stack control methods. */
+    void ResetStack();
+    void ReorderStack();
 public:
     EKG_Core() {}
 
     /* Start of managers and controllers to EKG. */
     EKG_ShaderManager ShaderManager;
     EKG_FontRenderer FontRenderer;
+
     /* End of managers and controllers. */
 
     /* Start of important methods. */
     void Init();
     void Quit();
+
     void AddElement(EKG_AbstractElement* Element);
     void RemoveElement(EKG_AbstractElement* Element);
+
+    EKG_AbstractElement* GetElementById(unsigned int Id);
+    unsigned int NewId();
+
+    void Sync(float X, float Y, float W, float H, const EKG_Stack &Stack);
     /* End of important methods. */
 
     /* Start of concurrent methods. */

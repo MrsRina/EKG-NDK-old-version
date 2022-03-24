@@ -10,7 +10,7 @@ bool EKG_Stack::Contains(unsigned int Id) {
     return false;
 }
 
-bool EKG_Stack::Remove(unsigned int Id) {
+bool EKG_Stack::Rem(unsigned int Id) {
     std::vector<unsigned int> NewStackedIds;
     bool Flag;
 
@@ -26,7 +26,7 @@ bool EKG_Stack::Remove(unsigned int Id) {
     return Flag;
 }
 
-bool EKG_Stack::Add(unsigned int Id) {
+bool EKG_Stack::Put(unsigned int Id) {
     this->StackedIds.push_back(Id);
     return true;
 }
@@ -71,19 +71,19 @@ void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top) {
 }
 
 float EKG_Color::GetRedf() {
-    return 1.0F / (float) this->R;
+    return (float) this->R / 255.0F;
 }
 
 float EKG_Color::GetGreenf() {
-    return 1.0F / (float) this->G;
+    return (float) this->G / 255.0F;
 }
 
 float EKG_Color::GetBluef() {
-    return 1.0F / (float) this->B;
+    return (float) this->B / 255.0F;
 }
 
 float EKG_Color::GetAlphaf() {
-    return 1.0F / (float) this->A;
+    return (float) this->A / 255.0F;
 }
 
 EKG_Color::EKG_Color(unsigned int Red, unsigned int Green, unsigned int Blue, unsigned int Alpha) {
@@ -111,4 +111,15 @@ void EKG_Color::Set(unsigned int Red, unsigned int Green, unsigned int Blue) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
+}
+
+bool EKG_Rect::CollideWithPoint(float PointX, float PointY) {
+    return PointX > this->X && PointY > this->Y && PointX < this->X + this->W and PointY < this->Y + this->H;
+}
+
+bool EKG_Rect::CollideWithRect(float RectX, float RectY, float RectW, float RectH) {
+    return CollideWithPoint(RectX, RectY) ||
+           CollideWithPoint(RectX + RectW, RectY) ||
+           CollideWithPoint(RectX + RectW, RectY + RectH) ||
+           CollideWithPoint(RectX, RectY + RectH);
 }

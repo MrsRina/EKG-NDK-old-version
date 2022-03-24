@@ -20,7 +20,7 @@ protected:
 
     /* Rect of this element and scaled metrics. */
     EKG_Rect Rect;
-    float ScaledX, ScaledY, ScaledWidth, ScaledHeight;
+    float ScaledX, ScaledY, ScaledWidth, ScaledHeight, SyncX, SyncY;
 
     /* Scissor metrics (very important to scissor works). */
     int ScissorX, ScissorY, ScissorW, ScissorH;
@@ -29,6 +29,9 @@ protected:
     bool Hovered, Visible, Disabled, Dead;
 public:
     /* Start of setters and getters. */
+    bool IsMaster();
+    bool IsFingerOver(float X, float Y);
+
     void SetTag(const std::string &NewTag);
     std::string GetTag();
 
@@ -72,14 +75,31 @@ public:
 
     void SetDead(bool State);
     bool IsDead();
+
+    void SetScissorX(int X);
+    int GetScissorX();
+
+    void SetScissorY(int Y);
+    int GetScissorY();
+
+    void SetScissorW(int W);
+    int GetScissorW();
+
+    void SetScissorH(int H);
+    int GetScissorH();
     /* End of setters and getters. */
 
     /* Start of action methods. */
+    void Place(float X, float Y);
     virtual void Kill();
+
+    virtual void SyncPos();
+    virtual void SyncSize();
     /* End of action methods. */
 
     /* Start of invokable update methods (important to make works). */
     void Scissor();
+    void Stack(EKG_Stack &Stack);
     /* End of invokable update methods. */
 
     /* Start of overrides methods. */

@@ -28,17 +28,20 @@ struct EKG_Vec2d {
  */
 struct EKG_Rect {
     float X, Y, W, H;
+
+    bool CollideWithPoint(float PointX, float PointY);
+    bool CollideWithRect(float RectX, float RectY, float RectW, float RectH);
 };
 
 /**
- * Add ids in a stack.
+ * Put ids in a stack.
  */
 struct EKG_Stack {
     std::vector<unsigned int> StackedIds;
 
     bool Contains(unsigned int Id);
-    bool Remove(unsigned int Id);
-    bool Add(unsigned int Id);
+    bool Rem(unsigned int Id);
+    bool Put(unsigned int Id);
 };
 
 /**

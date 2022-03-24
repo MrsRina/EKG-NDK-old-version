@@ -1,4 +1,5 @@
 #include "EKG_abstract_ui_element.h"
+#include "EKG.h"
 
 void EKG_AbstractElement::SetTag(const std::string &NewTag) {
     if (this->Tag != NewTag) {
@@ -134,7 +135,13 @@ void EKG_AbstractElement::OnCreated() {
 }
 
 void EKG_AbstractElement::OnPreEvent(SDL_Event Event) {
+    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION) {
+        float X = Event.motion.x;
+        float Y = Event.motion.y;
 
+        EKG::ScaledFingerPos(X, Y);
+        this->Hovered = this->IsFingerOver(X, Y);
+    }
 }
 
 void EKG_AbstractElement::OnEvent(SDL_Event Event) {
@@ -142,7 +149,7 @@ void EKG_AbstractElement::OnEvent(SDL_Event Event) {
 }
 
 void EKG_AbstractElement::OnPostEvent(SDL_Event Event) {
-
+    this->Hovered = false;
 }
 
 void EKG_AbstractElement::OnUpdate(float DeltaTicks) {
@@ -154,5 +161,90 @@ void EKG_AbstractElement::OnRender(float PartialTicks) {
 }
 
 void EKG_AbstractElement::Scissor() {
+
+}
+
+void EKG_AbstractElement::Stack(EKG_Stack &Stack) {
+    if (Stack.Contains(this->Id)) {
+        return;
+    }
+
+    Stack.Put(this->Id);
+
+    for (unsigned int Ids : this->Children.StackedIds) {
+        auto* Element = (EKG_AbstractElement*) EKG_CORE->GetElementById(Ids);
+
+        if (Element == NULL) {
+            continue;
+        }
+
+        Element->Stack(Stack);
+    }
+}
+
+bool EKG_AbstractElement::IsMaster() {
+    return !this->Children.StackedIds.empty();
+}
+
+void EKG_AbstractElement::SetScissorX(int X) {
+    this->ScissorX = X;
+}
+
+int EKG_AbstractElement::GetScissorX() {
+    return this->ScissorX;
+}
+
+void EKG_AbstractElement::SetScissorY(int Y) {
+    this->ScissorY = Y;
+}
+
+int EKG_AbstractElement::GetScissorY() {
+    return this->ScissorY;
+}
+
+void EKG_AbstractElement::SetScissorW(int W) {
+    this->ScissorW = W;
+}
+
+int EKG_AbstractElement::GetScissorW() {
+    return this->ScissorW;
+}
+
+void EKG_AbstractElement::SetScissorH(int H) {
+    this->ScissorH = H;
+}
+
+int EKG_AbstractElement::GetScissorH() {
+    return this->ScissorH;
+}
+
+bool EKG_AbstractElement::IsFingerOver(float X, float Y) {
+    bool Flag = this->Rect.CollideWithPoint(X, Y);
+
+    if (Flag && this->GetMasterId() != 0 && !EKG_CORE->GetElementById(this->GetMasterId())->IsFingerOver(X, Y)) {
+        return false;
+    }
+
+    return Flag;
+}
+
+void EKG_AbstractElement::Place(float X, float Y) {
+    if (this->GetMasterId() == 0) {
+        this->SetX(X);
+        this->SetY(Y);
+    } else {
+        this->SyncX = X;
+        this->SyncY = Y;
+
+        this->SetX(this->ScaledX + this->SyncX);
+        this->SetY(this->ScaledY + this->SyncY);
+    }
+}
+
+void EKG_AbstractElement::SyncPos() {
+    this->Place(this->SyncX, this->SyncY);
+}
+
+void EKG_AbstractElement::SyncSize() {
 
 }
