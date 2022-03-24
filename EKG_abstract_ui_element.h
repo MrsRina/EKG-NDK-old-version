@@ -26,7 +26,7 @@ protected:
     int ScissorX, ScissorY, ScissorW, ScissorH;
 
     /* Main flags. */
-    bool Hovered, Visible, Disabled, Dead;
+    bool Hovered, Visible = true, Disabled, Dead;
 public:
     /* Start of setters and getters. */
     bool IsMaster();

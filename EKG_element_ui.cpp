@@ -2,11 +2,19 @@
 #include "EKG.h"
 
 void EKG_Frame::Draggable(unsigned int Area) {
-    this->DraggableDockFlags = Area == NULL ? EKG::Dock::UNKNOWN : Area;
+    this->DraggableDockFlags = Area == NULL ? 0 : Area;
+
+    if (Area == EKG::Dock::FULL) {
+        this->SetOffsetDrag(0.0f);
+    }
 }
 
 void EKG_Frame::Resizable(unsigned int Area) {
-    this->ResizableDockFlags = Area == NULL ? EKG::Dock::UNKNOWN : Area;
+    this->ResizableDockFlags = Area == NULL ? 0 : Area;
+
+    if (Area == EKG::Dock::FULL) {
+        this->SetOffsetResize(0.0f);
+    }
 }
 
 void EKG_Frame::SetDragging(bool State) {
@@ -84,13 +92,13 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
             MovingEvent = true;
         }
 
-        if (this->ResizableDockFlags != EKG::Dock::UNKNOWN) {
+        if (this->Resizing != 0) {
             float X;
             float Y;
             float W;
             float H;
 
-            if (this->ResizableDockFlags == EKG::Dock::LEFT || this->ResizableDockFlags == EKG::Dock::TOP) {
+            if (this->Resizing == EKG::Dock::LEFT || this->Resizing == EKG::Dock::TOP) {
                 float DragUpdateX = FX - this->DragW;
                 float DragUpdateY = FY - this->DragH;
 
@@ -169,7 +177,7 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
         EKG::ScaledFingerPos(FX, FY);
 
         if (this->Hovered) {
-            if (this->DraggableDockFlags != EKG::UNKNOWN && !this->Dragging && this->Resizing == 0) {
+            if (this->DraggableDockFlags != 0 && !this->Dragging && this->Resizing == 0) {
                 int CollidingDock = EKG::PointCollideDock(this->DraggableDockFlags, FX, FY, 0, this->DragOffset, this->Rect);
 
                 if (CollidingDock != -1) {
@@ -186,7 +194,7 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
                 }
             }
 
-            if (this->ResizableDockFlags != EKG::Dock::UNKNOWN && this->Resizing == 0 && !this->Dragging) {
+            if (this->ResizableDockFlags != -1 && this->Resizing == 0 && !this->Dragging) {
                 int CollidingDock = EKG::PointCollideDock(this->ResizableDockFlags, FX, FY, 0, this->ResizeOffset, this->Rect);
 
                 if (CollidingDock != -1) {
@@ -230,27 +238,71 @@ void EKG_Frame::OnUpdate(float DeltaTicks) {
 void EKG_Frame::OnRender(float PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
 
-    EKG_Color Color(EKG_THEME->FrameBackground);
-
     // Background.
-    EKES_DrawRect(this->Rect, Color);
+    EKG_Color Color(EKG_CORE->ColorTheme.FrameBackground);
+    EKG_DrawFilledRect(this->Rect, Color);
 
     // Border.
-    if (EKG_THEME->IsWireframeFrameEnabled()) {
-        Color.Set(this->BorderColorTheme);
-        EKES_DrawWireframeRect(this->Rect, Color);
+    if (EKG_CORE->ColorTheme.IsOutlineFrameEnabled()) {
+        EKG_DrawOutlineRect(this->Rect, 1.0f, this->Border);
     }
 
     // Pressed state.
     if (this->Dragging || this->Resizing != 0) {
-        Color.Set(EKG_THEME->FramePressed);
-        EKES_DrawRect(this->Rect, Color);
+        Color.Set(EKG_CORE->ColorTheme.FramePressed);
+        EKG_DrawFilledRect(this->Rect, Color);
     }
 
     // Highlight.
     if (this->Hovered) {
-        Color.Set(EKG_THEME->FrameHighlight);
-        EKES_DrawRect(this->Rect, Color);
+        Color.Set(EKG_CORE->ColorTheme.FrameHighlight);
+        EKG_DrawFilledRect(this->Rect, Color);
+    }
+}
+
+void EKG_Frame::Alpha(unsigned int Alpha) {
+    this->CustomAlpha = true;
+    this->ValueAlpha = Alpha;
+}
+
+EKG_Color EKG_Frame::GetBorderColor() {
+    return this->Border;
+}
+
+void EKG_Frame::SetBorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A) {
+    this->Border.Set(R, G, B, A);
+}
+
+void EKG_Frame::Place(EKG_AbstractElement* Element, float X, float Y) {
+    if (Element->GetId() == this->GetId()) {
+        EKG_Log(EKG_Print(this->Tag, this->Id) + "Place waring: You can not add this element" + EKG_Print(Element->GetTag(), Element->GetId()));
+        return;
     }
 
+    if (this->Children.Contains(Element->GetId())) {
+        return;
+    }
+
+    this->Children.Put(Element->GetId());
+
+    Element->SetMasterId(this->Id);
+    Element->Place(X, Y);
+
+    EKG_CORE->Sync(this->Rect.X, this->Rect.Y, this->Rect.W, this->Rect.H, this->Children);
+}
+
+void EKG_Frame::SetOffsetResize(float Offset) {
+    this->ResizeOffset = Offset;
+}
+
+float EKG_Frame::GetOffsetResize() {
+    return this->ResizeOffset;
+}
+
+void EKG_Frame::SetOffsetDrag(float Offset) {
+    this->DragOffset = Offset;
+}
+
+float EKG_Frame::GetOffsetDrag() {
+    return this->DragOffset;
 }

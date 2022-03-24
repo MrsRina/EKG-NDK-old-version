@@ -12,18 +12,24 @@ protected:
     unsigned int DraggableDockFlags, ResizableDockFlags;
 
     /* States. */
-    bool Dragging, Pressed, FreeDragAndDrop;
+    bool Dragging, Pressed, FreeDragAndDrop, CustomAlpha;
     int Resizing;
 
     /* Drag and resizable references. */
     float DragX, DragY, DragW, DragH, PreviousX, PreviousY, PreviousW, PreviousH;
 
     /* Limits of metric and offsets. */
-    float MinimumWidth, MinimumHeight, DragOffset, ResizeOffset;
+    float MinimumWidth = 50, MinimumHeight = 50, DragOffset = 0.70f, ResizeOffset = 0.70f;
+
+    /* Design additional. */
+    unsigned int ValueAlpha;
+    EKG_Color Border = EKG_Color(255, 255, 255, 255);
 public:
     /* Start of configurable methods. */
     void Draggable(unsigned int Area);
     void Resizable(unsigned int Area);
+    void Alpha(unsigned int A);
+    void Place(EKG_AbstractElement* Element, float X, float Y);
     /* End of configurable methods. */
 
     /* Start of setters and getters. */
@@ -35,6 +41,15 @@ public:
 
     void SetPressed(bool State);
     bool IsPressed();
+
+    void SetOffsetResize(float Offset);
+    float GetOffsetResize();
+
+    void SetOffsetDrag(float Offset);
+    float GetOffsetDrag();
+
+    void SetBorderColor(unsigned int R, unsigned int G, unsigned B, unsigned int A);
+    EKG_Color GetBorderColor();
     /* End of setters and getters. */
 
     /* Start of override methods. */

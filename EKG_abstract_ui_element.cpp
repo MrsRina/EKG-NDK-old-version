@@ -136,11 +136,11 @@ void EKG_AbstractElement::OnCreated() {
 
 void EKG_AbstractElement::OnPreEvent(SDL_Event Event) {
     if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION) {
-        float X = Event.motion.x;
-        float Y = Event.motion.y;
+        float FX = Event.tfinger.x;
+        float FY = Event.tfinger.y;
 
-        EKG::ScaledFingerPos(X, Y);
-        this->Hovered = this->IsFingerOver(X, Y);
+        EKG::ScaledFingerPos(FX, FY);
+        this->Hovered = this->IsFingerOver(FX, FY);
     }
 }
 

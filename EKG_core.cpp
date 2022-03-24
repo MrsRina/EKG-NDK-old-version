@@ -67,11 +67,13 @@ void EKG_Core::OnRender(float PartialTicks) {
 void EKG_Core::Init() {
     this->ShaderManager.Init();
     this->FontRenderer.Init();
+    this->ColorTheme.Init();
 }
 
 void EKG_Core::Quit() {
     this->ShaderManager.Quit();
     this->FontRenderer.Quit();
+    this->ColorTheme.Quit();
 }
 
 void EKG_Core::ResetStack() {
@@ -103,7 +105,7 @@ void EKG_Core::ResetStack() {
             continue;
         }
 
-        NewBufferOfRender.push_back(Element);
+        NewBufferOfUpdate.push_back(Element);
 
         if (Element->IsVisible()) {
             NewBufferOfRender.push_back(Element);

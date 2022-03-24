@@ -31,7 +31,7 @@ public:
     /* Start of managers and controllers to EKG. */
     EKG_ShaderManager ShaderManager;
     EKG_FontRenderer FontRenderer;
-
+    EKG_ColorTheme ColorTheme;
     /* End of managers and controllers. */
 
     /* Start of important methods. */

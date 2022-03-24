@@ -172,166 +172,6 @@ void EKG_FlagAdd(unsigned int &Flags, unsigned int Flag) {
     Flags |= Flag;
 }
 
-void EKG_ColorTheme::Frame(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue) {
-    switch (Flag) {
-        case BACKGROUND: {
-            this->FrameBackground[0] = RedValue;
-            this->FrameBackground[1] = GreenValue;
-            this->FrameBackground[2] = BlueValue;
-            this->FrameBackground[3] = AlphaValue;
-            break;
-        }
-
-        case HIGHLIGHT: {
-            this->FrameHighlight[0] = RedValue;
-            this->FrameHighlight[1] = GreenValue;
-            this->FrameHighlight[2] = BlueValue;
-            this->FrameHighlight[3] = AlphaValue;
-            break;
-        }
-
-        case FOCUSED: {
-            this->FrameFocused[0] = RedValue;
-            this->FrameFocused[1] = GreenValue;
-            this->FrameFocused[2] = BlueValue;
-            this->FrameFocused[3] = AlphaValue;
-            break;
-        }
-
-        case PRESSED: {
-            this->FramePressed[0] = RedValue;
-            this->FramePressed[1] = GreenValue;
-            this->FramePressed[2] = BlueValue;
-            this->FramePressed[3] = AlphaValue;
-            break;
-        }
-
-        case ACTIVY: {
-            this->FrameActivy[0] = RedValue;
-            this->FrameActivy[1] = GreenValue;
-            this->FrameActivy[2] = BlueValue;
-            this->FrameActivy[3] = AlphaValue;
-            break;
-        }
-    }
-}
-
-void EKG_ColorTheme::Container(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue) {
-    switch (Flag) {
-        case BACKGROUND: {
-            this->ContainerBackground[0] = RedValue;
-            this->ContainerBackground[1] = GreenValue;
-            this->ContainerBackground[2] = BlueValue;
-            this->ContainerBackground[3] = AlphaValue;
-            break;
-        }
-
-        case HIGHLIGHT: {
-            this->ContainerHighlight[0] = RedValue;
-            this->ContainerHighlight[1] = GreenValue;
-            this->ContainerHighlight[2] = BlueValue;
-            this->ContainerHighlight[3] = AlphaValue;
-            break;
-        }
-
-        case FOCUSED: {
-            this->ContainerFocused[0] = RedValue;
-            this->ContainerFocused[1] = GreenValue;
-            this->ContainerFocused[2] = BlueValue;
-            this->ContainerFocused[3] = AlphaValue;
-            break;
-        }
-
-        case PRESSED: {
-            this->ContainerPressed[0] = RedValue;
-            this->ContainerPressed[1] = GreenValue;
-            this->ContainerPressed[2] = BlueValue;
-            this->ContainerPressed[3] = AlphaValue;
-            break;
-        }
-
-        case ACTIVY: {
-            this->ContainerActivy[0] = RedValue;
-            this->ContainerActivy[1] = GreenValue;
-            this->ContainerActivy[2] = BlueValue;
-            this->ContainerActivy[3] = AlphaValue;
-            break;
-        }
-    }
-}
-
-void EKG_ColorTheme::Widget(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue)  {
-    switch (Flag) {
-        case BACKGROUND: {
-            this->WidgetBackground[0] = RedValue;
-            this->WidgetBackground[1] = GreenValue;
-            this->WidgetBackground[2] = BlueValue;
-            this->WidgetBackground[3] = AlphaValue;
-            break;
-        }
-
-        case HIGHLIGHT: {
-            this->WidgetHighlight[0] = RedValue;
-            this->WidgetHighlight[1] = GreenValue;
-            this->WidgetHighlight[2] = BlueValue;
-            this->WidgetHighlight[3] = AlphaValue;
-            break;
-        }
-
-        case FOCUSED: {
-            this->WidgetFocused[0] = RedValue;
-            this->WidgetFocused[1] = GreenValue;
-            this->WidgetFocused[2] = BlueValue;
-            this->WidgetFocused[3] = AlphaValue;
-            break;
-        }
-
-        case PRESSED: {
-            this->WidgetPressed[0] = RedValue;
-            this->WidgetPressed[1] = GreenValue;
-            this->WidgetPressed[2] = BlueValue;
-            this->WidgetPressed[3] = AlphaValue;
-            break;
-        }
-
-        case ACTIVY: {
-            this->WidgetActivy[0] = RedValue;
-            this->WidgetActivy[1] = GreenValue;
-            this->WidgetActivy[2] = BlueValue;
-            this->WidgetActivy[3] = AlphaValue;
-            break;
-        }
-    }
-}
-
-void EKG_ColorTheme::OnInit() {
-    Frame(BACKGROUND, 255, 255, 255, 50);
-    Frame(HIGHLIGHT, 0, 0, 0, 0);
-    Frame(PRESSED, 255, 255, 255, 50);
-    Frame(FOCUSED, 0, 0, 0, 0);
-    Frame(ACTIVY, 0, 0, 0, 0);
-
-    Container(BACKGROUND, 255, 0, 0, 50);
-    Container(HIGHLIGHT, 0, 0, 0, 0);
-    Container(PRESSED, 0, 0, 0, 0);
-    Container(FOCUSED, 0, 0, 0, 0);
-    Container(ACTIVY, 0, 0, 0, 0);
-
-    Widget(BACKGROUND, 0, 0, 0, 100);
-    Widget(HIGHLIGHT, 255, 0, 255, 50);
-    Widget(PRESSED, 255, 0, 255, 100);
-    Widget(FOCUSED, 0, 0, 0, 0);
-    Widget(ACTIVY, 255, 255, 255, 50);
-}
-
-bool EKG_ColorTheme::IsWireframeFrameEnabled() {
-    return this->WireframeFrame;
-}
-
-bool EKG_ColorTheme::IsWireframeButtonEnabled() {
-    return this->WireframeFrame;
-}
-
 bool EKG::ContextOkay = false;
 
 float EKG::DeviceScreenWidth = 0.0F;
@@ -361,7 +201,7 @@ void EKG::Quit() {
 }
 
 void EKG::Event(SDL_Event Event) {
-
+    EKG_CORE->OnEvent(Event);
 }
 
 void EKG::Update(float DeltaTicks) {
@@ -396,11 +236,11 @@ EKG_ShaderManager EKG::GetShaderManager() {
     return EKG_CORE->ShaderManager;
 }
 
-EKG::Dock EKG::PointCollideDock(unsigned int Flags, float PointX, float PointY, float MinOffset, float MaxOffset, const EKG_Rect &Rect) {
+unsigned int EKG::PointCollideDock(unsigned int Flags, float PointX, float PointY, float MinOffset, float MaxOffset, const EKG_Rect &Rect) {
     EKG_Rect DockRect {};
 
-    Dock DockColliding = Dock::UNKNOWN;
-    Dock DockType = Dock::FULL;
+    int DockColliding = -1;
+    unsigned int DockType = Dock::FULL;
 
     if (EKG_FlagContains(Flags, DockType)) {
         DockRect = GetRectDock(DockType, MinOffset, MaxOffset, Rect);
@@ -445,7 +285,7 @@ EKG::Dock EKG::PointCollideDock(unsigned int Flags, float PointX, float PointY, 
     return DockColliding;
 }
 
-EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffset, const EKG_Rect &Origin) {
+EKG_Rect EKG::GetRectDock(unsigned int p_Dock, float InitialOffset, float SizeOffset, const EKG_Rect &Origin) {
     EKG_Rect Rect;
 
     // Pos rect.
@@ -464,7 +304,7 @@ EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffse
     float Division;
 
     switch (p_Dock) {
-        case FULL: {
+        case Dock::FULL: {
             InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Origin.W;
             SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Origin.H;
 
@@ -475,7 +315,7 @@ EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffse
             break;
         }
 
-        case LEFT: {
+        case Dock::LEFT: {
             Division = Origin.W == 0 ? 0 : (Origin.W / 2.0F);
 
             InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * (Division);
@@ -488,7 +328,7 @@ EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffse
             break;
         }
 
-        case RIGHT: {
+        case Dock::RIGHT: {
             Division = Origin.W == 0 ? 0 : (Origin.W / 2.0F);
 
             InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
@@ -502,7 +342,7 @@ EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffse
             break;
         }
 
-        case TOP: {
+        case Dock::TOP: {
             Division = Origin.H == 0 ? 0 : (Origin.H / 2.0F);
 
             InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
@@ -515,7 +355,7 @@ EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffse
             break;
         }
 
-        case BOTTOM: {
+        case Dock::BOTTOM: {
             Division = Origin.H == 0 ? 0 : (Origin.H / 2.0F);
 
             InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
@@ -529,7 +369,7 @@ EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffse
             break;
         }
 
-        case CENTER: {
+        case Dock::CENTER: {
             Division = Origin.W == 0 ? 0 : (Origin.W / 2.0F);
             InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
             SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Division;
@@ -544,9 +384,6 @@ EKG_Rect EKG::GetRectDock(EKG::Dock p_Dock, float InitialOffset, float SizeOffse
 
             Y = Origin.Y + (Division / 2.0F) - InitialOffsetFixed;
             W = Division - SizeOffsetFixed;
-        }
-        case UNKNOWN: {
-            break;
         }
     }
 
@@ -575,5 +412,10 @@ EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialP
     Element->SyncPos();
     Element->SyncSize();
 
+    EKG_CORE->AddElement(Element);
     return Element;
+}
+
+EKG_ColorTheme EKG::GetTheme() {
+    return EKG_CORE->ColorTheme;
 }
