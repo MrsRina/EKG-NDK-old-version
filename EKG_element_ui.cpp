@@ -240,6 +240,11 @@ void EKG_Frame::OnRender(float PartialTicks) {
 
     // Background.
     EKG_Color Color(EKG_CORE->ColorTheme.FrameBackground);
+
+    if (EKG_CORE->ColorTheme.IsOutlineFrameEnabled()) {
+        Color.A = this->ValueAlpha;
+    }
+
     EKG_DrawFilledRect(this->Rect, Color);
 
     // Border.

@@ -60,3 +60,15 @@ public:
     void OnRender(float PartialTicks);
     /* End of override methods. */
 };
+
+class EKG_Button : public EKG_AbstractElement {
+protected:
+    /* States. */
+    bool Pressed, Checked, CheckBox;
+
+    /* Checkbox texture. */
+    EKG_Texture BoxTexture;
+
+    /* Design additional. */
+    EKG_Color Border;
+};
