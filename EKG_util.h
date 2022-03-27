@@ -25,6 +25,15 @@ void EKG_Log(std::string Log);
 std::string EKG_Print(const std::string& Tag, unsigned int Id);
 
 /**
+ * A lerp fuction.
+ * @param A - The previous value.
+ * @param B - The next value.
+ * @param T - Parcial ticks.
+ * @return
+ */
+float EKG_LinearInterpolation(float A, float B, float T);
+
+/**
  * Vec with two dimensions.
  */
 struct EKG_Vec2d {
@@ -118,11 +127,23 @@ public:
 };
 
 /**
- * Save texture id, width & height of original size texture.
+ * Save texture id, width & height of original size.
  */
 struct EKG_Texture {
+    std::string Name, Tag;
+
     float Width, Height;
     unsigned int Id;
+};
+
+/**
+ * An linear interpolation helper, used in UI animations.
+ */
+struct EKG_Smooth {
+    float Factory;
+    float NextFactory;
+
+    void Update(float PartialTicks);
 };
 
 /* Start of draw functions. */

@@ -146,6 +146,10 @@ std::string EKG_Print(const std::string& Tag, unsigned int Id) {
     return " [" + Tag + + "-" + std::to_string(Id) + "] ";
 }
 
+float EKG_LinearInterpolation(float A, float B, float T) {
+    return A + (B - A) * T;
+}
+
 float EKG_Color::GetRedf() {
     return (float) this->R / 255.0F;
 }
@@ -390,4 +394,8 @@ bool EKG_ColorTheme::IsOutlineButtonEnabled() {
 
 void EKG_ColorTheme::Quit() {
     // Nothing.
+}
+
+void EKG_Smooth::Update(float PartialTicks) {
+    this->Factory = EKG_LinearInterpolation(this->Factory, this->NextFactory, PartialTicks);
 }

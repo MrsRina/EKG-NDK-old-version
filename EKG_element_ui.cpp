@@ -311,3 +311,81 @@ void EKG_Frame::SetOffsetDrag(float Offset) {
 float EKG_Frame::GetOffsetDrag() {
     return this->DragOffset;
 }
+
+void EKG_Button::CheckBox(bool State) {
+    this->Box = State;
+}
+
+void EKG_Button::BoxTexture(const EKG_Texture &Texture) {
+    this->TextureBox = Texture;
+}
+
+void EKG_Button::BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A) {
+    this->Border.Set(R, G, B, A);
+}
+
+void EKG_Button::SetPressed(bool State) {
+    this->Pressed = State;
+}
+
+bool EKG_Button::IsPressed() {
+    return this->Pressed;
+}
+
+void EKG_Button::SetChecked(bool State) {
+    this->Checked = State;
+}
+
+bool EKG_Button::IsChecked() {
+    return this->Checked;
+}
+
+bool EKG_Button::IsCheckBox() {
+    return this->Box;
+}
+
+void EKG_Button::OnPreEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnPreEvent(Event);
+}
+
+void EKG_Button::OnEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnEvent(Event);
+}
+
+void EKG_Button::OnPostEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnPostEvent(Event);
+}
+
+void EKG_Button::OnUpdate(float DeltaTicks) {
+    EKG_AbstractElement::OnUpdate(DeltaTicks);
+
+    this->SmoothHighlight.NextFactory = this->Highlight;
+}
+
+void EKG_Button::OnRender(float PartialTicks) {
+    EKG_AbstractElement::OnRender(PartialTicks);
+
+    // Background
+    EKG_DrawFilledRect(this->Rect, EKG_CORE->ColorTheme.WidgetBackground);
+
+    // Border
+    if (EKG_CORE->ColorTheme.IsOutlineButtonEnabled()) {
+        EKG_DrawOutlineRect(this->Rect, this->Border);
+    }
+
+    if (this->Box) {
+        // Box
+        if (this->SmoothBoxPressed.Factory > 10) {
+            E
+            EKG_DrawFilledRect(this->Rect, EKG_CORE->ColorTheme.WidgetBackground);
+        }
+
+        // Box highlight
+    }
+
+    // Highlight
+}
+
+EKG_Texture EKG_Button::GetBoxTexture() {
+    return this->TextureBox;
+}

@@ -64,11 +64,43 @@ public:
 class EKG_Button : public EKG_AbstractElement {
 protected:
     /* States. */
-    bool Pressed, Checked, CheckBox;
+    bool Pressed, Checked, Box, FingerHoveredBox;
 
-    /* Checkbox texture. */
-    EKG_Texture BoxTexture;
+    /* Checkbox texture & metrics. */
+    EKG_Texture TextureBox;
+    float[4] BoxRect;
+
+    /* Animations. */
+    EKG_Smooth SmoothHighlight;
+    EKG_Smooth SmoothBoxHighlight;
+    EKG_Smooth SmoothBoxPressed;
+    EKG_Smooth SmoothPressed;
 
     /* Design additional. */
     EKG_Color Border;
+public:
+    /* Start of configurable methods. */
+    void CheckBox(bool State);
+    void BoxTexture(const EKG_Texture &Texture);
+    void BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A);
+    /* end of cconfigurable methods. */
+
+    /* Start of setters & getters. */
+    void SetPressed(bool State);
+    bool IsPressed();
+
+    void SetChecked(bool State);
+    bool IsChecked();
+
+    bool IsCheckBox();
+    EKG_Texture GetBoxTexture();
+    /* End of setters & getters. */
+
+    /* Start of override methods. */
+    void OnPreEvent(SDL_Event Event);
+    void OnEvent(SDL_Event Event);
+    void OnPostEvent(SDL_Event Event);
+    void OnUpdate(float DeltaTicks);
+    void OnRender(float PartialTicks);
+    /* End of override methods. */
 };
