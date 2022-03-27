@@ -230,14 +230,14 @@ bool EKG_AbstractElement::IsFingerOver(float X, float Y) {
 
 void EKG_AbstractElement::Place(float X, float Y) {
     if (this->GetMasterId() == 0) {
-        this->SetX(X);
-        this->SetY(Y);
+        this->Rect.X = X;
+        this->Rect.Y = Y;
     } else {
         this->SyncX = X;
         this->SyncY = Y;
 
-        this->SetX(this->ScaledX + this->SyncX);
-        this->SetY(this->ScaledY + this->SyncY);
+        this->Rect.X = this->ScaledX + this->SyncX;
+        this->Rect.Y = this->ScaledY + this->SyncY;
     }
 }
 

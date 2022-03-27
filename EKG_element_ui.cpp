@@ -312,6 +312,14 @@ float EKG_Frame::GetOffsetDrag() {
     return this->DragOffset;
 }
 
+void EKG_Frame::SetWidth(float Width) {
+    this->Rect.W = Width < this->MinimumWidth ? this->MinimumWidth : Width;
+}
+
+void EKG_Frame::SetHeight(float Height) {
+    this->Rect.H = Height < this->MinimumHeight ? this->MinimumHeight : Height;
+}
+
 void EKG_Button::CheckBox(bool State) {
     this->Box = State;
 }
@@ -464,6 +472,9 @@ void EKG_Button::SyncSize() {
 
     this->TextWidth = EKG_CORE->FontRenderer.GetStringWidth(this->Tag);
     this->TextHeight = EKG_CORE->FontRenderer.GetStringHeight(this->Tag);
+
+    this->Rect.H = this->Scale + this->TextHeight + this->Scale;
+
 }
 
 float EKG_Button::GetTextWidth() {

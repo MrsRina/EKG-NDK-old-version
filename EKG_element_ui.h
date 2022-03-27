@@ -48,6 +48,9 @@ public:
     void SetOffsetDrag(float Offset);
     float GetOffsetDrag();
 
+    void SetWidth(float Width);
+    void SetHeight(float Height);
+
     void SetBorderColor(unsigned int R, unsigned int G, unsigned B, unsigned int A);
     EKG_Color GetBorderColor();
     /* End of setters and getters. */

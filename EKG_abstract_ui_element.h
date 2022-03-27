@@ -50,16 +50,9 @@ public:
     void SetRect(const EKG_Rect &Rectangle);
     EKG_Rect GetRect();
 
-    void SetX(float X);
     float GetX();
-
-    void SetY(float Y);
     float GetY();
-
-    void SetWidth(float Width);
     float GetWidth();
-
-    void SetHeight(float Height);
     float GetHeight();
 
     void SetScaled(float X, float Y, float Width, float Height);
