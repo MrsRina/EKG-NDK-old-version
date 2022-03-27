@@ -400,6 +400,10 @@ void EKG::ScaledFingerPos(float &X, float &Y) {
     Y *= EKG::DeviceScreenHeight;
 }
 
+EKG_ColorTheme EKG::GetTheme() {
+    return EKG_CORE->ColorTheme;
+}
+
 EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight) {
     auto* Element = new EKG_Frame();
 
@@ -416,6 +420,16 @@ EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialP
     return Element;
 }
 
-EKG_ColorTheme EKG::GetTheme() {
-    return EKG_CORE->ColorTheme;
+EKG_Button* EKG::Button(const std::string &Name, float InitialPosX, float InitalPosY, float InitialScale) {
+    auto* Element = new EKG_Button();
+
+    Element->SetTag(Name);
+    Element->SetId(EKG_CORE->NewId());
+    Element->SetX(InitialPosX);
+    Element->SetY(InitialPosY);
+    Element->SyncPos();
+    Element->SyncSize();
+
+    EKG_CORE->AddElement(Element);
+    return nullptr;
 }

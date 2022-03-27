@@ -66,9 +66,10 @@ protected:
     /* States. */
     bool Pressed, Checked, Box, FingerHoveredBox;
 
-    /* Checkbox texture & metrics. */
+    /* Checkbox texture, metrics & scale. */
     EKG_Texture TextureBox;
     float[4] BoxRect;
+    float OffsetText, OffsetBox, TextWidth, TextHeight, Scale;
 
     /* Animations. */
     EKG_Smooth SmoothHighlight;
@@ -78,6 +79,11 @@ protected:
 
     /* Design additional. */
     EKG_Color Border;
+
+    /* Start of helper methods to box (checkbox mode on). */
+    void SetBoxRect(float X, float Y, float W, float H);
+    bool DetectPointCollideBox(float X, float Y);
+    /* End of helper methods. */
 public:
     /* Start of configurable methods. */
     void CheckBox(bool State);
@@ -94,9 +100,27 @@ public:
 
     bool IsCheckBox();
     EKG_Texture GetBoxTexture();
+
+    void SetOffsetText(float Offset);
+    float GetOffsetText();
+
+    void SetOffsetBox(float Offset);
+    float GetOffsetBox();
+
+    float[4] GetBoxRect();
+
+    void SetFingeHoveredBox(bool Over);
+    bool IsFingerHoveredBox();
+
+    void SetScale(float ButtonScale);
+    float GetScale();
+
+    float GetTextWidth();
+    float GetTextHeight();
     /* End of setters & getters. */
 
     /* Start of override methods. */
+    void SyncSize();
     void OnPreEvent(SDL_Event Event);
     void OnEvent(SDL_Event Event);
     void OnPostEvent(SDL_Event Event);
