@@ -68,7 +68,7 @@ public:
 class EKG_Button : public EKG_AbstractElement {
 protected:
     /* States. */
-    bool Pressed, Clicked, Checked, Box, HoveredBox;
+    bool Pressed, Clicked, Checked, Box, BoxScaled, HoveredBox;
 
     /* Checkbox texture, metrics & scale. */
     EKG_Texture TextureBox;
@@ -90,7 +90,7 @@ protected:
     /* End of helper methods. */
 public:
     /* Start of configurable methods. */
-    void CheckBox(bool State);
+    void CheckBox(bool State, bool ScaledMode = nullptr);
     void BoxTexture(const EKG_Texture &Texture);
     void BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A);
     /* end of configurable methods. */
@@ -136,4 +136,8 @@ public:
     void OnUpdate(float DeltaTicks);
     void OnRender(float PartialTicks);
     /* End of override methods. */
+};
+
+class EKG_Slider : EKG_AbstractElement {
+
 };

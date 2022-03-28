@@ -324,8 +324,13 @@ void EKG_Frame::Place(float X, float Y) {
     EKG_AbstractElement::Place(X, Y);
 }
 
-void EKG_Button::CheckBox(bool State) {
+void EKG_Button::CheckBox(bool State, bool ScaledMode) {
     this->Box = State;
+    this->BoxScaled = false;
+
+    if (ScaledMode != nullptr) {
+        this->BoxScaled = BoxScaled;
+    }
 }
 
 void EKG_Button::BoxTexture(const EKG_Texture &Texture) {
@@ -518,6 +523,14 @@ void EKG_Button::SyncSize() {
 
     this->Rect.H = this->Scale + this->TextHeight + this->Scale;
     this->Rect.W = this->Rect.W < this->TextWidth ? this->TextWidth : this->Rect.W;
+
+    if (this->Box) {
+        // The square of box .
+        float Square = this->ScaledBox ? this->TextHeight : (this->Rect.H / 2) - ((this->Rect.H / 2) / 2);
+
+        this->BoxRect[1] = Square;
+        this->BoxRect[2] = Square;
+    }
 }
 
 float EKG_Button::GetTextWidth() {
