@@ -79,7 +79,7 @@ void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Co
 }
 
 void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color) {
-    EKG_TESSELLATOR->NewDraw(GL_TRIANGLE_STRIP, 6);
+    EKG_TESSELLATOR->NewDraw(GL_LINES, 6);
     EKG_TESSELLATOR->SetRectColor(Color);
 
     // First triangle.
@@ -382,6 +382,9 @@ void EKG_ColorTheme::Init() {
     Widget(PRESSED, 255, 0, 255, 100);
     Widget(FOCUSED, 0, 0, 0, 0);
     Widget(ACTIVY, 255, 255, 255, 50);
+
+    this->OutlineButton = true;
+    this->OutlineFrame = true;
 }
 
 bool EKG_ColorTheme::IsOutlineFrameEnabled() {

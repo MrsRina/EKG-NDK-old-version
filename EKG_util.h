@@ -115,6 +115,8 @@ public:
     unsigned int WidgetPressed[4];
     unsigned int WidgetActivy[4];
 
+    EKG_Color StringColor = EKG_Color(255, 255, 255);
+
     void Init();
     void Quit();
 

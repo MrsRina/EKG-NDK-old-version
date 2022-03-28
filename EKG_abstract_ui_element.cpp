@@ -51,32 +51,16 @@ EKG_Rect EKG_AbstractElement::GetRect() {
     return this->Rect;
 }
 
-void EKG_AbstractElement::SetX(float X) {
-    this->Rect.X = X;
-}
-
 float EKG_AbstractElement::GetX() {
     return this->Rect.X;
-}
-
-void EKG_AbstractElement::SetY(float Y) {
-    this->Rect.Y = Y;
 }
 
 float EKG_AbstractElement::GetY() {
     return this->Rect.Y;
 }
 
-void EKG_AbstractElement::SetWidth(float Width) {
-    this->Rect.W = Width;
-}
-
 float EKG_AbstractElement::GetWidth() {
     return this->Rect.W;
-}
-
-void EKG_AbstractElement::SetHeight(float Height) {
-    this->Rect.H = Height;
 }
 
 float EKG_AbstractElement::GetHeight() {

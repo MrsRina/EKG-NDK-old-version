@@ -320,6 +320,10 @@ void EKG_Frame::SetHeight(float Height) {
     this->Rect.H = Height < this->MinimumHeight ? this->MinimumHeight : Height;
 }
 
+void EKG_Frame::Place(float X, float Y) {
+    EKG_AbstractElement::Place(X, Y);
+}
+
 void EKG_Button::CheckBox(bool State) {
     this->Box = State;
 }
@@ -354,24 +358,58 @@ bool EKG_Button::IsCheckBox() {
 
 void EKG_Button::OnPreEvent(SDL_Event Event) {
     EKG_AbstractElement::OnPreEvent(Event);
+
+    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION) {
+        float FX = Event.tfinger.x;
+        float FY = Event.tfinger.y;
+
+        EKG::ScaledFingerPos(FX, FY);
+        this->HoveredBox = this->DetectPointCollideBox(FX, FY);
+    }
 }
 
 void EKG_Button::OnEvent(SDL_Event Event) {
     EKG_AbstractElement::OnEvent(Event);
+
+    if (Event.type == SDL_FINGERDOWN && this->Hovered) {
+        this->Pressed = true;
+    }
 }
 
 void EKG_Button::OnPostEvent(SDL_Event Event) {
+    if (Event.type == SDL_FINGERUP && this->Pressed) {
+        if (this->HoveredBox || this->Hovered) {
+            this->Checked = this->IsCheckBox() ? !this->Checked : this->Checked;
+            this->Clicked = true;
+        }
+
+        this->Pressed = false;
+    }
+
     EKG_AbstractElement::OnPostEvent(Event);
 }
 
 void EKG_Button::OnUpdate(float DeltaTicks) {
     EKG_AbstractElement::OnUpdate(DeltaTicks);
 
-    this->SmoothHighlight.NextFactory = this->Highlight;
+    this->SmoothHighlight.NextFactory = this->Hovered && !this->HoveredBox ? (float) EKG_CORE->ColorTheme.WidgetHighlight[4] : 0;
+    this->SmoothBoxHighlight.NextFactory = this->HoveredBox ? (float) EKG_CORE->ColorTheme.WidgetHighlight[4] : 0;
+    this->SmoothPressed.NextFactory = this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[4] : 0;
+    this->SmoothBoxPressed.NextFactory = this->HoveredBox && this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[4] : 0;
+
+    if (this->Clicked) {
+        this->Clicked = false;
+    }
 }
 
 void EKG_Button::OnRender(float PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
+
+    // Update animations.
+    this->SmoothPressed.Update(PartialTicks);
+    this->SmoothHighlight.Update(PartialTicks);
+    this->SmoothBoxHighlight.Update(PartialTicks);
+    this->SmoothBoxPressed.Update(PartialTicks);
 
     // Background
     EKG_Color Color(EKG_CORE->ColorTheme.WidgetBackground);
@@ -379,36 +417,41 @@ void EKG_Button::OnRender(float PartialTicks) {
 
     // Border
     if (EKG_CORE->ColorTheme.IsOutlineButtonEnabled()) {
-        Color.Set(this->Boder.R, this->Border.G, this->Border.B, this->Border.A);
-        EKG_DrawOutlineRect(this->Rect, Color);
+        Color.Set(this->Border.R, this->Border.G, this->Border.B, this->Border.A);
+        EKG_DrawOutlineRect(this->Rect, 1.0f, Color);
     }
 
+    // Pressed.
     if (this->SmoothPressed.Factory > 10) {
         Color.Set(EKG_CORE->ColorTheme.WidgetPressed, (unsigned int) this->SmoothPressed.Factory);
+        EKG_DrawFilledRect(this->Rect, Color);
     }
 
     if (this->Box) {
         Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
-        EKG_DrawSolidShape(this->GetX() + this->Box[0], this->GetY() + this->Box[1], this->Box[2], this->Box[3], Color);
+        EKG_DrawFilledShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], Color);
 
         // Box
         if (this->SmoothBoxPressed.Factory > 10) {
             Color.Set(EKG_CORE->ColorTheme.WidgetPressed, (unsigned int) this->SmoothBoxPressed.Factory);
-            EKG_DrawFilledShape(this->GetX() + this->Box[0], this->GetY() + this->Box[1], this->Box[2], this->Box[3], Color);
+            EKG_DrawFilledShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], Color);
         }
 
         // Box highlight
         if (this->SmoothBoxHighlight.Factory > 10) {
-            Color.Set(EKG->ColorTheme.WidgetHighlight, (unsigned int) this->SmoothBoxHighlight.Factory);
-            EKG_DrawOutlineShape(this->GetX() + this->Box[0], this->GetY() + this->Box[1], this->Box[2], this->Box[3], Color);
+            Color.Set(EKG_CORE->ColorTheme.WidgetHighlight, (unsigned int) this->SmoothBoxHighlight.Factory);
+            EKG_DrawOutlineShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], 1.0F, Color);
         }
     }
 
     // Highlight
     if (this->SmoothHighlight.Factory > 10) {
-        Color.Set(EKG->ColorTheme.WidgetHighlight, (unsigned int) this->SmoothBoxHighlight.Factory);
-        EKG_DrawSolidRect(this->Rect, Color);
+        Color.Set(EKG_CORE->ColorTheme.WidgetHighlight, (unsigned int) this->SmoothBoxHighlight.Factory);
+        EKG_DrawFilledRect(this->Rect, Color);
     }
+
+    // String.
+    EKG_CORE->FontRenderer.DrawString(this->Tag, this->Rect.X + this->OffsetText, this->Rect.Y + this->Scale, EKG_CORE->ColorTheme.StringColor);
 }
 
 EKG_Texture EKG_Button::GetBoxTexture() {
@@ -431,16 +474,16 @@ float EKG_Button::GetOffsetBox() {
     return this->OffsetBox;
 }
 
-int EKG_Button::GetBoxRect() {
+float* EKG_Button::GetBoxRect() {
     return this->BoxRect;
 }
 
-bool EKG_Button::IsFingerHoveredBox() {
-    return this->FingerHoveredBox;
+bool EKG_Button::IsHoveredBox() {
+    return this->HoveredBox;
 }
 
-void EKG_Button::SetFingeHoveredBox(bool Over) {
-    this->FingerHoveredBox = Over;
+void EKG_Button::SetHoveredBox(bool Over) {
+    this->HoveredBox = Over;
 }
 
 void EKG_Button::SetBoxRect(float X, float Y, float W, float H) {
@@ -474,7 +517,7 @@ void EKG_Button::SyncSize() {
     this->TextHeight = EKG_CORE->FontRenderer.GetStringHeight(this->Tag);
 
     this->Rect.H = this->Scale + this->TextHeight + this->Scale;
-
+    this->Rect.W = this->Rect.W < this->TextWidth ? this->TextWidth : this->Rect.W;
 }
 
 float EKG_Button::GetTextWidth() {
@@ -483,4 +526,16 @@ float EKG_Button::GetTextWidth() {
 
 float EKG_Button::GetTextHeight() {
     return this->TextHeight;
+}
+
+void EKG_Button::SetWidth(float Width) {
+    this->Rect.W = Width < this->TextWidth ? this->TextWidth : Width;
+}
+
+bool EKG_Button::IsClicked() {
+    return this->Clicked;
+}
+
+void EKG_Button::SetClicked(bool IsClicked) {
+    this->Clicked = IsClicked;
 }

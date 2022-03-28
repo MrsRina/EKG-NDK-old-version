@@ -83,7 +83,7 @@ public:
     /* End of setters and getters. */
 
     /* Start of action methods. */
-    void Place(float X, float Y);
+    virtual void Place(float X, float Y);
     virtual void Kill();
 
     virtual void SyncPos();
