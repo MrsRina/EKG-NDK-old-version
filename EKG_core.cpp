@@ -71,9 +71,21 @@ void EKG_Core::Init() {
 }
 
 void EKG_Core::Quit() {
+    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+        Element->Kill();
+        delete Element;
+    }
+
+    this->BufferUpdate.clear();
+    this->BufferRender.clear();
+
+    EKG_Log("Killed all alive elements.");
+
     this->ShaderManager.Quit();
     this->FontRenderer.Quit();
     this->ColorTheme.Quit();
+
+    EKG_Log("Shutdown complete.");
 }
 
 void EKG_Core::ResetStack() {

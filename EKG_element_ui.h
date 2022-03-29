@@ -51,12 +51,15 @@ public:
     void SetWidth(float Width);
     void SetHeight(float Height);
 
+    void SetLimit(float MinWidth, float MinHeight);
+
     void SetBorderColor(unsigned int R, unsigned int G, unsigned B, unsigned int A);
     EKG_Color GetBorderColor();
     /* End of setters and getters. */
 
     /* Start of override methods. */
     void Place(float X, float Y);
+    void SyncSize();
     void OnPreEvent(SDL_Event Event);
     void OnEvent(SDL_Event Event);
     void OnPostEvent(SDL_Event Event);
@@ -90,7 +93,7 @@ protected:
     /* End of helper methods. */
 public:
     /* Start of configurable methods. */
-    void CheckBox(bool State, bool ScaledMode = nullptr);
+    void CheckBox(bool State, bool ScaledMode = false);
     void BoxTexture(const EKG_Texture &Texture);
     void BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A);
     /* end of configurable methods. */

@@ -410,9 +410,9 @@ EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialP
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
     Element->Place(InitialPosX, InitialPosY);
+    Element->SetLimit(50, 50);
     Element->SetWidth(InitialSizeWidth);
     Element->SetHeight(InitialSizeHeight);
-    Element->SyncPos();
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
@@ -428,5 +428,5 @@ EKG_Button* EKG::Button(const std::string &Name, float InitialPosX, float Inital
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
-    return nullptr;
+    return Element;
 }

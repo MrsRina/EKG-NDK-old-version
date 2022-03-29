@@ -79,7 +79,7 @@ void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Co
 }
 
 void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color) {
-    EKG_TESSELLATOR->NewDraw(GL_LINES, 6);
+    EKG_TESSELLATOR->NewDraw(GL_LINE_STRIP, 6);
     EKG_TESSELLATOR->SetRectColor(Color);
 
     // First triangle.

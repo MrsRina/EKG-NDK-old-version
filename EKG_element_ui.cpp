@@ -280,7 +280,7 @@ void EKG_Frame::SetBorderColor(unsigned int R, unsigned int G, unsigned int B, u
 
 void EKG_Frame::Place(EKG_AbstractElement* Element, float X, float Y) {
     if (Element->GetId() == this->GetId()) {
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Place waring: You can not add this element" + EKG_Print(Element->GetTag(), Element->GetId()));
+        EKG_Log(EKG_Print(this->Tag, this->Id) + "Place waring: Place loop (master) id" + EKG_Print(Element->GetTag(), Element->GetId()));
         return;
     }
 
@@ -324,11 +324,23 @@ void EKG_Frame::Place(float X, float Y) {
     EKG_AbstractElement::Place(X, Y);
 }
 
+void EKG_Frame::SyncSize() {
+    EKG_AbstractElement::SyncSize();
+
+    this->Rect.W = this->Rect.W < this->MinimumWidth ? this->MinimumWidth : this->Rect.W;
+    this->Rect.H = this->Rect.H < this->MinimumHeight ? this->MinimumHeight : this->Rect.H;
+}
+
+void EKG_Frame::SetLimit(float MinWidth, float MinHeight) {
+    this->MinimumWidth = MinWidth < 10 ? 10 : MinWidth;
+    this->MinimumHeight = MinHeight < 10 ? 10 : MinHeight;
+}
+
 void EKG_Button::CheckBox(bool State, bool ScaledMode) {
     this->Box = State;
     this->BoxScaled = false;
 
-    if (ScaledMode != nullptr) {
+    if (ScaledMode != false) {
         this->BoxScaled = BoxScaled;
     }
 }
@@ -525,8 +537,8 @@ void EKG_Button::SyncSize() {
     this->Rect.W = this->Rect.W < this->TextWidth ? this->TextWidth : this->Rect.W;
 
     if (this->Box) {
-        // The square of box .
-        float Square = this->ScaledBox ? this->TextHeight : (this->Rect.H / 2) - ((this->Rect.H / 2) / 2);
+        // The square of box.
+        float Square = this->BoxScaled ? this->TextHeight : (this->Rect.H / 2) - ((this->Rect.H / 2) / 2);
 
         this->BoxRect[1] = Square;
         this->BoxRect[2] = Square;
