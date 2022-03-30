@@ -422,6 +422,7 @@ EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialP
 EKG_Button* EKG::Button(const std::string &Name, float InitialPosX, float InitalPosY, float InitialScale) {
     auto* Element = new EKG_Button();
 
+    Element->SetScale(InitialScale);
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
     Element->Place(InitialPosX, InitalPosY);

@@ -53,16 +53,20 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 }
 
 void EKG_Core::OnUpdate(float DeltaTicks) {
+    this->BufferRender.clear();
+
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
         Element->OnUpdate(DeltaTicks);
+
+        if (Element->IsVisible()) {
+            this->BufferRender.push_back(Element);
+        }
     }
 }
 
 void EKG_Core::OnRender(float PartialTicks) {
     for (EKG_AbstractElement* Element : this->BufferRender) {
-        if (Element->IsVisible()) {
-            Element->OnRender(PartialTicks);
-        }
+        Element->OnRender(PartialTicks);
     }
 }
 
@@ -94,17 +98,12 @@ void EKG_Core::ResetStack() {
     EKG_Stack Stack;
 
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
-    std::vector<EKG_AbstractElement*> NewBufferOfRender;
 
     // Get current elements list.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
         // If is not an master we add in new list.
         if (Element->GetMasterId() == 0) {
             NewBufferOfUpdate.push_back(Element);
-
-            if (Element->IsVisible()) {
-                NewBufferOfRender.push_back(Element);
-            }
         } else {
             // If is master we add every child in.
             Element->Stack(Stack);
@@ -120,14 +119,9 @@ void EKG_Core::ResetStack() {
         }
 
         NewBufferOfUpdate.push_back(Element);
-
-        if (Element->IsVisible()) {
-            NewBufferOfRender.push_back(Element);
-        }
     }
 
     this->BufferUpdate = NewBufferOfUpdate;
-    this->BufferRender = NewBufferOfRender;
 }
 
 void EKG_Core::ReorderStack() {
@@ -158,7 +152,6 @@ void EKG_Core::ReorderStack() {
     }
 
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
-    std::vector<EKG_AbstractElement*> NewBufferOfRender;
 
     // Put current.
     for (unsigned int IDs : Current.StackedIds) {
@@ -169,10 +162,6 @@ void EKG_Core::ReorderStack() {
         }
 
         NewBufferOfUpdate.push_back(Element);
-
-        if (Element->IsVisible()) {
-            NewBufferOfRender.push_back(Element);
-        }
     }
 
     // Put the focused ids at top of list.
@@ -184,14 +173,9 @@ void EKG_Core::ReorderStack() {
         }
 
         NewBufferOfUpdate.push_back(Element);
-
-        if (Element->IsVisible()) {
-            NewBufferOfRender.push_back(Element);
-        }
     }
 
     this->BufferUpdate = NewBufferOfUpdate;
-    this->BufferRender = NewBufferOfRender;
 }
 
 EKG_AbstractElement* EKG_Core::GetElementById(unsigned int Id) {

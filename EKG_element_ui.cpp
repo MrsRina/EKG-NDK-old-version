@@ -332,8 +332,21 @@ void EKG_Frame::SyncSize() {
 }
 
 void EKG_Frame::SetLimit(float MinWidth, float MinHeight) {
-    this->MinimumWidth = MinWidth < 10 ? 10 : MinWidth;
-    this->MinimumHeight = MinHeight < 10 ? 10 : MinHeight;
+    float Diff = MinWidth < 10 ? 10 : MinWidth;
+
+    bool ShouldSyncPhase1 = this->MinimumWidth != Diff;
+    bool ShouldSyncPhase2;
+
+    this->MinimumWidth = Diff;
+
+    Diff = MinHeight < 10 ? 10 : MinHeight;
+    ShouldSyncPhase2 = this->MinimumHeight != Diff;
+
+    this->MinimumHeight = Diff;
+
+    if (ShouldSyncPhase1 || ShouldSyncPhase2) {
+        this->SyncSize();
+    }
 }
 
 void EKG_Button::CheckBox(bool State, bool ScaledMode) {
@@ -341,7 +354,11 @@ void EKG_Button::CheckBox(bool State, bool ScaledMode) {
     this->BoxScaled = false;
 
     if (ScaledMode != false) {
-        this->BoxScaled = BoxScaled;
+        this->BoxScaled = ScaledMode;
+    }
+
+    if (this->Box) {
+        this->SyncSize();
     }
 }
 
@@ -398,6 +415,7 @@ void EKG_Button::OnPostEvent(SDL_Event Event) {
         if (this->HoveredBox || this->Hovered) {
             this->Checked = this->IsCheckBox() ? !this->Checked : this->Checked;
             this->Clicked = true;
+            EKG_Log("Clicked in checkbox.");
         }
 
         this->Pressed = false;
@@ -408,6 +426,11 @@ void EKG_Button::OnPostEvent(SDL_Event Event) {
 
 void EKG_Button::OnUpdate(float DeltaTicks) {
     EKG_AbstractElement::OnUpdate(DeltaTicks);
+
+    if (this->Box) {
+        this->BoxRect[0] = this->Rect.X + this->AlignBox;
+        this->BoxRect[1] = this->Rect.Y + this->Scale;
+    }
 
     this->SmoothHighlight.NextFactory = this->Hovered && !this->HoveredBox ? (float) EKG_CORE->ColorTheme.WidgetHighlight[4] : 0;
     this->SmoothBoxHighlight.NextFactory = this->HoveredBox ? (float) EKG_CORE->ColorTheme.WidgetHighlight[4] : 0;
@@ -520,8 +543,10 @@ bool EKG_Button::DetectPointCollideBox(float X, float Y) {
 }
 
 void EKG_Button::SetScale(float ButtonScale) {
-    this->Scale = ButtonScale;
-    this->SyncSize();
+    if (this->Scale != ButtonScale) {
+        this->Scale = ButtonScale;
+        this->SyncSize();
+    }
 }
 
 float EKG_Button::GetScale() {
@@ -539,7 +564,7 @@ void EKG_Button::SyncSize() {
 
     if (this->Box) {
         // The square of box.
-        float Square = this->BoxScaled ? this->TextHeight : (this->Rect.H / 2) - ((this->Rect.H / 2) / 2);
+        float Square = this->BoxScaled ? this->TextHeight : (this->Rect.H / 2) + ((this->Rect.H / 2) / 2);
 
         this->BoxRect[1] = Square;
         this->BoxRect[2] = Square;
@@ -555,7 +580,12 @@ float EKG_Button::GetTextHeight() {
 }
 
 void EKG_Button::SetWidth(float Width) {
-    this->Rect.W = Width < this->TextWidth ? this->TextWidth : Width;
+    float W = Width < this->TextWidth ? this->TextWidth : Width;
+
+    if (this->Rect.W != W) {
+        this->Rect.W = W;
+        this->SyncSize();
+    }
 }
 
 bool EKG_Button::IsClicked() {
