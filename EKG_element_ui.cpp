@@ -468,27 +468,27 @@ void EKG_Button::OnRender(float PartialTicks) {
     }
 
     // String.
-    EKG_CORE->FontRenderer.DrawString(this->Tag, this->Rect.X + this->OffsetText, this->Rect.Y + this->Scale, EKG_CORE->ColorTheme.StringColor);
+    EKG_CORE->FontRenderer.DrawString(this->Tag, this->Rect.X + this->AlignText, this->Rect.Y + this->Scale, EKG_CORE->ColorTheme.StringColor);
 }
 
 EKG_Texture EKG_Button::GetBoxTexture() {
     return this->TextureBox;
 }
 
-void EKG_Button::SetOffsetText(float Offset) {
-    this->OffsetText = Offset;
+void EKG_Button::SetAlignText(float Offset) {
+    this->AlignText = Offset;
 }
 
-float EKG_Button::GetOffsetText() {
-    return this->OffsetText;
+float EKG_Button::GetAlignText() {
+    return this->AlignText;
 }
 
-void EKG_Button::SetOffsetBox(float Offset) {
-    this->OffsetBox = Offset;
+void EKG_Button::SetAlignBox(float Offset) {
+    this->AlignBox = Offset;
 }
 
-float EKG_Button::GetOffsetBox() {
-    return this->OffsetBox;
+float EKG_Button::GetAlignBox() {
+    return this->AlignBox;
 }
 
 float* EKG_Button::GetBoxRect() {
@@ -521,6 +521,7 @@ bool EKG_Button::DetectPointCollideBox(float X, float Y) {
 
 void EKG_Button::SetScale(float ButtonScale) {
     this->Scale = ButtonScale;
+    this->SyncSize();
 }
 
 float EKG_Button::GetScale() {
@@ -563,4 +564,8 @@ bool EKG_Button::IsClicked() {
 
 void EKG_Button::SetClicked(bool IsClicked) {
     this->Clicked = IsClicked;
+}
+
+void EKG_Button::Center() {
+    this->AlignText = (this->Rect.W / 2) - (this->TextWidth / 2);
 }

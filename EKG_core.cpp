@@ -60,7 +60,9 @@ void EKG_Core::OnUpdate(float DeltaTicks) {
 
 void EKG_Core::OnRender(float PartialTicks) {
     for (EKG_AbstractElement* Element : this->BufferRender) {
-        Element->OnRender(PartialTicks);
+        if (Element->IsVisible()) {
+            Element->OnRender(PartialTicks);
+        }
     }
 }
 

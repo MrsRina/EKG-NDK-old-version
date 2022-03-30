@@ -226,10 +226,10 @@ bool EKG_Rect::CollideWithPoint(float PointX, float PointY) {
 }
 
 bool EKG_Rect::CollideWithRect(float RectX, float RectY, float RectW, float RectH) {
-    return true; //CollideWithPoint(RectX, RectY) ||
-           //CollideWithPoint(RectX + RectW, RectY) ||
-           //CollideWithPoint(RectX + RectW, RectY + RectH) ||
-           //CollideWithPoint(RectX, RectY + RectH);
+    return this->X < RectX + RectW &&
+           this->X + this->W > RectX &&
+           this->Y < RectY + RectH &&
+           this->Y + this->H > RectY;
 }
 
 void EKG_ColorTheme::Frame(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue) {

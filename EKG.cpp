@@ -426,6 +426,7 @@ EKG_Button* EKG::Button(const std::string &Name, float InitialPosX, float Inital
     Element->SetId(EKG_CORE->NewId());
     Element->Place(InitialPosX, InitalPosY);
     Element->SyncSize();
+    Element->Center();
 
     EKG_CORE->AddElement(Element);
     return Element;

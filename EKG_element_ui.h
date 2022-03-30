@@ -76,7 +76,7 @@ protected:
     /* Checkbox texture, metrics & scale. */
     EKG_Texture TextureBox;
     float BoxRect[4];
-    float OffsetText, OffsetBox, TextWidth, TextHeight, Scale;
+    float AlignText, AlignBox, TextWidth, TextHeight, Scale;
 
     /* Animations. */
     EKG_Smooth SmoothHighlight;
@@ -96,6 +96,7 @@ public:
     void CheckBox(bool State, bool ScaledMode = false);
     void BoxTexture(const EKG_Texture &Texture);
     void BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A);
+    void Center();
     /* end of configurable methods. */
 
     /* Start of setters & getters. */
@@ -111,11 +112,11 @@ public:
     bool IsCheckBox();
     EKG_Texture GetBoxTexture();
 
-    void SetOffsetText(float Offset);
-    float GetOffsetText();
+    void SetAlignText(float Offset);
+    float GetAlignText();
 
-    void SetOffsetBox(float Offset);
-    float GetOffsetBox();
+    void SetAlignBox(float Offset);
+    float GetAlignBox();
 
     float* GetBoxRect();
 
