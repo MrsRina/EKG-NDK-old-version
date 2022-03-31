@@ -75,8 +75,8 @@ protected:
 
     /* Checkbox texture, metrics & scale. */
     EKG_Texture TextureBox;
-    float BoxRect[4];
-    float AlignText, AlignBox = 2, TextWidth, TextHeight, Scale;
+    float BoxRect[4], AlignOffsetText, AlignOffsetBox, OffsetText, OffsetBox, TextWidth, TextHeight, Scale;
+    unsigned int AlignText, AlignBox;
 
     /* Animations. */
     EKG_Smooth SmoothHighlight;
@@ -93,10 +93,10 @@ protected:
     /* End of helper methods. */
 public:
     /* Start of configurable methods. */
-    void CheckBox(bool State, bool ScaledMode = false);
     void BoxTexture(const EKG_Texture &Texture);
     void BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A);
-    void Center();
+    void AlignBox(unsigned int Dock);
+    void AlignText(unsigned int Dock);
     /* end of configurable methods. */
 
     /* Start of setters & getters. */
@@ -112,11 +112,11 @@ public:
     bool IsCheckBox();
     EKG_Texture GetBoxTexture();
 
-    void SetAlignText(float Offset);
-    float GetAlignText();
+    void SetOffsetText(float Offset);
+    float GetOffsetText();
 
-    void SetAlignBox(float Offset);
-    float GetAlignBox();
+    void SetOffsetBox(float Offset);
+    float GetOffsetBox();
 
     float* GetBoxRect();
 
@@ -130,6 +130,7 @@ public:
     float GetTextHeight();
 
     void SetWidth(float Width);
+    void SetMode(std::string Mode);
     /* End of setters & getters. */
 
     /* Start of override methods. */
@@ -143,5 +144,26 @@ public:
 };
 
 class EKG_Slider : EKG_AbstractElement {
+protected:
+    /* Configurables. */
+    double Min, Max, Value;
 
+     /* States. */
+     bool Pressed, HoveredBar, Dragging, AmountVisible, TagVisible, MaxVisible, MinVisible;
+
+     /* Bar metrics. */
+     float BarRect[4];
+     float BarAlignX, BarAlignY;
+
+     /* Label metrics. */
+     float LabelAlignX, LabelAlignY;
+public:
+    /* Start of override methods. */
+    void SyncSize();
+    void OnPreEvent(SDL_Event Event);
+    void OnEvent(SDL_Event Event);
+    void OnPostEvent(SDL_Event Event);
+    void OnUpdate(float DeltaTicks);
+    void OnRender(float PartialTicks);
+    /* End of override methods. */
 };
