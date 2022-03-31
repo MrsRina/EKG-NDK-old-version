@@ -76,7 +76,7 @@ protected:
     /* Checkbox texture, metrics & scale. */
     EKG_Texture TextureBox;
     float BoxRect[4];
-    float AlignText, AlignBox, TextWidth, TextHeight, Scale;
+    float AlignText, AlignBox = 2, TextWidth, TextHeight, Scale;
 
     /* Animations. */
     EKG_Smooth SmoothHighlight;

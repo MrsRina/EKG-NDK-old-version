@@ -428,8 +428,8 @@ void EKG_Button::OnUpdate(float DeltaTicks) {
     EKG_AbstractElement::OnUpdate(DeltaTicks);
 
     if (this->Box) {
-        this->BoxRect[0] = this->Rect.X + this->AlignBox;
-        this->BoxRect[1] = this->Rect.Y + this->Scale;
+        this->BoxRect[0] = this->AlignBox;
+        this->BoxRect[1] = this->Scale;
     }
 
     this->SmoothHighlight.NextFactory = this->Hovered && !this->HoveredBox ? (float) EKG_CORE->ColorTheme.WidgetHighlight[4] : 0;
@@ -534,8 +534,8 @@ void EKG_Button::SetBoxRect(float X, float Y, float W, float H) {
 }
 
 bool EKG_Button::DetectPointCollideBox(float X, float Y) {
-    float BX = this->BoxRect[0];
-    float BY = this->BoxRect[1];
+    float BX = this->GetX() + this->BoxRect[0];
+    float BY = this->GetY() + this->BoxRect[1];
     float BW = this->BoxRect[2];
     float BH = this->BoxRect[3];
 
@@ -564,10 +564,10 @@ void EKG_Button::SyncSize() {
 
     if (this->Box) {
         // The square of box.
-        float Square = this->BoxScaled ? this->TextHeight : (this->Rect.H / 2) + ((this->Rect.H / 2) / 2);
+        float Square = this->BoxScaled ? this->TextHeight : (this->Rect.H / 2) + ((this->Rect.H / 4));
 
-        this->BoxRect[1] = Square;
         this->BoxRect[2] = Square;
+        this->BoxRect[3] = Square;
     }
 }
 
