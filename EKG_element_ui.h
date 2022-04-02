@@ -76,13 +76,14 @@ protected:
     /* Checkbox texture, metrics & scale. */
     EKG_Texture TextureBox;
     float BoxRect[4], AlignOffsetText, AlignOffsetBox, OffsetText, OffsetBox, TextWidth, TextHeight, Scale;
-    unsigned int AlignText, AlignBox;
+    unsigned int AlignTextDocking, AlignBoxDocking;
 
     /* Animations. */
     EKG_Smooth SmoothHighlight;
     EKG_Smooth SmoothBoxHighlight;
     EKG_Smooth SmoothBoxPressed;
     EKG_Smooth SmoothPressed;
+    EKG_Smooth SmoothBoxActivy;
 
     /* Design additional. */
     EKG_Color Border = EKG_Color(255, 255, 255, 255);

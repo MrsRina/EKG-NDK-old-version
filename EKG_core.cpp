@@ -24,31 +24,32 @@ void EKG_Core::AddElement(EKG_AbstractElement *Element) {
 }
 
 void EKG_Core::OnEvent(SDL_Event Event) {
-    this->FocusedId = 0;
+    this->ElementFocused = NULL;
 
     // Get focusing element id.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
+        // Update flags.
         Element->OnPreEvent(Event);
 
+        // The next superior element is set.
         if (Element->IsHovered()) {
-            this->FocusedId = Element->GetId();
+            this->ElementFocused = Element;
         }
 
+        // Reset flags.
         Element->OnPostEvent(Event);
     }
 
+    // Fix stack (after focused or nothing).
     if (Event.type == SDL_FINGERUP) {
         this->ResetStack();
         this->ReorderStack();
     }
 
-    // Call events of element id focused.
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
-        if (Element->GetId() == this->FocusedId) {
-            Element->OnPreEvent(Event);
-        }
-
-        Element->OnEvent(Event);
+    // Call events of focused element.
+    if (this->ElementFocused != NULL) {
+        this->ElementFocused->OnPreEvent(Event);
+        this->ElementFocused->Event(Event);
     }
 }
 
@@ -58,7 +59,7 @@ void EKG_Core::OnUpdate(float DeltaTicks) {
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
         Element->OnUpdate(DeltaTicks);
 
-        if (Element->IsVisible()) {
+        if (Element->IsVisible() && Element->IsRender()) {
             this->BufferRender.push_back(Element);
         }
     }
@@ -101,7 +102,7 @@ void EKG_Core::ResetStack() {
 
     // Get current elements list.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
-        // If is not an master we add in new list.
+        // If is not one master we add in new list.
         if (Element->GetMasterId() == 0) {
             NewBufferOfUpdate.push_back(Element);
         } else {
@@ -125,9 +126,11 @@ void EKG_Core::ResetStack() {
 }
 
 void EKG_Core::ReorderStack() {
-    if (this->FocusedId == 0) {
+    if (this->ElementFocused == NULL) {
         return;
     }
+
+    unsigned int FocusedId = ElementFocused->GetId();
 
     EKG_Stack Current;
     EKG_Stack Focused;
@@ -143,7 +146,7 @@ void EKG_Core::ReorderStack() {
         Element->Stack(Stack);
 
         // If contains element id focused we set the stack value in focused.
-        if (Stack.Contains(this->FocusedId)) {
+        if (Stack.Contains(FocusedId)) {
             Focused = Stack;
         } else {
             // Else, we add in current stack.
@@ -202,7 +205,7 @@ void EKG_Core::Sync(float X, float Y, float W, float H, const EKG_Stack &Stack) 
 
         Element->SetScaled(X, Y, W, H);
         Element->SyncPos();
-        Element->SetVisible(Element->GetRect().CollideWithRect(X, Y, W, H));
+        Element->SetRender(Element->GetRect().CollideWithRect(X, Y, W, H));
 
         if (Element->IsMaster()) {
             EKG_Core::Sync(Element->GetX(), Element->GetY(), Element->GetWidth(), Element->GetHeight(), Element->GetChildren());

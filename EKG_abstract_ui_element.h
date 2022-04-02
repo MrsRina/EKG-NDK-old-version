@@ -26,7 +26,7 @@ protected:
     int ScissorX, ScissorY, ScissorW, ScissorH;
 
     /* Main flags. */
-    bool Hovered, Visible = true, Disabled, Dead;
+    bool Hovered, Visible = true, Disabled, Dead, NoRender;
 public:
     /* Start of setters and getters. */
     bool IsMaster();
@@ -49,6 +49,9 @@ public:
 
     void SetRect(const EKG_Rect &Rectangle);
     EKG_Rect GetRect();
+
+    void SetRender(bool ApplyNoRender) ;
+    bool IsRender();
 
     float GetX();
     float GetY();
@@ -84,7 +87,7 @@ public:
 
     /* Start of action methods. */
     virtual void Place(float X, float Y);
-    virtual void Kill();
+    virtual EKG_AbstractElement* Kill();
 
     virtual void SyncPos();
     virtual void SyncSize();

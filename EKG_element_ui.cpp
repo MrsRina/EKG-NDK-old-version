@@ -392,7 +392,7 @@ void EKG_Button::OnPreEvent(SDL_Event Event) {
 void EKG_Button::OnEvent(SDL_Event Event) {
     EKG_AbstractElement::OnEvent(Event);
 
-    if (Event.type == SDL_FINGERDOWN) {
+    if (Event.type == SDL_FINGERDOWN && this->Hovered) {
         this->Pressed = true;
     }
 }
@@ -414,15 +414,11 @@ void EKG_Button::OnPostEvent(SDL_Event Event) {
 void EKG_Button::OnUpdate(float DeltaTicks) {
     EKG_AbstractElement::OnUpdate(DeltaTicks);
 
-    if (this->Box) {
-        this->BoxRect[0] = this->AlignOffsetBox + this->OffsetBox;
-        this->BoxRect[1] = this->Scale;
-    }
-
     this->SmoothHighlight.NextFactory = this->Hovered && !this->HoveredBox ? (float) EKG_CORE->ColorTheme.WidgetHighlight[4] : 0;
     this->SmoothBoxHighlight.NextFactory = this->HoveredBox ? (float) EKG_CORE->ColorTheme.WidgetHighlight[4] : 0;
-    this->SmoothPressed.NextFactory = this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[4] : 0;
+    this->SmoothPressed.NextFactory = this->Pressed && !this->HoveredBox? (float) EKG_CORE->ColorTheme.WidgetPressed[4] : 0;
     this->SmoothBoxPressed.NextFactory = this->HoveredBox && this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[4] : 0;
+    this->SmoothBoxActivy.NextFactory = this->Checked ? (float) EKG_CORE->ColorTheme.WidgetActivy[4] : 0;
 
     if (this->Clicked) {
         this->Clicked = false;
@@ -437,6 +433,7 @@ void EKG_Button::OnRender(float PartialTicks) {
     this->SmoothHighlight.Update(PartialTicks);
     this->SmoothBoxHighlight.Update(PartialTicks);
     this->SmoothBoxPressed.Update(PartialTicks);
+    this->SmoothBoxActivy.Update(PartialTicks);
 
     // Background
     EKG_Color Color(EKG_CORE->ColorTheme.WidgetBackground);
@@ -455,8 +452,10 @@ void EKG_Button::OnRender(float PartialTicks) {
     }
 
     if (this->Box) {
-        Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
-        EKG_DrawFilledShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], Color);
+        if (this->SmoothBoxActivy.Factory > 10) {
+            Color.Set(EKG_CORE->ColorTheme.WidgetActivy, (unsigned int) this->SmoothBoxActivy.Factory);
+            EKG_DrawFilledShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], Color);
+        }
 
         // Box
         if (this->SmoothBoxPressed.Factory > 10) {
@@ -550,7 +549,7 @@ void EKG_Button::SyncSize() {
     this->Rect.W = this->Rect.W < this->TextWidth ? this->TextWidth : this->Rect.W;
 
     /* After sync minimal sizes of rect. */
-    /* We need sync align text and box (if mode is on). */
+    /* We need to sync align text and box (if mode is on). */
 
     if (this->Box) {
         // The square of box.
@@ -559,25 +558,25 @@ void EKG_Button::SyncSize() {
         this->BoxRect[2] = Square;
         this->BoxRect[3] = Square;
 
-        switch (this->BoxAlign) {
+        switch (this->AlignBoxDocking) {
             case EKG::Dock::LEFT: {
-                this->AlignBoxText = 0;
+                this->AlignOffsetBox = Square / 4;
                 break;
             }
 
             case EKG::Dock::RIGHT: {
-                this->AlignBoxText = this->Rect.W - Square;
+                this->AlignOffsetBox = this->Rect.W - Square - (Square / 4);
                 break;
             }
 
             case EKG::Dock::CENTER: {
-                this->AlignBoxText = (this->Rect.W / 2) - (Square / 2);
+                this->AlignOffsetBox = (this->Rect.W / 2) - (Square / 2);
                 break;
             }
         }
     }
 
-    switch (this->TextAlign) {
+    switch (this->AlignTextDocking) {
         case EKG::Dock::LEFT: {
             this->AlignOffsetText = 0;
             break;
@@ -589,9 +588,15 @@ void EKG_Button::SyncSize() {
         }
 
         case EKG::Dock::CENTER: {
-            this->AlignOffsetText = (this->Rect.W / 2) - (this->TextWidth / 2)
+            this->AlignOffsetText = (this->Rect.W / 2) - (this->TextWidth / 2);
             break;
         }
+    }
+
+    // Now update the check box ret offset pos.
+    if (this->Box) {
+        this->BoxRect[0] = this->AlignOffsetBox + this->OffsetBox;
+        this->BoxRect[1] = this->BoxScaled ? ((this->Rect.H - this->BoxRect[2]) / 2) : this->Scale;
     }
 }
 
@@ -621,35 +626,25 @@ void EKG_Button::SetClicked(bool IsClicked) {
 }
 
 void EKG_Button::SetMode(std::string Mode) {
-    bool ShouldSync = this->CheckBox != true;
+    bool ShouldSync = this->Box != true;
 
-    switch (Mode) {
-        case "CheckBoxScaled": {
-            this->CheckBox = true;
-            this->BoxScaled = true;
+    if (Mode == "CheckBoxScaled") {
+        this->Box = true;
+        this->BoxScaled = true;
+    } else if (Mode == "CheckBox") {
+        ShouldSync = ShouldSync == false ? true : ShouldSync;
 
-            break;
+        this->Box = false;
+        this->BoxScaled = false;
+    } else if (Mode == "Normal") {
+        if (this->Box != false) {
+             ShouldSync = true;
         }
 
-        case "CheckBox": {
-            this->CheckBox = true;
-            this->BoxScaled = false;
-            break;
-        }
-
-        case "Normal": {
-            if (this->CheckBox != false) {
-                ShouldSync = true;
-            }
-
-            this->CheckBox = false;
-        }
-
-        default: {
-            ShouldSync = false;
-            EKG_Log(EKG_Print(this->Id, this->Tag) + "Mode does not exist: (CheckBoxScaled - CheckBox - Normal) ???\"" + Mode + "\"???");
-            break;
-        }
+        this->Box = false;
+    } else {
+        ShouldSync = false;
+        EKG_Log(EKG_Print(this->Tag, this->Id) + "Mode does not exist: (CheckBoxScaled - CheckBox - Normal) ???\"" + Mode + "\"???");
     }
 
     if (ShouldSync) {
@@ -659,24 +654,48 @@ void EKG_Button::SetMode(std::string Mode) {
 
 void EKG_Button::AlignBox(unsigned int Dock) {
     if (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT) {
-        if (this->AlignBox != Dock) {
-            this->AlignBox = Dock;
+        if (this->AlignBoxDocking != Dock) {
+            this->AlignBoxDocking = Dock;
             this->OffsetBox = 0.0F;
             this->SyncSize();
         }
     } else {
-        EKG_Log(EKG_Print(this->Id, this->Tag), "Incorrect align box: only accept (LEFT - CENTER - RIGHT)");
+        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect align box: only accept (LEFT - CENTER - RIGHT)");
     }
 }
 
 void EKG_Button::AlignText(unsigned int Dock) {
     if (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT) {
-        if (this->AlignText != Dock) {
-            this->AlignText = Dock;
-            this->OffsetText = 0
+        if (this->AlignTextDocking != Dock) {
+            this->AlignTextDocking = Dock;
+            this->OffsetText = 0.0F;
             this->SyncSize();
         }
     } else {
-        EKG_Log(EKG_Print(this->Id, this->Tag), "Incorrect align text: only accept (LEFT - CENTER - RIGHT)");
+        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect align text: only accept (LEFT - CENTER - RIGHT)");
     }
+}
+
+void EKG_Slider::SyncSize() {
+
+}
+
+void EKG_Slider::OnPreEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnPreEvent(Event);
+}
+
+void EKG_Slider::OnEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnEvent(Event);
+}
+
+void EKG_Slider::OnPostEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnPostEvent(Event);
+}
+
+void EKG_Slider::OnUpdate(float DeltaTicks) {
+    EKG_AbstractElement::OnUpdate(DeltaTicks);
+}
+
+void EKG_Slider::OnRender(float PartialTicks) {
+    EKG_AbstractElement::OnRender(PartialTicks);
 }
