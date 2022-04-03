@@ -155,7 +155,7 @@ protected:
      float BarRect[4], Size, Scale;
 
      /* Label metrics. */
-     float LabelAlignX, LabelAlignY;
+     float LabelAlignX, LabelAlignY, LabelHeight;
 public:
     /* Start of configurable methods. */
     void Orientation(std::string Orientation);
