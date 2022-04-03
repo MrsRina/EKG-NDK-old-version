@@ -79,8 +79,6 @@ protected:
     unsigned int AlignTextDocking, AlignBoxDocking;
 
     /* Animations. */
-    EKG_Smooth SmoothHighlight;
-    EKG_Smooth SmoothBoxHighlight;
     EKG_Smooth SmoothBoxPressed;
     EKG_Smooth SmoothPressed;
     EKG_Smooth SmoothBoxActivy;
@@ -98,6 +96,7 @@ public:
     void BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A);
     void AlignBox(unsigned int Dock);
     void AlignText(unsigned int Dock);
+    void Mode(std::string Mode);
     /* end of configurable methods. */
 
     /* Start of setters & getters. */
@@ -131,7 +130,6 @@ public:
     float GetTextHeight();
 
     void SetWidth(float Width);
-    void SetMode(std::string Mode);
     /* End of setters & getters. */
 
     /* Start of override methods. */
@@ -144,21 +142,42 @@ public:
     /* End of override methods. */
 };
 
-class EKG_Slider : EKG_AbstractElement {
+class EKG_Slider : public EKG_AbstractElement {
 protected:
     /* Configurables. */
     double Min, Max, Value;
 
      /* States. */
      bool Pressed, HoveredBar, Dragging, AmountVisible, TagVisible, MaxVisible, MinVisible;
+     unsigned int BarOrientation;
 
      /* Bar metrics. */
-     float BarRect[4];
-     float BarAlignX, BarAlignY;
+     float BarRect[4], Size, Scale;
 
      /* Label metrics. */
      float LabelAlignX, LabelAlignY;
 public:
+    /* Start of configurable methods. */
+    void Orientation(std::string Orientation);
+    /* End of configurable methods. */
+
+    /* Start of setters & getters. */
+    void SetScale(float Amount);
+    float GetScale();
+
+    void SetBarSize(float BarSize);
+    float GetBarSize();
+
+    void SetMax(double Maximum);
+    double GetMax();
+
+    void SetMin(double Minimum);
+    double GetMin();
+
+    void SetValue(double Val);
+    double GetValue();
+    /* End of setters & getters. */
+
     /* Start of override methods. */
     void SyncSize();
     void OnPreEvent(SDL_Event Event);

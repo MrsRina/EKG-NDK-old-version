@@ -24,7 +24,7 @@ void EKG_Core::AddElement(EKG_AbstractElement *Element) {
 }
 
 void EKG_Core::OnEvent(SDL_Event Event) {
-    this->ElementFocused = NULL;
+    this->FocusedId = 0;
 
     // Get focusing element id.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
@@ -33,7 +33,7 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 
         // The next superior element is set.
         if (Element->IsHovered()) {
-            this->ElementFocused = Element;
+            this->FocusedId = Element->GetId();
         }
 
         // Reset flags.
@@ -46,22 +46,25 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         this->ReorderStack();
     }
 
-    // Call events of focused element.
-    if (this->ElementFocused != NULL) {
-        this->ElementFocused->OnPreEvent(Event);
-        this->ElementFocused->Event(Event);
-    }
-}
-
-void EKG_Core::OnUpdate(float DeltaTicks) {
     this->BufferRender.clear();
 
+    // Call all events.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
-        Element->OnUpdate(DeltaTicks);
+        if (Element->GetId() == this->FocusedId) {
+            Element->OnPreEvent(Event);
+        }
+
+        Element->OnEvent(Event);
 
         if (Element->IsVisible() && Element->IsRender()) {
             this->BufferRender.push_back(Element);
         }
+    }
+}
+
+void EKG_Core::OnUpdate(float DeltaTicks) {
+    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+        Element->OnUpdate(DeltaTicks);
     }
 }
 
@@ -97,7 +100,6 @@ void EKG_Core::Quit() {
 
 void EKG_Core::ResetStack() {
     EKG_Stack Stack;
-
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
 
     // Get current elements list.
@@ -126,11 +128,9 @@ void EKG_Core::ResetStack() {
 }
 
 void EKG_Core::ReorderStack() {
-    if (this->ElementFocused == NULL) {
+    if (this->FocusedId == 0) {
         return;
     }
-
-    unsigned int FocusedId = ElementFocused->GetId();
 
     EKG_Stack Current;
     EKG_Stack Focused;
@@ -146,7 +146,7 @@ void EKG_Core::ReorderStack() {
         Element->Stack(Stack);
 
         // If contains element id focused we set the stack value in focused.
-        if (Stack.Contains(FocusedId)) {
+        if (Stack.Contains(this->FocusedId)) {
             Focused = Stack;
         } else {
             // Else, we add in current stack.

@@ -28,6 +28,9 @@ protected:
     /* Main flags. */
     bool Hovered, Visible = true, Disabled, Dead, NoRender;
 public:
+    EKG_AbstractElement() {}
+    ~EKG_AbstractElement() {}
+
     /* Start of setters and getters. */
     bool IsMaster();
     bool IsFingerOver(float X, float Y);

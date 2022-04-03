@@ -93,6 +93,7 @@ void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThicknes
     EKG_TESSELLATOR->Vertex(X, Y, 0);
 
     // Draw.
+    glLineWidth(LineThickness);
     EKG_TESSELLATOR->Draw();
 }
 
@@ -381,7 +382,7 @@ void EKG_ColorTheme::Init() {
     Widget(HIGHLIGHT, 255, 0, 255, 50);
     Widget(PRESSED, 255, 0, 255, 100);
     Widget(FOCUSED, 0, 0, 0, 0);
-    Widget(ACTIVY, 255, 255, 255, 50);
+    Widget(ACTIVY, 255, 0, 255, 50);
 
     this->OutlineButton = true;
     this->OutlineFrame = true;

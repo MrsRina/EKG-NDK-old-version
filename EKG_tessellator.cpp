@@ -256,7 +256,7 @@ void EKG_FontRenderer::Reload() {
     glBindTexture(GL_TEXTURE_2D, this->BitmapTextureId);
 
     // Define image.
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (int) this->TextureWidth, (int) this->TextureHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (int) this->TextureWidth, (int) this->TextureHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, nullptr);
 
     float OffsetX = 0;
 
@@ -363,9 +363,77 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
     EKG_TESSELLATOR->Draw();
 }
 
-void EKG_FontRenderer::DrawStringClamped(const std::string &String, float X, float Y, float W,
-                                         const EKG_Color &Color) {
+void EKG_FontRenderer::DrawStringClamped(const std::string &String, float PositionX, float PositionY, float W, const EKG_Color &Color) {
+    std::vector<GLfloat> VertexVector, TextureVector;
+    FT_Vector PreviousCharVector;
 
+    float RenderX, RenderY, RenderW, RenderH, OriginX = PositionX;
+    float TextureX, TextureY = 0.0F, TextureW, TextureH;
+
+    const char* CharString = String.c_str();
+    unsigned int CountChar = 0;
+
+    for (const char* I = CharString; *I; I++) {
+        if (this->UseKerning && this->Previous && *I) {
+            FT_Get_Kerning(this->Face, this->Previous, *I, 0, &PreviousCharVector);
+            PositionX += (PreviousCharVector.x >> 6);
+        }
+
+        EKG_CharData Data = Chars[*I];
+
+        RenderX = PositionX + (float) Data.TextureLeft;
+        RenderY = PositionY + (this->TextureHeight - (float) Data.TextureTop);
+        RenderW = Data.W;
+        RenderH = Data.H;
+
+        if (RenderX >= OriginX + W) {
+            continue;
+        }
+
+        CountChar++;
+
+        TextureX = Data.StoreX;
+        TextureW = Data.W / (float) this->TextureWidth;
+        TextureH = Data.H / (float) this->TextureHeight;
+
+        float VertexList[] = {
+                // First triangle.
+                RenderX, RenderY, 0,
+                RenderX, RenderY + RenderH, 0,
+                RenderX + RenderW, RenderY + RenderH, 0,
+
+                // Second triangle.
+                RenderX + RenderW, RenderY + RenderH, 0,
+                RenderX, RenderY, 0,
+                RenderX + RenderW, RenderY, 0
+        };
+
+        float TextCoordList[] = {
+                // First triangle.
+                TextureX, TextureY,
+                TextureX, TextureY + TextureH,
+                TextureX + TextureW, TextureY + TextureH,
+
+                // Second triangle.
+                TextureX + TextureW, TextureY + TextureH,
+                TextureX, TextureY,
+                TextureX + TextureW, TextureY
+        };
+
+        VertexVector.insert(VertexVector.end(), VertexList, VertexList + 18);
+        TextureVector.insert(TextureVector.end(), TextCoordList, TextCoordList + 12);
+
+        PositionX += Data.TextureX;
+        this->Previous = (int) *I;
+    }
+
+    // Draw string.
+    EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6 * (int) CountChar);
+    EKG_TESSELLATOR->BindTexture(this->BitmapTextureId);
+    EKG_TESSELLATOR->SetRectColor(255 - Color.R, 255 - Color.G, 255 - Color.B, Color.A);
+    EKG_TESSELLATOR->SetVertex(VertexVector);
+    EKG_TESSELLATOR->SetUV(TextureVector);
+    EKG_TESSELLATOR->Draw();
 }
 
 float EKG_FontRenderer::GetStringWidth(const std::string &String) {

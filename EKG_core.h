@@ -19,15 +19,12 @@ protected:
     /* Stacks. */
     EKG_Stack StackedIdsSelected;
 
-    /* Most high id to generate unique ids. */
-    unsigned int HighId;
+    /* Focused id & most high id to generate unique ids. */
+    unsigned int FocusedId, HighId;
 
     /* Stack control methods. */
     void ResetStack();
     void ReorderStack();
-
-    /* Focused element (object reference instead an uint id). */
-    EKG_AbstractElement* ElementFocused;
 public:
     EKG_Core() {}
 

@@ -79,7 +79,11 @@ public:
 
     /* Start of setup/concurrent static methods. */
     static EKG_Frame* Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight);
-    static EKG_Button* Button(const std::string &Name, float InitialPosX, float InitalPosY, float InitialScale);
+    static EKG_Button* Button(const std::string &Name, float InitialPosX, float InitialPosY, float InitialScale);
+    static EKG_Slider* Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY);
+
+    static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
+    static EKG_AbstractElement* Find(unsigned int Id);
 
     static void Context();
     static void Event(SDL_Event Event);

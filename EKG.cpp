@@ -419,16 +419,47 @@ EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialP
     return Element;
 }
 
-EKG_Button* EKG::Button(const std::string &Name, float InitialPosX, float InitalPosY, float InitialScale) {
+EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float InitialPosX, float InitialPosY) {
     auto* Element = new EKG_Button();
 
     Element->SetScale(InitialScale);
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
-    Element->Place(InitialPosX, InitalPosY);
-    Element->SyncSize();
+    Element->Place(InitialPosX, InitialPosY);
     Element->AlignText(EKG::Dock::CENTER);
     Element->AlignBox(EKG::Dock::LEFT);
+    Element->Mode("Normal");
+    Element->SetWidth(Element->GetTextWidth());
+    Element->SyncSize();
+
+    EKG_CORE->AddElement(Element);
+    return Element;
+}
+
+EKG_AbstractElement *EKG::Find(unsigned int Id) {
+    return EKG_CORE->GetElementById(Id);
+}
+
+std::vector<unsigned int> EKG::Children(EKG_AbstractElement* Element) {
+    std::vector<unsigned int> Stack;
+
+    if (Element == NULL) {
+        return Stack;
+    }
+
+    Stack = Element->GetChildren().StackedIds;
+    return Stack;
+}
+
+EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY) {
+    auto* Element = new EKG_Slider();
+
+    Element->Orientation("Horizontal");
+    Element->SetTag(Name);
+    Element->SetId(EKG_CORE->NewId());
+    Element->Place(InitialPosX, InitialPosY);
+    Element->SetBarSize(20);
+    Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
     return Element;

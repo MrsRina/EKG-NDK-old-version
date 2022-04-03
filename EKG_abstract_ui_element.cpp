@@ -4,6 +4,7 @@
 void EKG_AbstractElement::SetTag(const std::string &NewTag) {
     if (this->Tag != NewTag) {
         this->Tag = NewTag;
+        this->SyncSize();
     }
 }
 
