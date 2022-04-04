@@ -686,6 +686,8 @@ void EKG_Slider::SyncSize() {
     if (this->BarOrientation == 0) {
         this->Rect.W = this->Size;
         this->Rect.H = this->Scale + this->LabelHeighht + this->Scale;
+
+        this->BarRect[2] = this->Value-
     } else {
         this->Rect.W = this->Scale + this->LabelHeight + this->Scale;
         this->Rect.H = this->Size;
@@ -724,7 +726,7 @@ void EKG_Slider::OnRender(float PartialTicks) {
 
     // Bar.
     Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
-    EKG_DrawFilledShape(this->Rectthis->BarRect[0], this->BarRect[1], this->BarRect[2], this->BarRect[3], Color);
+    EKG_DrawFilledShape(this->GetX() + this->Rectthis->BarRect[0], this->GetY() + this->BarRect[1], this->BarRect[2], this->BarRect[3], Color);
 }
 
 void EKG_Slider::Orientation(std::string Orientation) {
@@ -769,4 +771,14 @@ void EKG_Slider::SetScale(float Amount) {
 
 float EKG_Slider::GetScale() {
     return this->Scale;
+}
+
+void EKG_Slider::SyncBar() {
+    float BarSizeFactor = this->BarOrientation == 0 ? this->Rect.W : this->Rect.H;
+
+    if (this->BarOrientation == 0) {
+        this->BarRect[2] = 0;
+    } else {
+
+    }
 }

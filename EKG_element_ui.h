@@ -156,6 +156,9 @@ protected:
 
      /* Label metrics. */
      float LabelAlignX, LabelAlignY, LabelHeight;
+
+     /* Update slider bar sie by current value. */
+     void SyncBar();
 public:
     /* Start of configurable methods. */
     void Orientation(std::string Orientation);
