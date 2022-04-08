@@ -701,18 +701,25 @@ void EKG_Slider::SyncSize() {
      * 0 = Horizontal.
      * 1 = Vertical.
      */
-    if (this->BarOrientation == 0) {
-        this->Rect.W = this->Size;
-        this->Rect.H = this->Scale + this->LabelHeighht + this->Scale;
+    switch (this->BarOrientation) {
+        case 0: {
+            this->Rect.W = this->Size;
+            this->Rect.H = this->Scale + this->LabelHeight + this->Scale;
 
-        this->BarRect[2] = this->Value-
-    } else {
-        this->Rect.W = this->Scale + this->LabelHeight + this->Scale;
-        this->Rect.H = this->Size;
+            this->BarRect[2] = (double) this->Rect.W * (this->Value - this->Min) / (this->Min - this->Max);
+            this->BarRect[3] = this->Rect.H;
+            break;
+        }
+
+        case 1: {
+            this->Rect.W = this->Scale + this->LabelHeight + this->Scale;
+            this->Rect.H = this->Size;
+
+            this->BarRect[2] = this->Rect.W;
+            this->BarRect[3] = (double) this->Rect.H * (this->Value - this->Min) / (this->Min - this->Max);
+            break;
+        }
     }
-
-    this->BarRect[2] = this->Rect.W;
-    this->BarRect[3] = this->Rect.H;
 }
 
 void EKG_Slider::OnPreEvent(SDL_Event Event) {
@@ -722,8 +729,36 @@ void EKG_Slider::OnPreEvent(SDL_Event Event) {
 void EKG_Slider::OnEvent(SDL_Event Event) {
     EKG_AbstractElement::OnEvent(Event);
 
-    if (SDL_FINGERDOWN && this->Hovered) {
-        this->Pressed = true;
+    switch (Event.type) {
+        case SDL_FINGERUP: {
+            this->Pressed = false;
+            this->Dragging = false;
+            break;
+        }
+
+        default: {
+            if (this->Drag && (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERUP)) {
+                float FX = Event.tfinger.x;
+                float FY = Event.tfinger.y;
+
+                EKG::ScaledFingerPos(FX, FY);
+
+                if (!this->Dragging && this->Hovered) {
+                    this->Pressed = true;
+                    this->Dragging = true;
+                }
+
+                if (this->Dragging && this->Pressed) {
+                    float FingerPosFactored = this->BarOrientation == 0 ? FX : FY;
+                    float Diff = (this->BarOrientation == 0 ? this->Rect.W : this->Rect.H) - FingerPosFactored;
+
+                    // Set bar progress.
+                    this->SyncBar(Diff < 0 ? 0 : Diff);
+                }
+            }
+
+            break;
+        }
     }
 }
 
@@ -744,23 +779,29 @@ void EKG_Slider::OnRender(float PartialTicks) {
 
     // Bar.
     Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
-    EKG_DrawFilledShape(this->GetX() + this->Rectthis->BarRect[0], this->GetY() + this->BarRect[1], this->BarRect[2], this->BarRect[3], Color);
+    EKG_DrawFilledShape(this->GetX() + this->BarRect[0], this->GetY() + this->BarRect[1], this->BarRect[2], this->BarRect[3], Color);
 }
 
 void EKG_Slider::Orientation(std::string Orientation) {
     this->BarOrientation = Orientation == "Horizontal" ? 0 : 1;
 }
 
-void EKG_Slider::SetBarSize(float BarSize) {
-    this->Size = BarSize;
+void EKG_Slider::SetSize(float BarSize) {
+    if (this->Size != BarSize) {
+        this->Size = BarSize;
+        this->SyncSize();
+    }
 }
 
-float EKG_Slider::GetBarSize() {
+float EKG_Slider::GetSize() {
     return this->Size;
 }
 
 void EKG_Slider::SetMax(double Maximum) {
-    this->Min = Maximum;
+    if (this->Max != Maximum) {
+        this->Max = Maximum;
+        this->SyncSize();
+    }
 }
 
 double EKG_Slider::GetMax() {
@@ -768,7 +809,10 @@ double EKG_Slider::GetMax() {
 }
 
 void EKG_Slider::SetMin(double Minimum) {
-    this->Min = Minimum;
+    if (this->Min != Minimum) {
+        this->Min = Minimum;
+        this->SyncSize();
+    }
 }
 
 double EKG_Slider::GetMin() {
@@ -776,7 +820,12 @@ double EKG_Slider::GetMin() {
 }
 
 void EKG_Slider::SetValue(double Val) {
-    this->Value = Val;
+    double ValueClampf = Val < this->Min ? this->Min : (Val > this->Max ? this->Max : Val);
+
+    if (this->Value != ValueClampf) {
+        this->Value = ValueClampf;
+        this->SyncSize();
+    }
 }
 
 double EKG_Slider::GetValue() {
@@ -784,19 +833,23 @@ double EKG_Slider::GetValue() {
 }
 
 void EKG_Slider::SetScale(float Amount) {
-    this->Scale = Amount;
+    if (this->Scale != Amount) {
+        this->Scale = Amount;
+        this->SyncSize();
+    }
 }
 
 float EKG_Slider::GetScale() {
     return this->Scale;
 }
 
-void EKG_Slider::SyncBar() {
+void EKG_Slider::SyncBar(float PositionFactory) {
     float BarSizeFactor = this->BarOrientation == 0 ? this->Rect.W : this->Rect.H;
 
-    if (this->BarOrientation == 0) {
-        this->BarRect[2] = 0;
-    } else {
+    // In this case we set the new value.
+    this->SetValue(((double) BarSizeFactor / (double) PositionFactory) * (this->Value - this->Min) / (double) (this->Min - this->Max));
+}
 
-    }
+void EKG_Slider::Draggable(bool State) {
+    this->Drag = State;
 }

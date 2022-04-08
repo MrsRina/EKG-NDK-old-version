@@ -148,7 +148,7 @@ protected:
     double Min, Max, Value;
 
      /* States. */
-     bool Pressed, HoveredBar, Dragging, AmountVisible, TagVisible, MaxVisible, MinVisible;
+     bool Pressed, HoveredBar, Drag, Dragging, AmountVisible, TagVisible, MaxVisible, MinVisible;
      unsigned int BarOrientation;
 
      /* Bar metrics. */
@@ -157,19 +157,20 @@ protected:
      /* Label metrics. */
      float LabelAlignX, LabelAlignY, LabelHeight;
 
-     /* Update slider bar sie by current value. */
-     void SyncBar();
+     /* Update slider progress with a pos factory. */
+     void SyncBar(float PositionFactory);
 public:
     /* Start of configurable methods. */
     void Orientation(std::string Orientation);
+    void Draggable(bool State);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
     void SetScale(float Amount);
     float GetScale();
 
-    void SetBarSize(float BarSize);
-    float GetBarSize();
+    void SetSize(float BarSize);
+    float GetSize();
 
     void SetMax(double Maximum);
     double GetMax();

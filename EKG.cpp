@@ -451,16 +451,31 @@ std::vector<unsigned int> EKG::Children(EKG_AbstractElement* Element) {
     return Stack;
 }
 
-EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY) {
+EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale) {
     auto* Element = new EKG_Slider();
 
     Element->Orientation("Horizontal");
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
     Element->Place(InitialPosX, InitialPosY);
-    Element->SetBarSize(20);
+    Element->SetSize(20);
+    Element->SetScale(InitialScale);
+    Element->SetMin(Min);
+    Element->SetMax(Max);
+    Element->SetValue(Value);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
     return Element;
+}
+
+void EKG::Kill(EKG_AbstractElement *&Element) {
+    // Kill element using method 'Kill'.
+    Element->Kill();
+
+    // Set NULL (for show that is dead).
+    Element = NULL;
+
+    // Delete from memeory (memory anti-leak).
+    delete Element;
 }
