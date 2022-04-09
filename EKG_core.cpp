@@ -3,6 +3,7 @@
 
 void EKG_Core::RemoveElement(EKG_AbstractElement* Element) {
     std::vector<EKG_AbstractElement*> NewBufferUpdate;
+    std::vector<EKG_AbstractElement*> NewBufferRender;
 
     for (EKG_AbstractElement* Elements : this->BufferUpdate) {
         if (Elements->GetId() == Element->GetId()) {
@@ -10,9 +11,14 @@ void EKG_Core::RemoveElement(EKG_AbstractElement* Element) {
         }
 
         NewBufferUpdate.push_back(Elements);
+
+        if (Element->IsVisible() && Element->IsRender()) {
+            NewBufferRender.push_back(Element);
+        }
     }
 
     this->BufferUpdate = NewBufferUpdate;
+    this->BufferRender = NewBufferRender;
 }
 
 void EKG_Core::AddElement(EKG_AbstractElement *Element) {

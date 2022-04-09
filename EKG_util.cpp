@@ -151,6 +151,18 @@ float EKG_LinearInterpolation(float A, float B, float T) {
     return A + (B - A) * T;
 }
 
+float EKG_Min(float Min, float Value) {
+    return Value < Min ? Min : Value;
+}
+
+float EKG_Max(float Value, float Max) {
+    return Value > Max ? Max : Value;
+}
+
+float EKG_Clampf(float V, float Min, float Max) {
+    return V < Min ? Min : (V > Max ? Max : V);
+}
+
 float EKG_Color::GetRedf() {
     return (float) this->R / 255.0F;
 }
@@ -366,13 +378,13 @@ void EKG_ColorTheme::Widget(unsigned int Flag, unsigned int RedValue, unsigned i
 }
 
 void EKG_ColorTheme::Init() {
-    Frame(BACKGROUND, 255, 255, 255, 50);
+    Frame(BACKGROUND, 61, 61, 60, 255);
     Frame(HIGHLIGHT, 0, 0, 0, 0);
     Frame(PRESSED, 255, 255, 255, 50);
     Frame(FOCUSED, 0, 0, 0, 0);
     Frame(ACTIVY, 0, 0, 0, 0);
 
-    Container(BACKGROUND, 255, 0, 0, 50);
+    Container(BACKGROUND, 255, 0, 0, 255);
     Container(HIGHLIGHT, 0, 0, 0, 0);
     Container(PRESSED, 0, 0, 0, 0);
     Container(FOCUSED, 0, 0, 0, 0);

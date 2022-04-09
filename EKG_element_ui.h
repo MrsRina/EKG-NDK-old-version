@@ -161,7 +161,7 @@ protected:
      void SyncBar(float PositionFactory);
 public:
     /* Start of configurable methods. */
-    void Orientation(std::string Orientation);
+    void Orientation(const std::string& Orientation);
     void Draggable(bool State);
     /* End of configurable methods. */
 

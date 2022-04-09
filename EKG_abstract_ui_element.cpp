@@ -111,6 +111,8 @@ bool EKG_AbstractElement::IsDead() {
 
 EKG_AbstractElement* EKG_AbstractElement::Kill() {
     this->Dead = true;
+    this->NoRender = true;
+    this->Visible = false;
     return NULL;
 }
 

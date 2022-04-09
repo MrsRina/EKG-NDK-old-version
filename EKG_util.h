@@ -6,6 +6,29 @@
 #include "EKG_includes.h"
 
 /**
+ * Min da value.
+ * @param Min
+ * @return Value.
+ */
+float EKG_Min(float Min, float Value);
+
+/**
+ * Max da value.
+ * @param Max
+ * @return Value.
+ */
+float EKG_Max(float Value, float Max);
+
+/**
+ * Clampf.
+ * @param V
+ * @param Min
+ * @param Max
+ * @return
+ */
+float EKG_Clampf(float V, float Min, float Max);
+
+/**
  * Apply ortho view 2D.
  */
 void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top);
