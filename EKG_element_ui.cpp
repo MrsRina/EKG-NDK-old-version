@@ -692,7 +692,7 @@ void EKG_Button::AlignText(unsigned int Dock) {
 }
 
 void EKG_Slider::SyncSize() {
-    this->LabelHeight = EKG_CORE->FontRenderer.GetStringHeight("Slider");
+    this->LabelSize = EKG_CORE->FontRenderer.GetStringHeight("Slider");
 
     this->BarRect[0] = 0;
     this->BarRect[1] = 0;
@@ -704,7 +704,7 @@ void EKG_Slider::SyncSize() {
     switch (this->BarOrientation) {
         case 0: {
             this->Rect.W = this->Size;
-            this->Rect.H = this->Scale + this->LabelHeight + this->Scale;
+            this->Rect.H = this->Scale + this->LabelSize + this->Scale;
 
             this->BarRect[2] = ((float) this->Rect.W) * ((float) this->Value - (float) this->Min) / ((float) this->Max - (float) this->Min);
             this->BarRect[3] = this->Rect.H;
@@ -712,7 +712,7 @@ void EKG_Slider::SyncSize() {
         }
 
         case 1: {
-            this->Rect.W = this->Scale + this->LabelHeight + this->Scale;
+            this->Rect.W = this->Scale + this->LabelSize + this->Scale;
             this->Rect.H = this->Size;
 
             this->BarRect[2] = this->Rect.W;

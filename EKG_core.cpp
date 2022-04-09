@@ -1,19 +1,22 @@
 #include "EKG_core.h"
 #include "EKG.h"
 
-void EKG_Core::RemoveElement(EKG_AbstractElement* Element) {
-    std::vector<EKG_AbstractElement*> NewBufferUpdate;
+void EKG_Core::RemoveElement(unsigned int ElementId) {
     std::vector<EKG_AbstractElement*> NewBufferRender;
+    std::vector<EKG_AbstractElement*> NewBufferUpdate;
 
     for (EKG_AbstractElement* Elements : this->BufferUpdate) {
-        if (Elements->GetId() == Element->GetId()) {
+        if (Elements->GetId() == ElementId) {
+            Elements->Kill();
+
+            delete Elements;
             continue;
         }
 
         NewBufferUpdate.push_back(Elements);
 
-        if (Element->IsVisible() && Element->IsRender()) {
-            NewBufferRender.push_back(Element);
+        if (Elements->IsVisible() && Elements->IsRender()) {
+            NewBufferRender.push_back(Elements);
         }
     }
 

@@ -155,7 +155,7 @@ protected:
      float BarRect[4], Size, Scale;
 
      /* Label metrics. */
-     float LabelAlignX, LabelAlignY, LabelHeight;
+     float LabelAlignX, LabelAlignY, LabelSize;
 
      /* Update slider progress with a pos factory. */
      void SyncBar(float PositionFactory);

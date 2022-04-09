@@ -39,7 +39,7 @@ public:
     void Quit();
 
     void AddElement(EKG_AbstractElement* Element);
-    void RemoveElement(EKG_AbstractElement* Element);
+    void RemoveElement(unsigned int ElementId);
 
     EKG_AbstractElement* GetElementById(unsigned int Id);
     unsigned int NewId();
