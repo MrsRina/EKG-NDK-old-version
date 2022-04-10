@@ -692,7 +692,8 @@ void EKG_Button::AlignText(unsigned int Dock) {
 }
 
 void EKG_Slider::SyncSize() {
-    this->LabelSize = EKG_CORE->FontRenderer.GetStringHeight("Slider");
+    this->LabelHeight = EKG_CORE->FontRenderer.GetStringHeight(std::to_string(this->GetValue()));
+    this->LabelWidth = EKG_CORE->FontRenderer.GetStringWidth(std::to_string(this->GetValue()));
 
     this->BarRect[0] = 0;
     this->BarRect[1] = 0;
@@ -704,7 +705,7 @@ void EKG_Slider::SyncSize() {
     switch (this->BarOrientation) {
         case 0: {
             this->Rect.W = this->Size;
-            this->Rect.H = this->Scale + this->LabelSize + this->Scale;
+            this->Rect.H = this->Scale + this->LabelHeight + this->Scale;
 
             this->BarRect[2] = ((float) this->Rect.W) * ((float) this->Value - (float) this->Min) / ((float) this->Max - (float) this->Min);
             this->BarRect[3] = this->Rect.H;
@@ -712,11 +713,48 @@ void EKG_Slider::SyncSize() {
         }
 
         case 1: {
-            this->Rect.W = this->Scale + this->LabelSize + this->Scale;
+            this->Rect.W = this->Scale + this->LabelHeight + this->Scale;
             this->Rect.H = this->Size;
 
             this->BarRect[2] = this->Rect.W;
             this->BarRect[3] = ((float) this->Rect.H) * ((float) this->Value - (float) this->Min) / ((float) this->Max - (float) this->Min);
+            break;
+        }
+    }
+
+    switch (this->LabelAlignDocking) {
+        case EKG::Dock::LEFT: {
+            this->LabelAlignX = 2.0F;
+            this->LabelAlignY = this->Size;
+            break;
+        }
+
+        case EKG::Dock::CENTER: {
+            if (this->BarOrientation == 0) {
+                this->LabelAlignX = (this->GetWidth() / 2.0F) - (this->LabelWidth / 2.0F);
+                this->LabelAlignY = this->Size;
+            } else {
+                this->LabelAlignX = (this->GetWidth() / 2.0F) - (this->LabelWidth / 2.0F);
+                this->LabelAlignY = (this->GetHeight() / 2.0F) - (this->LabelHeight / 2.0F);
+            }
+            break;
+        }
+
+        case EKG::Dock::RIGHT: {
+            this->LabelAlignX = this->GetWidth() - this->LabelWidth - 2.0F;
+            this->LabelAlignY = this->Size;
+            break;
+        }
+
+        case EKG::Dock::TOP: {
+            this->LabelAlignX = (this->GetWidth() / 2.0F) - (this->LabelWidth / 2.0F);
+            this->LabelAlignY = 2.0F;
+            break;
+        }
+
+        case EKG::Dock::BOTTOM: {
+            this->LabelAlignX = (this->GetWidth() / 2.0F) - (this->LabelWidth / 2.0F);
+            this->LabelAlignY = this->GetHeight() - this->LabelHeight - 2.0F;
             break;
         }
     }
@@ -780,6 +818,11 @@ void EKG_Slider::OnRender(float PartialTicks) {
     // Bar.
     Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
     EKG_DrawFilledShape(this->GetX() + this->BarRect[0], this->GetY() + this->BarRect[1], this->BarRect[2], this->BarRect[3], Color);
+
+    // Value.
+    if (this->LabelVisible) {
+        EKG_CORE->FontRenderer.DrawString(std::to_string(this->GetValue()), this->GetX() + this->LabelAlignX, this->GetY() + this->LabelAlignY, EKG_CORE->ColorTheme.StringColor);
+    }
 }
 
 void EKG_Slider::Orientation(const std::string& Orientation) {
@@ -862,4 +905,20 @@ void EKG_Slider::SyncBar(float PositionFactory) {
 
 void EKG_Slider::Draggable(bool State) {
     this->Drag = State;
+}
+
+void EKG_Slider::LabelAlign(unsigned int Docking) {
+    bool Flag = (Docking == EKG::Dock::LEFT || Docking == EKG::Dock::RIGHT || Docking == EKG::Dock::CENTER || Docking == EKG::Dock::TOP || Docking == EKG::Dock::BOTTOM);
+
+    if (this->LabelAlignDocking != Docking && Flag) {
+        this->LabelAlignDocking = Docking;
+        this->SyncSize();
+    } else if (!Flag) {
+        EKG_Log(EKG_Print(this->GetTag(), this->GetId()) + " Incorrect align label: For horizontal docking (LEFT - CENTER - RIGHT), for vertical docking (TOP - CENTER - BOTTOM)");
+        this->LabelAlignDocking = EKG::Dock::CENTER;
+    }
+}
+
+void EKG_Slider::LabelVisibility(bool LabelState) {
+    this->Visible = LabelState;
 }
