@@ -85,7 +85,7 @@ public:
     static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
     static EKG_AbstractElement* Find(unsigned int Id);
 
-    static NULL Kill(unsigned int ElementId);
+    static void Kill(EKG_AbstractElement* &Element);
     static void Context();
     static void Event(SDL_Event Event);
     static void Update(float DeltaTicks);

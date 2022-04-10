@@ -469,7 +469,7 @@ EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float M
     return Element;
 }
 
-NULL EKG::Kill(unsigned int ElementId) {
-    EKG_CORE->RemoveElement(ElementId);
-    return NULL;
+void EKG::Kill(EKG_AbstractElement* &Element) {
+    EKG_CORE->RemoveElement(Element->GetId());
+    Element = NULL;
 }
