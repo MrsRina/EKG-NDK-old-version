@@ -412,6 +412,10 @@ void EKG_ColorTheme::Quit() {
     // Nothing.
 }
 
+bool EKG_ColorTheme::IsOutlineSliderEnabled() {
+    return this->OutlineSlider;
+}
+
 void EKG_Smooth::Update(float PartialTicks) {
     this->Factory = EKG_LinearInterpolation(this->Factory, this->NextFactory, PartialTicks);
 }

@@ -1,5 +1,6 @@
 #include "EKG_element_ui.h"
 #include "EKG.h"
+#include <iomanip>
 
 void EKG_Frame::Draggable(unsigned int Area) {
     this->DraggableDockFlags = Area == NULL ? 0 : Area;
@@ -355,10 +356,6 @@ void EKG_Button::BoxTexture(const EKG_Texture &Texture) {
     this->TextureBox = Texture;
 }
 
-void EKG_Button::BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A) {
-    this->Border.Set(R, G, B, A);
-}
-
 void EKG_Button::SetPressed(bool State) {
     this->Pressed = State;
 }
@@ -415,6 +412,7 @@ void EKG_Button::OnEvent(SDL_Event Event) {
 
                 if (this->HoveredBox || this->Hovered) {
                     this->Checked = this->IsCheckBox() ? !this->Checked : this->Checked;
+                    this->Clicked = true;
                 }
 
                 this->Pressed = false;
@@ -456,8 +454,7 @@ void EKG_Button::OnRender(float PartialTicks) {
 
     // Border
     if (EKG_CORE->ColorTheme.IsOutlineButtonEnabled()) {
-        Color.Set(this->Border.R, this->Border.G, this->Border.B, this->Border.A);
-        EKG_DrawOutlineRect(this->Rect, 1.0f, Color);
+        EKG_DrawOutlineRect(this->Rect, 1.5f, EKG_CORE->ColorTheme.StringColor);
     }
 
     // Pressed.
@@ -473,8 +470,7 @@ void EKG_Button::OnRender(float PartialTicks) {
         }
 
         // Border of box.
-        Color.Set(this->Border.R, this->Border.G, this->Border.B, this->Border.A);
-        EKG_DrawOutlineShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], 2.0F, Color);
+        EKG_DrawOutlineShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], 2.0F, EKG_CORE->ColorTheme.StringColor);
 
         // Box
         if (this->SmoothBoxPressed.Factory > 10) {
@@ -692,6 +688,8 @@ void EKG_Button::AlignText(unsigned int Dock) {
 }
 
 void EKG_Slider::SyncSize() {
+    float NameHeight = EKG_CORE->FontRenderer.GetStringHeight(this->Tag);
+
     this->LabelHeight = EKG_CORE->FontRenderer.GetStringHeight(std::to_string(this->GetValue()));
     this->LabelWidth = EKG_CORE->FontRenderer.GetStringWidth(std::to_string(this->GetValue()));
 
@@ -705,7 +703,7 @@ void EKG_Slider::SyncSize() {
     switch (this->BarOrientation) {
         case 0: {
             this->Rect.W = this->Size;
-            this->Rect.H = this->Scale + this->LabelHeight + this->Scale;
+            this->Rect.H = this->Scale + NameHeight + this->Scale;
 
             this->BarRect[2] = ((float) this->Rect.W) * ((float) this->Value - (float) this->Min) / ((float) this->Max - (float) this->Min);
             this->BarRect[3] = this->Rect.H;
@@ -713,7 +711,7 @@ void EKG_Slider::SyncSize() {
         }
 
         case 1: {
-            this->Rect.W = this->Scale + this->LabelHeight + this->Scale;
+            this->Rect.W = this->Scale + NameHeight + this->Scale;
             this->Rect.H = this->Size;
 
             this->BarRect[2] = this->Rect.W;
@@ -725,14 +723,14 @@ void EKG_Slider::SyncSize() {
     switch (this->LabelAlignDocking) {
         case EKG::Dock::LEFT: {
             this->LabelAlignX = 2.0F;
-            this->LabelAlignY = this->Size;
+            this->LabelAlignY = this->Scale;
             break;
         }
 
         case EKG::Dock::CENTER: {
             if (this->BarOrientation == 0) {
                 this->LabelAlignX = (this->GetWidth() / 2.0F) - (this->LabelWidth / 2.0F);
-                this->LabelAlignY = this->Size;
+                this->LabelAlignY = this->Scale;
             } else {
                 this->LabelAlignX = (this->GetWidth() / 2.0F) - (this->LabelWidth / 2.0F);
                 this->LabelAlignY = (this->GetHeight() / 2.0F) - (this->LabelHeight / 2.0F);
@@ -742,7 +740,7 @@ void EKG_Slider::SyncSize() {
 
         case EKG::Dock::RIGHT: {
             this->LabelAlignX = this->GetWidth() - this->LabelWidth - 2.0F;
-            this->LabelAlignY = this->Size;
+            this->LabelAlignY = this->Scale;
             break;
         }
 
@@ -819,8 +817,14 @@ void EKG_Slider::OnRender(float PartialTicks) {
     Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
     EKG_DrawFilledShape(this->GetX() + this->BarRect[0], this->GetY() + this->BarRect[1], this->BarRect[2], this->BarRect[3], Color);
 
+    if (EKG_CORE->ColorTheme.IsOutlineSliderEnabled()) {
+        EKG_DrawOutlineRect(this->Rect, 1.5f, EKG_CORE->ColorTheme.StringColor);
+    }
+
     // Value.
     if (this->LabelVisible) {
+        std::string FormatedValue = std::setprecision(2);
+
         EKG_CORE->FontRenderer.DrawString(std::to_string(this->GetValue()), this->GetX() + this->LabelAlignX, this->GetY() + this->LabelAlignY, EKG_CORE->ColorTheme.StringColor);
     }
 }
@@ -920,5 +924,5 @@ void EKG_Slider::LabelAlign(unsigned int Docking) {
 }
 
 void EKG_Slider::LabelVisibility(bool LabelState) {
-    this->Visible = LabelState;
+    this->LabelVisible = LabelState;
 }

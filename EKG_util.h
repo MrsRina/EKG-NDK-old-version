@@ -113,6 +113,7 @@ class EKG_ColorTheme {
 private:
     bool OutlineFrame;
     bool OutlineButton;
+    bool OutlineSlider;
 public:
     static const unsigned int BACKGROUND = 0;
     static const unsigned int HIGHLIGHT  = 1;
@@ -145,6 +146,7 @@ public:
 
     bool IsOutlineFrameEnabled();
     bool IsOutlineButtonEnabled();
+    bool IsOutlineSliderEnabled();
 
     void Frame(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue);
     void Container(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue);

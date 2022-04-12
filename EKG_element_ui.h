@@ -83,9 +83,6 @@ protected:
     EKG_Smooth SmoothPressed;
     EKG_Smooth SmoothBoxActivy;
 
-    /* Design additional. */
-    EKG_Color Border = EKG_Color(255, 255, 255, 255);
-
     /* Start of helper methods to box (checkbox mode on). */
     void SetBoxRect(float X, float Y, float W, float H);
     bool DetectPointCollideBox(float X, float Y);
