@@ -688,10 +688,13 @@ void EKG_Button::AlignText(unsigned int Dock) {
 }
 
 void EKG_Slider::SyncSize() {
+    std::string StringValue = std::to_string(this->GetValue());
+    this->Format = StringValue.substr(0, StringValue.find('.') + 3);
+
     float NameHeight = EKG_CORE->FontRenderer.GetStringHeight(this->Tag);
 
-    this->LabelHeight = EKG_CORE->FontRenderer.GetStringHeight(std::to_string(this->GetValue()));
-    this->LabelWidth = EKG_CORE->FontRenderer.GetStringWidth(std::to_string(this->GetValue()));
+    this->LabelWidth = EKG_CORE->FontRenderer.GetStringWidth(this->Format);
+    this->LabelHeight = EKG_CORE->FontRenderer.GetStringHeight(this->Format);
 
     this->BarRect[0] = 0;
     this->BarRect[1] = 0;
@@ -823,9 +826,7 @@ void EKG_Slider::OnRender(float PartialTicks) {
 
     // Value.
     if (this->LabelVisible) {
-        std::string FormatedValue = std::setprecision(2);
-
-        EKG_CORE->FontRenderer.DrawString(std::to_string(this->GetValue()), this->GetX() + this->LabelAlignX, this->GetY() + this->LabelAlignY, EKG_CORE->ColorTheme.StringColor);
+        EKG_CORE->FontRenderer.DrawString(this->Format, this->GetX() + this->LabelAlignX, this->GetY() + this->LabelAlignY, EKG_CORE->ColorTheme.StringColor);
     }
 }
 

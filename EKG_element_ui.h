@@ -141,22 +141,25 @@ public:
 
 class EKG_Slider : public EKG_AbstractElement {
 protected:
+    /* For render value. */
+    std::string Format;
+
     /* Configurables. */
     double Min, Max, Value;
 
-     /* States. */
-     bool Pressed,Drag, Dragging, LabelVisible;
-     unsigned int BarOrientation;
+    /* States. */
+    bool Pressed,Drag, Dragging, LabelVisible;
+    unsigned int BarOrientation;
 
-     /* Bar metrics. */
-     float BarRect[4], Size, Scale;
+    /* Bar metrics. */
+    float BarRect[4], Size, Scale;
 
-     /* Label metrics & docking of the label. */
-     float LabelAlignX, LabelAlignY, LabelWidth, LabelHeight, OffsetLabel, AlignLabel;
-     unsigned int LabelAlignDocking;
+    /* Label metrics & docking of the label. */
+    float LabelAlignX, LabelAlignY, LabelWidth, LabelHeight, OffsetLabel, AlignLabel;
+    unsigned int LabelAlignDocking;
 
-     /* Update slider progress with a pos factory. */
-     void SyncBar(float PositionFactory);
+    /* Update slider progress with a pos factory. */
+    void SyncBar(float PositionFactory);
 public:
     /* Start of configurable methods. */
     void Orientation(const std::string& Orientation);
