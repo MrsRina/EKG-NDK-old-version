@@ -1,6 +1,18 @@
 #include "EKG_util.h"
 #include "EKG.h"
 
+void EKG_Scissor(int X, int Y, int W, int H) {
+    int FactorW = X + W;
+    int FactorH = Y + H;
+
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(X, (int) EKG::DeviceScreenHeight - FactorH, FactorW - X, FactorH - Y);
+}
+
+void EKG_EndScissor() {
+    glDisable(GL_SCISSOR_TEST);
+}
+
 bool EKG_Stack::Contains(unsigned int Id) {
     for (unsigned int Ids : this->StackedIds) {
         if (Ids == Id) {
@@ -398,6 +410,8 @@ void EKG_ColorTheme::Init() {
 
     this->OutlineButton = true;
     this->OutlineFrame = true;
+
+    this->StringColor.Set(255, 255, 255);
 }
 
 bool EKG_ColorTheme::IsOutlineFrameEnabled() {

@@ -173,6 +173,11 @@ struct EKG_Smooth {
     void Update(float PartialTicks);
 };
 
+/* Start of scissor functions. */
+void EKG_Scissor(int X, int Y, int W, int H);
+void EKG_EndScissor();
+/* End of scissor functions. */
+
 /* Start of draw functions. */
 void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Color);
 void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color);

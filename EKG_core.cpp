@@ -68,6 +68,8 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         if (Element->IsVisible() && Element->IsRender()) {
             this->BufferRender.push_back(Element);
         }
+
+        this->SyncScissor(Element);
     }
 }
 
@@ -219,5 +221,54 @@ void EKG_Core::Sync(float X, float Y, float W, float H, const EKG_Stack &Stack) 
         if (Element->IsMaster()) {
             EKG_Core::Sync(Element->GetX(), Element->GetY(), Element->GetWidth(), Element->GetHeight(), Element->GetChildren());
         }
+    }
+}
+
+void EKG_Core::SyncScissor(EKG_AbstractElement* Element) {
+    Element->SetScissor(Element->GetX(), Element->GetY(), Element->GetWidth(), Element->GetHeight());
+
+    if (!Element->IsMaster()) {
+        return;
+    }
+
+    int X = Element->GetScissorX();
+    int Y = Element->GetScissorY();
+    int W = Element->GetScissorW();
+    int H = Element->GetScissorH();
+
+  // if (X < (int) Element->GetX()) {
+  //     Element->SetScissor((int) Element->GetX(), Element->GetScissorY(), Element->GetScissorW(), Element->GetScissorH());
+  // }
+
+  // if (Y < (int) Element->GetY()) {
+  //     Element->SetScissor(Element->GetScissorX(), (int) Element->GetY(), Element->GetScissorW(), Element->GetScissorH());
+  // }
+
+  // if (W < (int) Element->GetWidth()) {
+  //     Element->SetScissor(Element->GetScissorX(), Element->GetScissorY(), (int) Element->GetWidth(), Element->GetScissorH());
+  // }
+
+  // if (H < (int) Element->GetHeight()) {
+  //     Element->SetScissor(Element->GetScissorX(), Element->GetScissorY(), Element->GetScissorW(), (int) Element->GetHeight());
+    //}
+
+    for (unsigned int Ids : Element->GetChildren().StackedIds) {
+        auto* Elements = (EKG_AbstractElement*) this->GetElementById(Ids);
+
+       // if (X < (int) Elements->GetX()) {
+       //     Elements->SetScissor((int) Elements->GetX(), Elements->GetScissorY(), Elements->GetScissorW(), Elements->GetScissorH());
+       // }
+//
+       // if (Y < (int) Element->GetY()) {
+       //     Elements->SetScissor(Elements->GetScissorX(), (int) Elements->GetY(), Elements->GetScissorW(), Elements->GetScissorH());
+       // }
+//
+       // if (W < (int) Elements->GetWidth()) {
+       //     Elements->SetScissor(Elements->GetScissorX(), Elements->GetScissorY(), (int) Elements->GetWidth(), Elements->GetScissorH());
+       // }
+//
+       // if (H < (int) Elements->GetHeight()) {
+       //     Elements->SetScissor(Elements->GetScissorX(), Elements->GetScissorY(), Elements->GetScissorW(), (int) Elements->GetHeight());
+       // }
     }
 }

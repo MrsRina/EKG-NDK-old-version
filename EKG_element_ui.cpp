@@ -247,6 +247,9 @@ void EKG_Frame::OnUpdate(float DeltaTicks) {
 void EKG_Frame::OnRender(float PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
 
+    // Enable scissor test and cut off the fragments.
+    EKG_Scissor(this->GetScissorX(), this->GetScissorY(), this->GetScissorW(), this->GetScissorH());
+
     // Background.
     EKG_Color Color(EKG_CORE->ColorTheme.FrameBackground);
 
@@ -266,6 +269,9 @@ void EKG_Frame::OnRender(float PartialTicks) {
         Color.Set(EKG_CORE->ColorTheme.FramePressed);
         EKG_DrawFilledRect(this->Rect, Color);
     }
+
+    // End scissor.
+    EKG_EndScissor();
 }
 
 void EKG_Frame::Alpha(unsigned int Alpha) {
@@ -448,6 +454,9 @@ void EKG_Button::OnRender(float PartialTicks) {
     this->SmoothBoxPressed.Update(PartialTicks);
     this->SmoothBoxActivy.Update(PartialTicks);
 
+    // Enable scissor test and cut off the fragments.
+    EKG_Scissor(this->GetScissorX(), this->GetScissorY(), this->GetScissorW(), this->GetScissorH());
+
     // Background
     EKG_Color Color(EKG_CORE->ColorTheme.WidgetBackground);
     EKG_DrawFilledRect(this->Rect, Color);
@@ -481,6 +490,9 @@ void EKG_Button::OnRender(float PartialTicks) {
 
     // String.
     EKG_CORE->FontRenderer.DrawString(this->Tag, this->Rect.X + this->AlignOffsetText + this->OffsetText, this->Rect.Y + this->Scale, EKG_CORE->ColorTheme.StringColor);
+
+    // End scissor.
+    EKG_EndScissor();
 }
 
 EKG_Texture EKG_Button::GetBoxTexture() {
@@ -812,6 +824,9 @@ void EKG_Slider::OnUpdate(float DeltaTicks) {
 void EKG_Slider::OnRender(float PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
 
+    // Enable scissor test and cut off the fragments.
+    EKG_Scissor(this->GetScissorX(), this->GetScissorY(), this->GetScissorW(), this->GetScissorH());
+
     // Background.
     EKG_Color Color(EKG_CORE->ColorTheme.WidgetBackground);
     EKG_DrawFilledRect(this->Rect, Color);
@@ -828,6 +843,9 @@ void EKG_Slider::OnRender(float PartialTicks) {
     if (this->LabelVisible) {
         EKG_CORE->FontRenderer.DrawString(this->Format, this->GetX() + this->LabelAlignX, this->GetY() + this->LabelAlignY, EKG_CORE->ColorTheme.StringColor);
     }
+
+    // End scissor.
+    EKG_EndScissor();
 }
 
 void EKG_Slider::Orientation(const std::string& Orientation) {

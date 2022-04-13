@@ -62,6 +62,7 @@ public:
     float GetHeight();
 
     void SetScaled(float X, float Y, float Width, float Height);
+    void SetScissor(int X, int Y, int W, int H);
 
     void SetHovered(bool State);
     bool IsHovered();
@@ -75,16 +76,9 @@ public:
     void SetDead(bool State);
     bool IsDead();
 
-    void SetScissorX(int X);
     int GetScissorX();
-
-    void SetScissorY(int Y);
     int GetScissorY();
-
-    void SetScissorW(int W);
     int GetScissorW();
-
-    void SetScissorH(int H);
     int GetScissorH();
     /* End of setters and getters. */
 

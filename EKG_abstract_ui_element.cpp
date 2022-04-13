@@ -176,32 +176,23 @@ bool EKG_AbstractElement::IsMaster() {
     return !this->Children.StackedIds.empty();
 }
 
-void EKG_AbstractElement::SetScissorX(int X) {
+void EKG_AbstractElement::SetScissor(int X, int Y, int W, int H) {
     this->ScissorX = X;
+    this->ScissorY = Y;
+    this->ScissorW = W;
+    this->ScissorH = H;
 }
 
 int EKG_AbstractElement::GetScissorX() {
     return this->ScissorX;
 }
 
-void EKG_AbstractElement::SetScissorY(int Y) {
-    this->ScissorY = Y;
-}
-
 int EKG_AbstractElement::GetScissorY() {
     return this->ScissorY;
 }
 
-void EKG_AbstractElement::SetScissorW(int W) {
-    this->ScissorW = W;
-}
-
 int EKG_AbstractElement::GetScissorW() {
     return this->ScissorW;
-}
-
-void EKG_AbstractElement::SetScissorH(int H) {
-    this->ScissorH = H;
 }
 
 int EKG_AbstractElement::GetScissorH() {

@@ -45,6 +45,7 @@ public:
     unsigned int NewId();
 
     void Sync(float X, float Y, float W, float H, const EKG_Stack &Stack);
+    void SyncScissor(EKG_AbstractElement* Element);
     /* End of important methods. */
 
     /* Start of concurrent methods. */
