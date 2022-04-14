@@ -676,26 +676,26 @@ void EKG_Button::Mode(std::string Mode) {
 }
 
 void EKG_Button::AlignBox(unsigned int Dock) {
-    if (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT) {
-        if (this->AlignBoxDocking != Dock) {
-            this->AlignBoxDocking = Dock;
-            this->OffsetBox = 0.0F;
-            this->SyncSize();
-        }
+    bool Flag = (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT);
+
+    if (this->AlignBoxDocking != Dock) {
+        this->AlignBoxDocking = Dock;
+        this->OffsetBox = 0.0F;
+        this->SyncSize();
     } else {
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect align box: only accept (LEFT - CENTER - RIGHT)");
+        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect box align: only accept (LEFT - CENTER - RIGHT)");
     }
 }
 
 void EKG_Button::AlignText(unsigned int Dock) {
-    if (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT) {
-        if (this->AlignTextDocking != Dock) {
-            this->AlignTextDocking = Dock;
-            this->OffsetText = 0.0F;
-            this->SyncSize();
-        }
+    bool Flag = (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT);
+
+    if (this->AlignTextDocking != Dock && Flag) {
+        this->AlignTextDocking = Dock;
+        this->OffsetText = 0.0F;
+        this->SyncSize();
     } else {
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect align text: only accept (LEFT - CENTER - RIGHT)");
+        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect text align: only accept (LEFT - CENTER - RIGHT)");
     }
 }
 
@@ -933,15 +933,203 @@ void EKG_Slider::Draggable(bool State) {
 void EKG_Slider::LabelAlign(unsigned int Docking) {
     bool Flag = (Docking == EKG::Dock::LEFT || Docking == EKG::Dock::RIGHT || Docking == EKG::Dock::CENTER || Docking == EKG::Dock::TOP || Docking == EKG::Dock::BOTTOM);
 
-    if (this->LabelAlignDocking != Docking && Flag) {
+    if (ShouldSync && Flag) {
         this->LabelAlignDocking = Docking;
         this->SyncSize();
     } else if (!Flag) {
-        EKG_Log(EKG_Print(this->GetTag(), this->GetId()) + " Incorrect align label: For horizontal docking (LEFT - CENTER - RIGHT), for vertical docking (TOP - CENTER - BOTTOM)");
+        EKG_Log(EKG_Print(this->GetTag(), this->GetId()) + " Incorrect label align: for horizontal docking (LEFT - CENTER - RIGHT), for vertical docking (TOP - CENTER - BOTTOM)");
+
+        ShouldSync = this->LabelAlignDocking != EKG::Dock::CENTER;
         this->LabelAlignDocking = EKG::Dock::CENTER;
     }
 }
 
 void EKG_Slider::LabelVisibility(bool LabelState) {
     this->LabelVisible = LabelState;
+}
+
+void EKG_Popup::Insert(const std::string &StringList[32]) {
+    this->List.clear();
+
+    for (const std::string Strings : StringList) {
+        EKG_Texture Compoenent;
+
+        Component.Name = Strings;
+        Component.Tag = "Enabled";
+
+        this->List.push_back(Component);
+    }
+}
+
+void EKG_Popup::Delete(const std::string &Pattern) {
+    std::vector<EKG_Texture> NewList;
+
+    for (EKG_Texture Components : this->List) {
+        if (EKG_StringContains(Pattern, Components.Name)) {
+            continue;
+        }
+
+        NewList.push_back(Components);
+    }
+
+    bool ShouldSync = this->List.size() != NewList.size();
+    this->List = NewList;
+
+    if (ShouldSync) {
+        this->SyncSize();
+    }
+}
+
+void EKG_Popup::Disable(const std::string &Pattern) {
+    std::vector<EKG_Texture> NewList;
+
+    for (EKG_Texture Components : this->List) {
+        if (EKG_StringContains(Pattern, Components.Name)) {
+            Components.Tag = "0";
+        }
+
+        NewList.push_back(Components);
+    }
+
+    bool ShouldSync = this->List.size() != NewList.size();
+    this->List = NewList;
+
+    if (ShouldSync) {
+        this->SyncSize();
+    }
+}
+
+void EKG_Popup::Enable(const std::string &Pattern) {
+    std::vector<EKG_Texture> NewList;
+
+    for (EKG_Texture Components : this->List) {
+        if (EKG_StringContains(Pattern, Components.Name)) {
+            Components.Tag = "1";
+        }
+
+        NewList.push_back(Components);
+    }
+
+    bool ShouldSync = this->List.size() != NewList.size();
+    this->List = NewList;
+
+    if (ShouldSync) {
+        this->SyncSize();
+    }
+}
+
+void EKG_Popup::SetOffsetLabel(float OffsetLabel) {
+    this->LabelOffset = OffsetLabel;
+}
+
+float EKG_Popup::GetOffsetLabel() {
+    return this->LabelOffset;
+}
+
+void EKG_Popup::SetPressed(bool State) {
+    this->Pressed = State;
+}
+
+bool EKG_Popup::IsPressed() {
+    return this->Pressed;
+}
+
+void EKG_Popup::SetClicked(bool State) {
+    this->Clicked = State;
+}
+
+bool EKG_Popup::IsClicked() {
+    return this->Clicked;
+}
+
+void EKG_Popup::SetWidth(float Width) {
+    if (this->Rect.W != Width) {
+        this->Rect.W = Width;
+        this->SyncSize();
+    }
+}
+
+std::vector<EKG_Texture> EKG_Popup::GetList() {
+    return this->List;
+}
+
+std::string EKG_Popup::GetFocused() {
+    return this->Focused;
+}
+
+std::string EKG_Popup::GetClicked() {
+    return this->Selected;
+}
+
+void EKG_Popup::SyncSize() {
+    EKG_AbstractElement::SyncSize();
+
+    // This method is invoked too many times.
+    // So we call 'ConcurrentList' instead 'NewList'.
+    std::vector<EKG_Texture> ConcurrentList;
+
+    for (EKG_Texture &Components : this->List) {
+        // It cost too many ticks (hardware) to get string height.
+        Texture.Height = EKG_CORE->FontRenderer.GetStringHeight(Components.Name);
+    }
+
+    this->List = ConcurrentList;
+}
+
+void EKG_Popup::OnPreEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnPreEvent(Event);
+}
+
+void EKG_Popup::OnEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnEvent(Event);
+
+    switch (Event.type) {
+        case SDL_FINGERUP: {
+            if (!this->Hovered) {
+                this->Kill();
+            } else {
+                if (this->Focused != "" && this->Pressed != "" && this->Focused == this->Pressed) {
+                    this->Clicked = this->Pressed;
+                }
+            }
+
+            break;
+        }
+    }
+}
+
+void EKG_Popup::OnPostEvent(SDL_Event Event) {
+    EKG_AbstractElement::OnPostEvent(Event);
+}
+
+void EKG_Popup::OnUpdate(float DeltaTicks) {
+    EKG_AbstractElement::OnUpdate(DeltaTicks);
+}
+
+void EKG_Popup::OnRender(float PartialTicks) {
+    EKG_AbstractElement::OnRender(PartialTicks);
+    EKG_Color Color(EKG_CORE->ColorTheme.WidgetActivy);
+
+    float FullHeight = this->GetY();
+
+    // I do not like iterations in loops.
+    for (EKG_Texture Components : this->List) {
+        // Background when is focused.
+        if (Components.Name == this->Focused) {
+            EKG_DrawFilledShape(this->GetX(), FullHeight, this->Rect.W, Components.Height, Color);
+        }
+
+        // Draw the name of component.
+        EKG_CORE->FontRenderer.DrawString(Components.Name, this->GetX() + this->LabelOffset, FullHeight, EKG_CORE->ColorTheme.StringColor);
+
+        // Update the height to the next element be rendered property.
+        FullHeight += Components.Height;
+    }
+
+    // Outline (YOU CAN NOT DISABLED IT SORRY).
+    EKG_DrawOutlineRect(this->Rect, 1.5f, EKG_CORE->ColorTheme.StringColor);
+}
+
+std::string EKG_Popup::GetHoveredCompoenent(float FX, float FY) {
+    return "no-hovered";
 }

@@ -6,6 +6,14 @@
 #include "EKG_includes.h"
 
 /**
+ * Compare strings and find equals char.
+ * @param StringOne
+ * @param StringTwo
+ * @return
+ */
+bool EKG_StringContains(const std::string &StringOne, const std::string &StringTwo);
+
+/**
  * Min da value.
  * @param Min
  * @return Value.

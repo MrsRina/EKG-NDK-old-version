@@ -144,11 +144,11 @@ protected:
     /* For render value. */
     std::string Format;
 
-    /* Configurables. */
+    /* Settings. */
     double Min, Max, Value;
 
     /* States. */
-    bool Pressed,Drag, Dragging, LabelVisible;
+    bool Pressed, Drag, Dragging, LabelVisible;
     unsigned int BarOrientation;
 
     /* Bar metrics. */
@@ -169,6 +169,9 @@ public:
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
+    void SetOffsetLabel(float Offfset);
+    float GetOffsetLabel();
+
     void SetScale(float Amount);
     float GetScale();
 
@@ -183,6 +186,56 @@ public:
 
     void SetValue(double Val);
     double GetValue();
+    /* End of setters & getters. */
+
+    /* Start of override methods. */
+    void SyncSize();
+    void OnPreEvent(SDL_Event Event);
+    void OnEvent(SDL_Event Event);
+    void OnPostEvent(SDL_Event Event);
+    void OnUpdate(float DeltaTicks);
+    void OnRender(float PartialTicks);
+    /* End of override methods. */
+};
+
+class EKG_Popup : public EKG_AbstractElement {
+protected:
+    /* Settings. */
+    std::vector<EKG_Texture> List;
+    std::string Selected, Focused;
+
+    /* States. */
+    bool Pressed, Clicked;
+
+    /* Metrics of popup & buttons. */
+    float MaximumHeight, MaximumWidth, LabelOffset;
+
+    /* Help to returns hovered components. */
+    std::string GetHoveredCompoenent(float FX, float FY);
+public:
+    /* Start of configurable methods. */
+    void Insert(const std::string &StringList[32]);
+    void Delete(const std::string &Pattern);
+    void Disable(const std::string &Pattern);
+    void Enable(const std::string &Pattern);
+    /* End of configurable methods. */
+
+    /* Start of setters & getters. */
+    void SetOffsetLabel(float OffsetLabel);
+    float GetOffsetLabel();
+
+    void SetPressed(bool State);
+    bool IsPressed();
+
+    void SetClicked(bool State);
+    bool IsClicked();
+
+    void SetWidth(float Width);
+
+    std::vector<EKG_Texture> GetList();
+
+    std::string GetFocused();
+    std::string GetClicked();
     /* End of setters & getters. */
 
     /* Start of override methods. */

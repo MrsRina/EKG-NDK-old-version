@@ -175,6 +175,10 @@ float EKG_Clampf(float V, float Min, float Max) {
     return V < Min ? Min : (V > Max ? Max : V);
 }
 
+bool EKG_StringContains(const std::string &StringOne, const std::string &StringTwo) {
+    return StringOne.find(StringTwo) != std::string:::npos;
+}
+
 float EKG_Color::GetRedf() {
     return (float) this->R / 255.0F;
 }
