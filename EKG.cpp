@@ -441,6 +441,7 @@ EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialP
 
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
+    Element->SetScale(2);
     Element->Place(InitialPosX, InitialPosY);
     Element->SetWidth(InitialSizeWidth);
     Element->Insert(List);

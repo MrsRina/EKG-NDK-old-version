@@ -115,6 +115,11 @@ void EKG_Core::ResetStack() {
 
     // Get current elements list.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
+        if (Element->IsDead()) {
+            delete Element;
+            continue;
+        }
+
         // If is not one master we add in new list.
         if (Element->GetMasterId() == 0) {
             NewBufferOfUpdate.push_back(Element);
@@ -127,11 +132,6 @@ void EKG_Core::ResetStack() {
     // Update stack now pushing back the fixed stack list.
     for (unsigned int IDs : Stack.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
-
-        if (Element == NULL) {
-            continue;
-        }
-
         NewBufferOfUpdate.push_back(Element);
     }
 
@@ -147,6 +147,11 @@ void EKG_Core::ReorderStack() {
     EKG_Stack Focused;
 
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
+        if (Element->IsDead()) {
+            delete Element;
+            continue;
+        }
+
         // Ignore if contains in focused.
         if (Focused.Contains(Element->GetId())) {
             continue;
@@ -170,22 +175,12 @@ void EKG_Core::ReorderStack() {
     // Put current.
     for (unsigned int IDs : Current.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
-
-        if (Element == NULL) {
-            continue;
-        }
-
         NewBufferOfUpdate.push_back(Element);
     }
 
     // Put the focused ids at top of list.
     for (unsigned int IDs : Focused.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
-
-        if (Element == NULL) {
-            continue;
-        }
-
         NewBufferOfUpdate.push_back(Element);
     }
 
@@ -271,4 +266,12 @@ void EKG_Core::SyncScissor(EKG_AbstractElement* Element) {
        //     Elements->SetScissor(Elements->GetScissorX(), Elements->GetScissorY(), Elements->GetScissorW(), (int) Elements->GetHeight());
        // }
     }
+}
+
+int EKG_Core::GetSizeOfUpdateElements() {
+    return this->BufferUpdate.size();
+}
+
+int EKG_Core::GetSizeOfRenderElements() {
+    return this->BufferRender.size();
 }

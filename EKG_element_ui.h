@@ -6,6 +6,12 @@
 #include "EKG_includes.h"
 #include "EKG_abstract_ui_element.h"
 
+/**
+ * Name: Frame
+ * Type: Frame
+ * Description: A master element to place others elements.
+ * Features: Set draggable, resizable & add child (elements).
+ **/
 class EKG_Frame : public EKG_AbstractElement {
 protected:
     /* Flags used to save build config in frame. */
@@ -68,6 +74,12 @@ public:
     /* End of override methods. */
 };
 
+/**
+ * Name: Button
+ * Type: Widget
+ * Description: A normal button state & check.
+ * Features: Check box or normal click.
+ **/
 class EKG_Button : public EKG_AbstractElement {
 protected:
     /* States. */
@@ -90,7 +102,6 @@ protected:
 public:
     /* Start of configurable methods. */
     void BoxTexture(const EKG_Texture &Texture);
-    void BorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned A);
     void AlignBox(unsigned int Dock);
     void AlignText(unsigned int Dock);
     void Mode(std::string Mode);
@@ -139,6 +150,13 @@ public:
     /* End of override methods. */
 };
 
+/**
+ * Name: Slider
+ * Type: Widget
+ * Description: Control a bar with value min & max.
+ * Features: Set draggable or make a progress bar,
+ * two align (Horizontal - Vertical)
+ **/
 class EKG_Slider : public EKG_AbstractElement {
 protected:
     /* For render value. */
@@ -169,7 +187,7 @@ public:
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
-    void SetOffsetLabel(float Offfset);
+    void SetOffsetLabel(float Offset);
     float GetOffsetLabel();
 
     void SetScale(float Amount);
@@ -198,6 +216,12 @@ public:
     /* End of override methods. */
 };
 
+/**
+ * Name: Popup
+ * Type: Container
+ * Description: List elements and make selectable
+ * Features: Enable or disable elements
+ **/
 class EKG_Popup : public EKG_AbstractElement {
 protected:
     /* Settings. */
@@ -208,21 +232,21 @@ protected:
     bool Pressed, Clicked;
 
     /* Metrics of popup & buttons. */
-    float MaximumHeight, MaximumWidth, LabelOffset;
+    float MaximumHeight, MaximumWidth, TextOffset, TextScale;
 
     /* Help to returns hovered components. */
-    std::string GetHoveredCompoenent(float FX, float FY);
+    std::string GetHoveredComponent(float FX, float FY);
 public:
     /* Start of configurable methods. */
-    void Insert(const std::string &StringList[32]);
+    void Insert(const std::string StringList[32]);
     void Delete(const std::string &Pattern);
     void Disable(const std::string &Pattern);
     void Enable(const std::string &Pattern);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
-    void SetOffsetLabel(float OffsetLabel);
-    float GetOffsetLabel();
+    void SetOffsetText(float OffsetText);
+    float GetOffsetText();
 
     void SetPressed(bool State);
     bool IsPressed();
@@ -231,6 +255,9 @@ public:
     bool IsClicked();
 
     void SetWidth(float Width);
+
+    void SetScale(float TextScale);
+    float GetScale();
 
     std::vector<EKG_Texture> GetList();
 

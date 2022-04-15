@@ -44,11 +44,11 @@ bool EKG_Stack::Put(unsigned int Id) {
     return true;
 }
 
-void EKG_Log(std::string Log) {
-    std::string FullaLog = "[EKG] " + Log;
+void EKG_Log(const std::string& Log) {
+    std::string FullLog = "[EKG] " + Log;
 
     // Send log using SDL function.
-    SDL_Log("%s", FullaLog.c_str());
+    SDL_Log("%s", FullLog.c_str());
 }
 
 void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top) {
@@ -176,7 +176,7 @@ float EKG_Clampf(float V, float Min, float Max) {
 }
 
 bool EKG_StringContains(const std::string &StringOne, const std::string &StringTwo) {
-    return StringOne.find(StringTwo) != std::string:::npos;
+    return StringOne.find(StringTwo) != std::string::npos;
 }
 
 float EKG_Color::GetRedf() {
@@ -400,9 +400,9 @@ void EKG_ColorTheme::Init() {
     Frame(FOCUSED, 0, 0, 0, 0);
     Frame(ACTIVY, 0, 0, 0, 0);
 
-    Container(BACKGROUND, 255, 0, 0, 255);
+    Container(BACKGROUND, 61, 61, 60, 255);
     Container(HIGHLIGHT, 0, 0, 0, 0);
-    Container(PRESSED, 0, 0, 0, 0);
+    Container(PRESSED, 255, 255, 255, 50);
     Container(FOCUSED, 0, 0, 0, 0);
     Container(ACTIVY, 0, 0, 0, 0);
 

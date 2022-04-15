@@ -34,6 +34,11 @@ public:
     EKG_ColorTheme ColorTheme;
     /* End of managers and controllers. */
 
+    /* Start of setters & getters. */
+    int GetSizeOfUpdateElements();
+    int GetSizeOfRenderElements();
+    /* End of setters & getters. */
+
     /* Start of important methods. */
     void Init();
     void Quit();

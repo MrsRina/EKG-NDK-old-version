@@ -88,10 +88,8 @@ void EKG_AbstractElement::SetVisible(bool State) {
 }
 
 bool EKG_AbstractElement::IsVisible() {
-    return this->Visible;
+    return this->Visible && !this->Dead;
 }
-
-
 
 void EKG_AbstractElement::SetDisabled(bool State) {
     this->Disabled = State;
@@ -231,7 +229,7 @@ void EKG_AbstractElement::SyncSize() {
 }
 
 bool EKG_AbstractElement::IsRender() {
-    return !this->NoRender;
+    return !this->NoRender && !this->Dead;
 }
 
 void EKG_AbstractElement::SetRender(bool ApplyNoRender) {

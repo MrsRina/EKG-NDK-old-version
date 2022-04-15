@@ -932,6 +932,7 @@ void EKG_Slider::Draggable(bool State) {
 
 void EKG_Slider::LabelAlign(unsigned int Docking) {
     bool Flag = (Docking == EKG::Dock::LEFT || Docking == EKG::Dock::RIGHT || Docking == EKG::Dock::CENTER || Docking == EKG::Dock::TOP || Docking == EKG::Dock::BOTTOM);
+    bool ShouldSync = this->LabelAlignDocking != Docking;
 
     if (ShouldSync && Flag) {
         this->LabelAlignDocking = Docking;
@@ -948,14 +949,29 @@ void EKG_Slider::LabelVisibility(bool LabelState) {
     this->LabelVisible = LabelState;
 }
 
-void EKG_Popup::Insert(const std::string &StringList[32]) {
+void EKG_Slider::SetOffsetLabel(float Offset) {
+    this->OffsetLabel = Offset;
+}
+
+float EKG_Slider::GetOffsetLabel() {
+    return this->OffsetLabel;
+}
+
+void EKG_Popup::Insert(const std::string StringList[32]) {
     this->List.clear();
 
-    for (const std::string Strings : StringList) {
-        EKG_Texture Compoenent;
+    for (int I = 0; I < 32; I++) {
+        std::string String = StringList[I];
 
-        Component.Name = Strings;
-        Component.Tag = "Enabled";
+        if (String.empty()) {
+            continue;
+        }
+
+        EKG_Log(String);
+        EKG_Texture Component;
+
+        Component.Name = String;
+        Component.Tag = "1";
 
         this->List.push_back(Component);
     }
@@ -964,7 +980,7 @@ void EKG_Popup::Insert(const std::string &StringList[32]) {
 void EKG_Popup::Delete(const std::string &Pattern) {
     std::vector<EKG_Texture> NewList;
 
-    for (EKG_Texture Components : this->List) {
+    for (const EKG_Texture &Components : this->List) {
         if (EKG_StringContains(Pattern, Components.Name)) {
             continue;
         }
@@ -1018,12 +1034,12 @@ void EKG_Popup::Enable(const std::string &Pattern) {
     }
 }
 
-void EKG_Popup::SetOffsetLabel(float OffsetLabel) {
-    this->LabelOffset = OffsetLabel;
+void EKG_Popup::SetOffsetText(float OffsetText) {
+    this->TextOffset = OffsetText;
 }
 
-float EKG_Popup::GetOffsetLabel() {
-    return this->LabelOffset;
+float EKG_Popup::GetOffsetText() {
+    return this->TextOffset;
 }
 
 void EKG_Popup::SetPressed(bool State) {
@@ -1068,9 +1084,14 @@ void EKG_Popup::SyncSize() {
     // So we call 'ConcurrentList' instead 'NewList'.
     std::vector<EKG_Texture> ConcurrentList;
 
+    this->MaximumHeight = 0.0F;
+
     for (EKG_Texture &Components : this->List) {
         // It cost too many ticks (hardware) to get string height.
-        Texture.Height = EKG_CORE->FontRenderer.GetStringHeight(Components.Name);
+        Components.Height = EKG_CORE->FontRenderer.GetStringHeight(Components.Name) + (this->TextScale * 2);
+        ConcurrentList.push_back(Components);
+
+        this->MaximumHeight += Components.Height;
     }
 
     this->List = ConcurrentList;
@@ -1090,7 +1111,7 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
 
             EKG::ScaledFingerPos(FX, FY);
 
-            if (!this->Hovered) {
+            if (!this->IsFingerOver(FX, FY)) {
                 this->Kill();
             } else {
                 if (this->Pressed && this->Focused != "NULL" && this->Focused == this->GetHoveredComponent(FX, FY)) {
@@ -1106,6 +1127,11 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
         }
 
         case SDL_FINGERDOWN: {
+            if (!this->Hovered) {
+                this->Kill();
+                return;
+            }
+
             float FX = Event.tfinger.x;
             float FY = Event.tfinger.y;
 
@@ -1129,35 +1155,49 @@ void EKG_Popup::OnUpdate(float DeltaTicks) {
 
 void EKG_Popup::OnRender(float PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
-    EKG_Color Color(EKG_CORE->ColorTheme.WidgetActivy);
 
+    // Background container.
+    EKG_Color Color(EKG_CORE->ColorTheme.ContainerBackground);
+    EKG_DrawFilledRect(this->Rect, Color);
+
+    // Now reset color to activy in theme.
+    Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
+
+    // We need calc a runtime height to render property the positions.
     float FullHeight = this->GetY();
 
-    // I do not like iterations in loops.
-    for (EKG_Texture Components : this->List) {
+    EKG_Scissor((int) this->Rect.X, (int) this->Rect.Y, (int) this->Rect.W, (int) this->Rect.H);
+
+    // I do not like iterations in loops but need use here.
+    for (const EKG_Texture &Components : this->List) {
         // Background when is focused.
         if (Components.Name == this->Focused) {
             EKG_DrawFilledShape(this->GetX(), FullHeight, this->Rect.W, Components.Height, Color);
         }
 
         // Draw the name of component.
-        EKG_CORE->FontRenderer.DrawString(Components.Name, this->GetX() + this->LabelOffset, FullHeight, EKG_CORE->ColorTheme.StringColor);
+        EKG_CORE->FontRenderer.DrawString(Components.Name, this->GetX() + 2.0F + this->TextOffset, FullHeight + this->TextScale, EKG_CORE->ColorTheme.StringColor);
 
         // Update the height to the next element be rendered property.
         FullHeight += Components.Height;
     }
 
+    EKG_EndScissor();
+
+    // Animation of rect.
+    this->Rect.H = EKG_LinearInterpolation(this->Rect.H, this->MaximumHeight, PartialTicks);
+
     // Outline (YOU CAN NOT DISABLED IT SORRY).
     EKG_DrawOutlineRect(this->Rect, 1.5f, EKG_CORE->ColorTheme.StringColor);
 }
 
-std::string EKG_Popup::GetHoveredCompoenent(float FX, float FY) {
+std::string EKG_Popup::GetHoveredComponent(float FX, float FY) {
     float FullHeight = this->GetY();
     float X, Y, W, H;
 
-    for (EKG_Texture Components : this-List) {
-        X = this->GetX() + Components.X;
-        Y = this->GetY() + Components.Y;
+    for (const EKG_Texture &Components : this->List) {
+        X = this->GetX();
+        Y = FullHeight;
 
         W = X + this->GetWidth();
         H = Y + Components.Height;
@@ -1170,4 +1210,15 @@ std::string EKG_Popup::GetHoveredCompoenent(float FX, float FY) {
     }
 
     return "NULL";
+}
+
+void EKG_Popup::SetScale(float Scale) {
+    if (this->TextScale != Scale) {
+        this->TextScale = Scale;
+        this->SyncSize();
+    }
+}
+
+float EKG_Popup::GetScale() {
+    return this->TextScale;
 }
