@@ -81,6 +81,7 @@ public:
     static EKG_Frame* Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight);
     static EKG_Button* Button(const std::string &Name, float InitialPosX, float InitialPosY, float InitialScale);
     static EKG_Slider* Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale);
+    static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, std::string List[32]);
 
     static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
     static EKG_AbstractElement* Find(unsigned int Id);

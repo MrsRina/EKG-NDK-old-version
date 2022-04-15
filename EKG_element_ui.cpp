@@ -1085,13 +1085,34 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
 
     switch (Event.type) {
         case SDL_FINGERUP: {
+            float FX = Event.tfinger.x;
+            float FY = Event.tfinger.y;
+
+            EKG::ScaledFingerPos(FX, FY);
+
             if (!this->Hovered) {
                 this->Kill();
             } else {
-                if (this->Focused != "" && this->Pressed != "" && this->Focused == this->Pressed) {
-                    this->Clicked = this->Pressed;
+                if (this->Pressed && this->Focused != "NULL" && this->Focused == this->GetHoveredComponent(FX, FY)) {
+                    this->Clicked = true;
+                    this->Selected = this->Focused;
                 }
             }
+
+            this->Pressed = false;
+            this->Focused = "NULL";
+
+            break;
+        }
+
+        case SDL_FINGERDOWN: {
+            float FX = Event.tfinger.x;
+            float FY = Event.tfinger.y;
+
+            EKG::ScaledFingerPos(FX, FY);
+
+            this->Focused = this->GetHoveredComponent(FX, FY);
+            this->Pressed = this->Focused != "NULL";
 
             break;
         }
@@ -1131,5 +1152,22 @@ void EKG_Popup::OnRender(float PartialTicks) {
 }
 
 std::string EKG_Popup::GetHoveredCompoenent(float FX, float FY) {
-    return "no-hovered";
+    float FullHeight = this->GetY();
+    float X, Y, W, H;
+
+    for (EKG_Texture Components : this-List) {
+        X = this->GetX() + Components.X;
+        Y = this->GetY() + Components.Y;
+
+        W = X + this->GetWidth();
+        H = Y + Components.Height;
+
+        if (Components.Tag == "1" && FX > X && FX < W && FY > Y && FY < H) {
+            return Components.Name;
+        }
+
+        FullHeight += Components.Height;
+    }
+
+    return "NULL";
 }

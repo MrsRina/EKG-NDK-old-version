@@ -436,6 +436,20 @@ EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float Initi
     return Element;
 }
 
+EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, std::string List[32]) {
+    auto* Element = new EKG_Popup();
+
+    Element->SetTag(Name);
+    Element->SetId(EKG_CORE->NewId());
+    Element->Place(InitialPosX, InitialPosY);
+    Element->SetWidth(InitialSizeWidth);
+    Element->Insert(List);
+    Element->SyncSize();
+
+    EKG_CORE->AddElement(Element);
+    return Element;
+}
+
 EKG_AbstractElement *EKG::Find(unsigned int Id) {
     return EKG_CORE->GetElementById(Id);
 }
