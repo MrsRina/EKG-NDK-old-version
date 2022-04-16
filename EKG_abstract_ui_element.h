@@ -6,6 +6,11 @@
 #include "EKG_includes.h"
 #include "EKG_util.h"
 
+#define FRAME  1
+#define BUTTON 2
+#define SLIDER 3
+#define POPUP  4
+
 class EKG_AbstractElement {
 protected:
     /* The tag of element. */
