@@ -5,7 +5,11 @@
 #pragma once
 #include "EKG_core.h"
 #include "EKG_tessellator.h"
-#include "EKG_element_ui.h"
+
+#include "EKG_ui_element_frame.h"
+#include "EKG_ui_element_button.h"
+#include "EKG_ui_element_slider.h"
+#include "EKG_ui_element_popup.h"
 
 /* Start of shader util functions. */
 void EKG_StartUseShader(GLuint ShaderId);
