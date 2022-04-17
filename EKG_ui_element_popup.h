@@ -29,14 +29,14 @@ protected:
     float MaximumHeight, MaximumWidth, TextOffset, TextScale;
 
     /* Help to returns hovered components. */
-    std::string GetHoveredComponent(float FX, float FY);
+    EKG_Texture GetHoveredComponent(float FX, float FY);
 public:
     /* Start of configurable methods. */
     void Insert(const std::string StringList[32]);
     void Delete(const std::string &Pattern);
     void Disable(const std::string &Pattern);
     void Enable(const std::string &Pattern);
-    void Place(EKG_AbstractElement* Element, const std::string &Component);
+    void Place(EKG_Popup* Element, const std::string &Component);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
@@ -57,6 +57,7 @@ public:
     void SetScale(float TextScale);
     float GetScale();
 
+    bool IsActivy(float FX, float FY);
     std::vector<EKG_Texture> GetList();
 
     std::string GetFocused();

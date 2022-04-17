@@ -154,14 +154,27 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
             float FY = Event.tfinger.y;
 
             EKG::ScaledFingerPos(FX, FY);
+            EKG_Texture Component = this->GetHoveredComponent(FX, FY);
 
-            if (!this->IsFingerOver(FX, FY)) {
-                this->Kill();
-            } else {
-                if (this->Pressed && this->Focused != "NULL" && this->Focused == this->GetHoveredComponent(FX, FY)) {
-                    this->Clicked = true;
-                    this->Selected = this->Focused;
+            bool Phase;
+
+            if (this->Pressed && this->Focused != "NULL" && this->Focused == Component.Name) {
+                this->Clicked = true;
+                this->Selected = this->Focused;
+
+                Phase = true;
+            }
+
+            if (Component.Id != 0) {
+                auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(Component.Id);
+
+                if (Element != NULL && !Phase) {
+                    Element->SetShow(false);
                 }
+            }
+
+            if (!this->IsFingerOver(FX, FY) && !this->IsActivy(FX, FY)) {
+                this->Kill();
             }
 
             this->Pressed = false;
@@ -171,18 +184,28 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
         }
 
         case SDL_FINGERDOWN: {
-            if (!this->Hovered) {
-                this->Kill();
-                return;
-            }
-
             float FX = Event.tfinger.x;
             float FY = Event.tfinger.y;
 
             EKG::ScaledFingerPos(FX, FY);
 
-            this->Focused = this->GetHoveredComponent(FX, FY);
+            if (!this->Hovered && !this->IsActivy(FX, FY)) {
+                this->Kill();
+                return;
+            }
+
+            EKG_Texture Component = this->GetHoveredComponent(FX, FY);
+
+            this->Focused = Component.Name;
             this->Pressed = this->Focused != "NULL";
+
+            if (Component.Id != 0) {
+                auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(Component.Id);
+
+                if (Element != NULL) {
+                    Element->SetShow(true);
+                }
+            }
 
             break;
         }
@@ -235,7 +258,7 @@ void EKG_Popup::OnRender(float PartialTicks) {
     EKG_DrawOutlineRect(this->Rect, 1.5f, EKG_CORE->ColorTheme.StringColor);
 }
 
-std::string EKG_Popup::GetHoveredComponent(float FX, float FY) {
+EKG_Texture EKG_Popup::GetHoveredComponent(float FX, float FY) {
     float FullHeight = this->GetY();
     float X, Y, W, H;
 
@@ -247,13 +270,16 @@ std::string EKG_Popup::GetHoveredComponent(float FX, float FY) {
         H = Y + Components.Height;
 
         if (Components.Tag == "1" && FX > X && FX < W && FY > Y && FY < H) {
-            return Components.Name;
+            return Components;
         }
 
         FullHeight += Components.Height;
     }
 
-    return "NULL";
+    EKG_Texture Component;
+    Component.Name = "NULL";
+
+    return Component;
 }
 
 void EKG_Popup::SetScale(float Scale) {
@@ -267,7 +293,11 @@ float EKG_Popup::GetScale() {
     return this->TextScale;
 }
 
-void EKG_Popup::Place(EKG_AbstractElement* Element, const std::string &Component) {
+void EKG_Popup::Place(EKG_Popup* Element, const std::string &Component) {
+    if (this->Children.Contains(Element->GetId())) {
+        return;
+    }
+
     bool Contains;
     std::vector<EKG_Texture> NewList;
 
@@ -283,6 +313,9 @@ void EKG_Popup::Place(EKG_AbstractElement* Element, const std::string &Component
 
     if (Contains) {
         this->List = NewList;
+
+        Element->SetMasterId(this->MasterId);
+        Element->SetShow(false);
     }
 }
 
@@ -296,4 +329,22 @@ bool EKG_Popup::IsShow() {
 
 void EKG_Popup::Place(float X, float Y) {
     EKG_AbstractElement::Place(X, Y);
+}
+
+bool EKG_Popup::IsActivy(float FX, float FY) {
+    bool First;
+
+    for (const EKG_Texture &Components : this->List) {
+        if (Components.Tag == "1" && Components.Id != 0) {
+            auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(Components.Id);
+
+            if (Element == NULL) {
+                continue;
+            }
+
+            First = Element->IsFingerOver(FX, FY) || Element->IsActivy(FX, FY);
+        }
+    }
+
+    return First;
 }
