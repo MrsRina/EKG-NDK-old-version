@@ -33,7 +33,12 @@ protected:
     /* Main flags. */
     bool Hovered, Visible = true, Disabled, Dead, NoRender;
 public:
-    EKG_AbstractElement() {}
+    unsigned int Type;
+
+    EKG_AbstractElement(unsigned int ElementType) {
+        this->Type = ElementType;
+    }
+
     ~EKG_AbstractElement() {}
 
     /* Start of setters and getters. */

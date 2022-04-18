@@ -405,7 +405,7 @@ EKG_ColorTheme EKG::GetTheme() {
 }
 
 EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight) {
-    auto* Element = new EKG_Frame();
+    auto* Element = new EKG_Frame(EKG::Type::FRAME);
 
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
@@ -420,7 +420,7 @@ EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialP
 }
 
 EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float InitialPosX, float InitialPosY) {
-    auto* Element = new EKG_Button();
+    auto* Element = new EKG_Button(EKG::Type::BUTTON);
 
     Element->SetScale(InitialScale);
     Element->SetTag(Name);
@@ -437,7 +437,7 @@ EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float Initi
 }
 
 EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, std::string List[32]) {
-    auto* Element = new EKG_Popup();
+    auto* Element = new EKG_Popup(EKG::Type::POPUP);
 
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());

@@ -52,8 +52,8 @@ public:
 
     /**
      * Coordinates used in EKG.
-     */
-    class Dock {
+     **/
+    struct Dock {
     public:
         static const unsigned int FULL    = 1 << 1;
         static const unsigned int TOP     = 1 << 2;
@@ -61,6 +61,17 @@ public:
         static const unsigned int LEFT    = 1 << 4;
         static const unsigned int RIGHT   = 1 << 5;
         static const unsigned int CENTER  = 1 << 6;
+    };
+
+    /**
+     * Elements in EKG.
+     **/
+    struct Type {
+    public:
+        static const unsigned int FRAME  = 1;
+        static const unsigned int SLIDER = 2;
+        static const unsigned int BUTTON = 3;
+        static const unsigned int POPUP  = 4;
     };
 
     /* Start of UI helpers method. */
