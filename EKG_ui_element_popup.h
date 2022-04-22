@@ -11,6 +11,14 @@
 #define EKG_UI_ELEMENT_POPUP_H
 
 /**
+ * Event to get elements value released in popup.
+ */
+typedef struct EKG_PopupEvent {
+    std::string tag;
+    std::string value;
+} EKG_PopupEvent;
+
+/**
  * Name: Popup
  * Type: Container
  * Description: List elements and make selectable
@@ -20,7 +28,7 @@ class EKG_Popup : public EKG_AbstractElement {
 protected:
     /* Settings. */
     std::vector<EKG_Texture> List;
-    std::string Selected, Focused;
+    std::string Selected, Focused, Activy;
 
     /* States. */
     bool Pressed, Clicked, Show;
@@ -30,41 +38,50 @@ protected:
 
     /* Help to returns hovered components. */
     EKG_Texture GetHoveredComponent(float FX, float FY);
+
+    /* Sync menus hovering. */
+    bool IsUpdate(float FX, float FY);
 public:
     /* Start of configurable methods. */
-    void Insert(const std::string StringList[32]);
+    void Insert(const std::list<std::string> &List);
     void Delete(const std::string &Pattern);
     void Disable(const std::string &Pattern);
     void Enable(const std::string &Pattern);
-    void Place(EKG_Popup* Element, const std::string &Component);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
     void SetOffsetText(float OffsetText);
+
     float GetOffsetText();
-
     void SetPressed(bool State);
+
     bool IsPressed();
-
     void SetClicked(bool State);
+
     bool IsClicked();
-
     void SetShow(bool State);
-    bool IsShow();
 
+    bool IsShow();
     void SetWidth(float Width);
 
     void SetScale(float TextScale);
+
     float GetScale();
-
     bool IsActivy(float FX, float FY);
-    std::vector<EKG_Texture> GetList();
 
+    std::vector<EKG_Texture> GetList();
     std::string GetFocused();
+
     std::string GetClicked();
     /* End of setters & getters. */
 
+    /* Start of action methods. */
+    void Place(EKG_Popup* Element);
+    void Place(float X, float Y, float BoundingX, float BoundingY);
+    /* End of action methods. */
+
     /* Start of override methods. */
+    std::string InfoClass();
     void Place(float X, float Y);
     void SyncSize();
     void OnPreEvent(SDL_Event Event);

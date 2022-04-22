@@ -235,3 +235,15 @@ bool EKG_AbstractElement::IsRender() {
 void EKG_AbstractElement::SetRender(bool ApplyNoRender) {
     this->NoRender = !ApplyNoRender;
 }
+
+EKG_AbstractElement::EKG_AbstractElement() {
+
+}
+
+EKG_AbstractElement::~EKG_AbstractElement() {
+
+}
+
+std::string EKG_AbstractElement::InfoClass() {
+    return "Abstract";
+}

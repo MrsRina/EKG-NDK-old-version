@@ -50,6 +50,9 @@ public:
     /* Metrics of device. */
     static float DeviceScreenWidth, DeviceScreenHeight;
 
+    /* Flags used in environment. */
+    static const int NOPOS = -256;
+
     /**
      * Coordinates used in EKG.
      **/
@@ -63,21 +66,16 @@ public:
         static const unsigned int CENTER  = 1 << 6;
     };
 
-    /**
-     * Elements in EKG.
-     **/
-    struct Type {
-    public:
-        static const unsigned int FRAME  = 1;
-        static const unsigned int SLIDER = 2;
-        static const unsigned int BUTTON = 3;
-        static const unsigned int POPUP  = 4;
-    };
-
     /* Start of UI helpers method. */
     static unsigned int PointCollideDock(unsigned int Flags, float PointX, float PointY, float MinOffset, float MaxOffset, const EKG_Rect &Rect);
     static EKG_Rect GetRectDock(unsigned int p_Dock, float InitialOffset, float SizeOffset, const EKG_Rect &Origin);
     static void ScaledFingerPos(float &X, float &Y);
+
+    static std::string CurrentFocusedTag();
+    static std::string CurrentFocusedType();
+    static unsigned int CurrentFocusedId();
+
+    static EKG_Timing* Timing();
     /* End of UI helpers method. */
 
     /* Start of static instance methods. */
@@ -96,7 +94,7 @@ public:
     static EKG_Frame* Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight);
     static EKG_Button* Button(const std::string &Name, float InitialPosX, float InitialPosY, float InitialScale);
     static EKG_Slider* Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale);
-    static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, std::string List[32]);
+    static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::list<std::string> &List);
 
     static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
     static EKG_AbstractElement* Find(unsigned int Id);

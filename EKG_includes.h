@@ -11,6 +11,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <vector>
+#include <list>
 #include <glm.hpp>
 #include <SDL_opengles2.h>
 #include <pthread.h>

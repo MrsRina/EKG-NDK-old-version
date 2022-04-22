@@ -97,11 +97,15 @@ void EKG_Slider::OnEvent(SDL_Event Event) {
                 EKG::ScaledFingerPos(FX, FY);
 
                 if (!this->Dragging && this->Hovered && Event.type == SDL_FINGERDOWN) {
+                    EKG_CORE->ActionHappen();
+
                     this->Pressed = true;
                     this->Dragging = true;
                 }
 
                 if (this->Dragging && this->Pressed) {
+                    EKG_CORE->ActionHappen();
+
                     float Diff = (this->BarOrientation == 0 ? this->Rect.W : this->Rect.H);
                     float FingerPosFactored = this->BarOrientation == 0 ? FX : FY;
 
@@ -257,4 +261,9 @@ void EKG_Slider::SetOffsetLabel(float Offset) {
 
 float EKG_Slider::GetOffsetLabel() {
     return this->OffsetLabel;
+}
+
+std::string EKG_Slider::InfoClass() {
+    EKG_AbstractElement::InfoClass();
+    return "Slider";
 }

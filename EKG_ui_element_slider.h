@@ -67,6 +67,7 @@ public:
     /* End of setters & getters. */
 
     /* Start of override methods. */
+    std::string InfoClass();
     void SyncSize();
     void OnPreEvent(SDL_Event Event);
     void OnEvent(SDL_Event Event);

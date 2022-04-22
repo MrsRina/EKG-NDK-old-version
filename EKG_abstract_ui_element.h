@@ -6,11 +6,19 @@
 #include "EKG_includes.h"
 #include "EKG_util.h"
 
-#define FRAME  1
-#define BUTTON 2
-#define SLIDER 3
-#define POPUP  4
+#ifndef EKG_ABSTRACT_UI_ELEMENT_H
+#define EKG_ABSTRACT_UI_ELEMENT_H
 
+/**
+ * Events in EKG.
+ */
+typedef enum EKG_Events {
+    EKG_POPUPCALLBACK = SDL_USEREVENT + 1
+} EKG_Events;
+
+/**
+ * Abstract element.
+ */
 class EKG_AbstractElement {
 protected:
     /* The tag of element. */
@@ -33,13 +41,8 @@ protected:
     /* Main flags. */
     bool Hovered, Visible = true, Disabled, Dead, NoRender;
 public:
-    unsigned int Type;
-
-    EKG_AbstractElement(unsigned int ElementType) {
-        this->Type = ElementType;
-    }
-
-    ~EKG_AbstractElement() {}
+    EKG_AbstractElement();
+    ~EKG_AbstractElement();
 
     /* Start of setters and getters. */
     bool IsMaster();
@@ -106,6 +109,8 @@ public:
     /* End of invokable update methods. */
 
     /* Start of overrides methods. */
+    virtual std::string InfoClass();
+
     virtual void OnKilled();
     virtual void OnCreated();
 
@@ -117,3 +122,5 @@ public:
     virtual void OnRender(float PartialTicks);
     /* End of overrides methods. */
 };
+
+#endif

@@ -437,3 +437,21 @@ bool EKG_ColorTheme::IsOutlineSliderEnabled() {
 void EKG_Smooth::Update(float PartialTicks) {
     this->Factory = EKG_LinearInterpolation(this->Factory, this->NextFactory, PartialTicks);
 }
+
+void EKG_Timing::Start() {
+    this->PreviousTick = SDL_GetTicks();
+    this->IsUsing = true;
+}
+
+bool EKG_Timing::EndIf(float MS) {
+    const bool Flag = (float) SDL_GetTicks() - this->PreviousTick > MS;
+
+    this->PreviousTick = (float) SDL_GetTicks();
+    this->Stop();
+
+    return Flag;
+}
+
+void EKG_Timing::Stop() {
+    this->IsUsing = false;
+}

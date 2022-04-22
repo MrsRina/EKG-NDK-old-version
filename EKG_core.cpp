@@ -33,6 +33,15 @@ void EKG_Core::AddElement(EKG_AbstractElement *Element) {
 }
 
 void EKG_Core::OnEvent(SDL_Event Event) {
+    if (Event.type != SDL_FINGERDOWN && Event.type != SDL_FINGERUP && Event.type != SDL_FINGERMOTION) {
+        return;
+    }
+
+
+    if (Event.type == SDL_FINGERDOWN) {
+        this->ActionHappening = false;
+    }
+
     this->FocusedId = 0;
 
     // Get focusing element id.
@@ -89,6 +98,8 @@ void EKG_Core::Init() {
     this->ShaderManager.Init();
     this->FontRenderer.Init();
     this->ColorTheme.Init();
+
+    this->Timing = new EKG_Timing();
 }
 
 void EKG_Core::Quit() {
@@ -139,7 +150,10 @@ void EKG_Core::ResetStack() {
 }
 
 void EKG_Core::ReorderStack() {
+    // Reset if is 0.
     if (this->FocusedId == 0) {
+        this->FocusedTag = "NULL";
+        this->FocusedType = "NULL";
         return;
     }
 
@@ -182,6 +196,12 @@ void EKG_Core::ReorderStack() {
     for (unsigned int IDs : Focused.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
         NewBufferOfUpdate.push_back(Element);
+
+        // Communicate for EKG environment the current focused element.
+        if (this->FocusedId == IDs) {
+            this->FocusedTag = Element->GetTag();
+            this->FocusedType = Element->InfoClass();
+        }
     }
 
     this->BufferUpdate = NewBufferOfUpdate;
@@ -274,4 +294,24 @@ int EKG_Core::GetSizeOfUpdateElements() {
 
 int EKG_Core::GetSizeOfRenderElements() {
     return this->BufferRender.size();
+}
+
+int EKG_Core::GetFocusedElementId() {
+    return this->FocusedId;
+}
+
+std::string EKG_Core::GetFocusedTag() {
+    return this->FocusedTag;
+}
+
+std::string EKG_Core::GetFocusedType() {
+    return this->FocusedType;
+}
+
+void EKG_Core::ActionHappen() {
+    this->ActionHappening = true;
+}
+
+bool EKG_Core::IsActionHappening() {
+    return this->ActionHappening;
 }

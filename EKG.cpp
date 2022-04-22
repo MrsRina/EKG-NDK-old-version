@@ -405,7 +405,7 @@ EKG_ColorTheme EKG::GetTheme() {
 }
 
 EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight) {
-    auto* Element = new EKG_Frame(EKG::Type::FRAME);
+    auto* Element = new EKG_Frame();
 
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
@@ -420,7 +420,7 @@ EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialP
 }
 
 EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float InitialPosX, float InitialPosY) {
-    auto* Element = new EKG_Button(EKG::Type::BUTTON);
+    auto* Element = new EKG_Button();
 
     Element->SetScale(InitialScale);
     Element->SetTag(Name);
@@ -436,15 +436,39 @@ EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float Initi
     return Element;
 }
 
-EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, std::string List[32]) {
-    auto* Element = new EKG_Popup(EKG::Type::POPUP);
+EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::list<std::string> &List) {
+    // Instead we create a new popup, we need to verify what element is at top (focused);
+    if (EKG_CORE->IsActionHappening() || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS)) {
+        return NULL;
+    }
+
+    auto* Element = new EKG_Popup();
 
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
     Element->SetScale(2);
-    Element->Place(InitialPosX, InitialPosY);
+    Element->SetShow(InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS);
     Element->SetWidth(InitialSizeWidth);
+    Element->Place(InitialPosX, InitialPosY);
     Element->Insert(List);
+    Element->SyncSize();
+
+    EKG_CORE->AddElement(Element);
+    return Element;
+}
+
+EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale) {
+    auto* Element = new EKG_Slider();
+
+    Element->Orientation("Horizontal");
+    Element->SetTag(Name);
+    Element->SetId(EKG_CORE->NewId());
+    Element->SetSize(20);
+    Element->SetScale(InitialScale);
+    Element->Place(InitialPosX, InitialPosY);
+    Element->SetMin(Min);
+    Element->SetMax(Max);
+    Element->SetValue(Value);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
@@ -466,25 +490,23 @@ std::vector<unsigned int> EKG::Children(EKG_AbstractElement* Element) {
     return Stack;
 }
 
-EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale) {
-    auto* Element = new EKG_Slider();
-
-    Element->Orientation("Horizontal");
-    Element->SetTag(Name);
-    Element->SetId(EKG_CORE->NewId());
-    Element->Place(InitialPosX, InitialPosY);
-    Element->SetSize(20);
-    Element->SetScale(InitialScale);
-    Element->SetMin(Min);
-    Element->SetMax(Max);
-    Element->SetValue(Value);
-    Element->SyncSize();
-
-    EKG_CORE->AddElement(Element);
-    return Element;
-}
-
 void EKG::Kill(EKG_AbstractElement* &Element) {
     EKG_CORE->RemoveElement(Element->GetId());
     Element = NULL;
+}
+
+std::string EKG::CurrentFocusedTag() {
+    return EKG_CORE->GetFocusedTag();
+}
+
+std::string EKG::CurrentFocusedType() {
+    return EKG_CORE->GetFocusedType();
+}
+
+unsigned int EKG::CurrentFocusedId() {
+    return EKG_CORE->GetFocusedElementId();
+}
+
+EKG_Timing* EKG::Timing() {
+    return EKG_CORE->Timing;
 }

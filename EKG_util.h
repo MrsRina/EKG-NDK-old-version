@@ -168,8 +168,20 @@ struct EKG_Texture {
     std::string Name, Tag;
 
     float Width, Height;
-    unsigned int Id;
+    unsigned int Id = 0;
 };
+
+/**
+ * Handler finger press timing.
+ **/
+typedef struct EKG_Timing {
+    float PreviousTick;
+    bool IsUsing;
+
+    void Start();
+    void Stop();
+    bool EndIf(float MS);
+} EKG_Timing;
 
 /**
  * An linear interpolation helper, used in UI animations.

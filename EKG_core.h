@@ -22,21 +22,38 @@ protected:
     /* Focused id & most high id to generate unique ids. */
     unsigned int FocusedId, HighId;
 
+    /* References. */
+    std::string FocusedTag, FocusedType;
+
     /* Stack control methods. */
     void ResetStack();
     void ReorderStack();
+
+    /* Environment. */
+    bool ActionHappening;
 public:
+    float PartialTicks;
+    float DeltaTicks;
+
     EKG_Core() {}
 
     /* Start of managers and controllers to EKG. */
     EKG_ShaderManager ShaderManager;
     EKG_FontRenderer FontRenderer;
     EKG_ColorTheme ColorTheme;
+    EKG_Timing* Timing;
     /* End of managers and controllers. */
 
     /* Start of setters & getters. */
     int GetSizeOfUpdateElements();
     int GetSizeOfRenderElements();
+    int GetFocusedElementId();
+
+    std::string GetFocusedTag();
+    std::string GetFocusedType();
+
+    void ActionHappen();
+    bool IsActionHappening();
     /* End of setters & getters. */
 
     /* Start of important methods. */

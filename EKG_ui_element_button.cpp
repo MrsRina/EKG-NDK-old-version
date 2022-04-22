@@ -43,6 +43,7 @@ void EKG_Button::OnEvent(SDL_Event Event) {
     switch (Event.type) {
         case SDL_FINGERDOWN: {
             if (this->Hovered) {
+                EKG_CORE->ActionHappen();
                 this->Pressed = true;
             }
 
@@ -60,6 +61,8 @@ void EKG_Button::OnEvent(SDL_Event Event) {
                 this->Hovered = this->IsFingerOver(FX, FY);
 
                 if (this->HoveredBox || this->Hovered) {
+                    EKG_CORE->ActionHappen();
+
                     this->Checked = this->IsCheckBox() ? !this->Checked : this->Checked;
                     this->Clicked = true;
                 }
@@ -340,4 +343,9 @@ void EKG_Button::AlignText(unsigned int Dock) {
     } else {
         EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect text align: only accept (LEFT - CENTER - RIGHT)");
     }
+}
+
+std::string EKG_Button::InfoClass() {
+    EKG_AbstractElement::InfoClass();
+    return "Button";
 }
