@@ -72,8 +72,8 @@ public:
     void OnPreEvent(SDL_Event Event);
     void OnEvent(SDL_Event Event);
     void OnPostEvent(SDL_Event Event);
-    void OnUpdate(float DeltaTicks);
-    void OnRender(float PartialTicks);
+    void OnUpdate(const float &DeltaTicks);
+    void OnRender(const float &PartialTicks);
     /* End of override methods. */
 };
 

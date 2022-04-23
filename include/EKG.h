@@ -102,7 +102,7 @@ public:
     static void Kill(EKG_AbstractElement* &Element);
     static void Context();
     static void Event(SDL_Event Event);
-    static void Update(float DeltaTicks);
-    static void Render(float PartialTicks);
+    static void Update(const float &DeltaTicks);
+    static void Render(const float &PartialTicks);
     /* End of setup/concurrent static methods. */
 };

@@ -97,7 +97,7 @@ public:
 
     /* Start of action methods. */
     virtual void Place(float X, float Y);
-    virtual EKG_AbstractElement* Kill();
+    virtual void Kill();
 
     virtual void SyncPos();
     virtual void SyncSize();
@@ -118,8 +118,8 @@ public:
     virtual void OnEvent(SDL_Event Event);
     virtual void OnPostEvent(SDL_Event Event);
 
-    virtual void OnUpdate(float DeltaTicks);
-    virtual void OnRender(float PartialTicks);
+    virtual void OnUpdate(const float &DeltaTicks);
+    virtual void OnRender(const float &PartialTicks);
     /* End of overrides methods. */
 };
 

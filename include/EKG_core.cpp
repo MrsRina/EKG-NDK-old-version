@@ -37,7 +37,6 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         return;
     }
 
-
     if (Event.type == SDL_FINGERDOWN) {
         this->ActionHappening = false;
     }
@@ -58,13 +57,13 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         Element->OnPostEvent(Event);
     }
 
+    this->BufferRender.clear();
+
     // Fix stack (after focused or nothing).
     if (Event.type == SDL_FINGERUP) {
         this->ResetStack();
         this->ReorderStack();
     }
-
-    this->BufferRender.clear();
 
     // Call all events.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
@@ -80,15 +79,20 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 
         this->SyncScissor(Element);
     }
+
+    // Fix stack (after focused or nothing).
+    if (Event.type == SDL_FINGERUP) {
+        this->ResetStack();
+    }
 }
 
-void EKG_Core::OnUpdate(float DeltaTicks) {
+void EKG_Core::OnUpdate(const float &DeltaTicks) {
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
         Element->OnUpdate(DeltaTicks);
     }
 }
 
-void EKG_Core::OnRender(float PartialTicks) {
+void EKG_Core::OnRender(const float &PartialTicks) {
     for (EKG_AbstractElement* Element : this->BufferRender) {
         Element->OnRender(PartialTicks);
     }
@@ -124,6 +128,8 @@ void EKG_Core::ResetStack() {
     EKG_Stack Stack;
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
 
+    this->BufferRender.clear();
+
     // Get current elements list.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
         if (Element->IsDead()) {
@@ -134,6 +140,10 @@ void EKG_Core::ResetStack() {
         // If is not one master we add in new list.
         if (Element->GetMasterId() == 0) {
             NewBufferOfUpdate.push_back(Element);
+
+            if (Element->IsVisible() && Element->IsRender()) {
+                this->BufferRender.push_back(Element);
+            }
         } else {
             // If is master we add every child in.
             Element->Stack(Stack);
@@ -144,6 +154,10 @@ void EKG_Core::ResetStack() {
     for (unsigned int IDs : Stack.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
         NewBufferOfUpdate.push_back(Element);
+
+        if (Element->IsVisible() && Element->IsRender()) {
+            this->BufferRender.push_back(Element);
+        }
     }
 
     this->BufferUpdate = NewBufferOfUpdate;
@@ -218,7 +232,8 @@ EKG_AbstractElement* EKG_Core::GetElementById(unsigned int Id) {
 }
 
 unsigned int EKG_Core::NewId() {
-    return this->HighId++;
+    this->HighId++;
+    return this->HighId;
 }
 
 void EKG_Core::Sync(float X, float Y, float W, float H, const EKG_Stack &Stack) {

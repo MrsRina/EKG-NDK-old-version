@@ -107,11 +107,10 @@ bool EKG_AbstractElement::IsDead() {
     return this->Dead;
 }
 
-EKG_AbstractElement* EKG_AbstractElement::Kill() {
+void EKG_AbstractElement::Kill() {
     this->Dead = true;
     this->NoRender = true;
     this->Visible = false;
-    return NULL;
 }
 
 void EKG_AbstractElement::OnKilled() {
@@ -140,11 +139,11 @@ void EKG_AbstractElement::OnPostEvent(SDL_Event Event) {
     this->Hovered = false;
 }
 
-void EKG_AbstractElement::OnUpdate(float DeltaTicks) {
+void EKG_AbstractElement::OnUpdate(const float &DeltaTicks) {
 
 }
 
-void EKG_AbstractElement::OnRender(float PartialTicks) {
+void EKG_AbstractElement::OnRender(const float &PartialTicks) {
 
 }
 

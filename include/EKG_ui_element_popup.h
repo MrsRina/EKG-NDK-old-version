@@ -67,7 +67,6 @@ public:
     void SetScale(float TextScale);
 
     float GetScale();
-    bool IsActivy(float FX, float FY);
 
     std::vector<EKG_Texture> GetList();
     std::string GetFocused();
@@ -82,13 +81,15 @@ public:
 
     /* Start of override methods. */
     std::string InfoClass();
+
+    void Kill();
     void Place(float X, float Y);
     void SyncSize();
     void OnPreEvent(SDL_Event Event);
     void OnEvent(SDL_Event Event);
     void OnPostEvent(SDL_Event Event);
-    void OnUpdate(float DeltaTicks);
-    void OnRender(float PartialTicks);
+    void OnUpdate(const float &DeltaTicks);
+    void OnRender(const float &PartialTicks);
     /* End of override methods. */
 };
 

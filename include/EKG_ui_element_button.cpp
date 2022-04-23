@@ -80,7 +80,7 @@ void EKG_Button::OnPostEvent(SDL_Event Event) {
     this->HoveredBox = false;
 }
 
-void EKG_Button::OnUpdate(float DeltaTicks) {
+void EKG_Button::OnUpdate(const float &DeltaTicks) {
     EKG_AbstractElement::OnUpdate(DeltaTicks);
 
     this->SmoothPressed.NextFactory = this->Pressed && !this->HoveredBox? (float) EKG_CORE->ColorTheme.WidgetPressed[3] : 0;
@@ -92,7 +92,7 @@ void EKG_Button::OnUpdate(float DeltaTicks) {
     }
 }
 
-void EKG_Button::OnRender(float PartialTicks) {
+void EKG_Button::OnRender(const float &PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
 
     // Update animations.

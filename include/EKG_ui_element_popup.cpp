@@ -139,7 +139,14 @@ void EKG_Popup::SyncSize() {
 }
 
 void EKG_Popup::OnPreEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnPreEvent(Event);
+    // There is no problem in finger pos out of master bound.
+    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION) {
+        float FX = Event.tfinger.x;
+        float FY = Event.tfinger.y;
+
+        EKG::ScaledFingerPos(FX, FY);
+        this->Hovered = this->Rect.CollideWithPoint(FX, FY);
+    }
 }
 
 void EKG_Popup::OnEvent(SDL_Event Event) {
@@ -153,12 +160,14 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
             EKG::ScaledFingerPos(FX, FY);
             EKG_Texture Component = this->GetHoveredComponent(FX, FY);
 
+            this->Selected = "NULL";
+
             if (this->Pressed && this->Focused != "NULL" && this->Focused == Component.Name) {
                 this->Clicked = true;
                 this->Selected = this->Focused;
             }
 
-            if (!this->IsUpdate(FX, FY) || this->Selected == "NULL") {
+            if (!this->IsUpdate(FX, FY) || (this->Selected != "NULL" && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
                 this->Kill();
             }
 
@@ -190,11 +199,15 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                         if (Element != NULL) {
                             Element->SetShow(Flag);
                             Element->Place(this->GetX() +  this->GetWidth(), FullHeight, this->GetX(), this->GetY());
+
+                            this->Activy = Component.Name;
                         }
                     }
 
                     FullHeight += Components.Height;
                 }
+
+                EKG_CORE->ActionHappen();
             }
 
             break;
@@ -206,11 +219,11 @@ void EKG_Popup::OnPostEvent(SDL_Event Event) {
     EKG_AbstractElement::OnPostEvent(Event);
 }
 
-void EKG_Popup::OnUpdate(float DeltaTicks) {
+void EKG_Popup::OnUpdate(const float &DeltaTicks) {
     EKG_AbstractElement::OnUpdate(DeltaTicks);
 }
 
-void EKG_Popup::OnRender(float PartialTicks) {
+void EKG_Popup::OnRender(const float &PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
 
     // Animation of rect.
@@ -335,24 +348,6 @@ void EKG_Popup::Place(float X, float Y) {
     EKG_AbstractElement::Place(FactoredX, FactoredY);
 }
 
-bool EKG_Popup::IsActivy(float FX, float FY) {
-    bool First;
-
-    for (const EKG_Texture &Components : this->List) {
-        if (Components.Tag == "1" && Components.Id != 0 && this->Activy == Components.Name) {
-            auto *Element = (EKG_Popup *) EKG_CORE->GetElementById(Components.Id);
-
-            if (Element == NULL) {
-                continue;
-            }
-
-            First = Element->IsFingerOver(FX, FY) || Element->IsActivy(FX, FY);
-        }
-    }
-
-    return First;
-}
-
 std::string EKG_Popup::InfoClass() {
     EKG_AbstractElement::InfoClass();
     return "Popup";
@@ -376,4 +371,30 @@ void EKG_Popup::Place(float X, float Y, float BoundingX, float BoundingY) {
 
 bool EKG_Popup::IsUpdate(float FX, float FY) {
     return EKG::CurrentFocusedType() == "Popup" && EKG::CurrentFocusedId() != 0 && (EKG::CurrentFocusedId() == this->MasterId || EKG::CurrentFocusedId() == this->GetId() || this->Children.Contains(EKG::CurrentFocusedId()));
+}
+
+void EKG_Popup::Kill() {
+    if (this->Dead) {
+        return;
+    }
+
+    EKG_AbstractElement::Kill();
+
+    for (unsigned int IDs : this->Children.StackedIds) {
+        auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(IDs);
+
+        if (Element != NULL) {
+            Element->Kill();
+        }
+    }
+
+    this->Children.StackedIds.clear();
+
+    if (this->GetMasterId() != 0) {
+        auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(this->GetMasterId());
+
+        if (Element != NULL) {
+            Element->Kill();
+        }
+    }
 }

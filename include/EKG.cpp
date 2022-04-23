@@ -204,11 +204,11 @@ void EKG::Event(SDL_Event Event) {
     EKG_CORE->OnEvent(Event);
 }
 
-void EKG::Update(float DeltaTicks) {
+void EKG::Update(const float &DeltaTicks) {
     EKG_CORE->OnUpdate(DeltaTicks);
 }
 
-void EKG::Render(float PartialTicks) {
+void EKG::Render(const float &PartialTicks) {
     EKG_CORE->OnRender(PartialTicks);
 }
 

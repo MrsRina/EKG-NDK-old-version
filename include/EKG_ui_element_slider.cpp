@@ -123,11 +123,11 @@ void EKG_Slider::OnPostEvent(SDL_Event Event) {
     EKG_AbstractElement::OnPostEvent(Event);
 }
 
-void EKG_Slider::OnUpdate(float DeltaTicks) {
+void EKG_Slider::OnUpdate(const float &DeltaTicks) {
     EKG_AbstractElement::OnUpdate(DeltaTicks);
 }
 
-void EKG_Slider::OnRender(float PartialTicks) {
+void EKG_Slider::OnRender(const float &PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
 
     // Enable scissor test and cut off the fragments.

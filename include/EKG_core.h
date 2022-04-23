@@ -72,7 +72,7 @@ public:
 
     /* Start of concurrent methods. */
     void OnEvent(SDL_Event Event);
-    void OnUpdate(float DeltaTicks);
-    void OnRender(float PartialTicks);
+    void OnUpdate(const float &DeltaTicks);
+    void OnRender(const float &PartialTicks);
     /* End of concurrent methods. */
 };
