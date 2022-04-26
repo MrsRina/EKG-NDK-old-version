@@ -10,13 +10,6 @@
 #define EKG_ABSTRACT_UI_ELEMENT_H
 
 /**
- * Events in EKG.
- */
-typedef enum EKG_Events {
-    EKG_POPUPCALLBACK = SDL_USEREVENT + 1
-} EKG_Events;
-
-/**
  * Abstract element.
  */
 class EKG_AbstractElement {

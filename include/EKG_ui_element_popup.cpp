@@ -1,10 +1,10 @@
 #include "EKG_ui_element_popup.h"
 #include "EKG.h"
 
-void EKG_Popup::Insert(const std::list<std::string> &List) {
+void EKG_Popup::Insert(const std::list<std::string> &ToAddList) {
     this->List.clear();
 
-    for (std::string String : List) {
+    for (const std::string& String : ToAddList) {
         if (String.empty()) {
             continue;
         }
@@ -167,8 +167,26 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 this->Selected = this->Focused;
             }
 
-            if (!this->IsUpdate(FX, FY) || (this->Selected != "NULL" && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
+            if (EKG::CurrentFocusedType() != "Popup" || (this->Selected != "NULL" && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
                 this->Kill();
+            }
+
+            if (this->Focused != "NULL" && Component.Id == 0) {
+                if (EKG_POPUPCALLBACK != ((Uint32) -1)) {
+                    auto* Callback = new EKG_PopupCallback;
+                    Callback->Info = "oi";
+
+                    SDL_Event event;
+                    SDL_memset(&event, 0, sizeof(event)); /* or SDL_zero(event) */
+                    event.type = SDL_USEREVENT;
+                    event.user.code = EKG_POPUPCALLBACK;
+                    event.user.data1 = &Callback;
+                    event.user.data2 = 0;
+                    SDL_PushEvent(&event);
+
+                    EKG_Log("Evento foi");
+                    delete Callback;
+                }
             }
 
             this->Pressed = false;

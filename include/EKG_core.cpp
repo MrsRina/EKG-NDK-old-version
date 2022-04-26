@@ -55,15 +55,10 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 
         // Reset flags.
         Element->OnPostEvent(Event);
+
     }
 
     this->BufferRender.clear();
-
-    // Fix stack (after focused or nothing).
-    if (Event.type == SDL_FINGERUP) {
-        this->ResetStack();
-        this->ReorderStack();
-    }
 
     // Call all events.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
@@ -80,9 +75,8 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         this->SyncScissor(Element);
     }
 
-    // Fix stack (after focused or nothing).
-    if (Event.type == SDL_FINGERUP) {
-        this->ResetStack();
+    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERUP) {
+        this->ReorderStack();
     }
 }
 
@@ -128,8 +122,6 @@ void EKG_Core::ResetStack() {
     EKG_Stack Stack;
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
 
-    this->BufferRender.clear();
-
     // Get current elements list.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
         if (Element->IsDead()) {
@@ -140,10 +132,6 @@ void EKG_Core::ResetStack() {
         // If is not one master we add in new list.
         if (Element->GetMasterId() == 0) {
             NewBufferOfUpdate.push_back(Element);
-
-            if (Element->IsVisible() && Element->IsRender()) {
-                this->BufferRender.push_back(Element);
-            }
         } else {
             // If is master we add every child in.
             Element->Stack(Stack);
@@ -154,10 +142,6 @@ void EKG_Core::ResetStack() {
     for (unsigned int IDs : Stack.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
         NewBufferOfUpdate.push_back(Element);
-
-        if (Element->IsVisible() && Element->IsRender()) {
-            this->BufferRender.push_back(Element);
-        }
     }
 
     this->BufferUpdate = NewBufferOfUpdate;
@@ -199,11 +183,16 @@ void EKG_Core::ReorderStack() {
     }
 
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
+    this->BufferRender.clear();
 
     // Put current.
     for (unsigned int IDs : Current.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
         NewBufferOfUpdate.push_back(Element);
+
+        if (Element->IsVisible() && Element->IsRender()) {
+            this->BufferRender.push_back(Element);
+        }
     }
 
     // Put the focused ids at top of list.
@@ -215,6 +204,10 @@ void EKG_Core::ReorderStack() {
         if (this->FocusedId == IDs) {
             this->FocusedTag = Element->GetTag();
             this->FocusedType = Element->InfoClass();
+        }
+
+        if (Element->IsVisible() && Element->IsRender()) {
+            this->BufferRender.push_back(Element);
         }
     }
 

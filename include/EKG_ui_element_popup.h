@@ -13,10 +13,10 @@
 /**
  * Event to get elements value released in popup.
  */
-typedef struct EKG_PopupEvent {
-    std::string tag;
-    std::string value;
-} EKG_PopupEvent;
+const Uint32 EKG_POPUPCALLBACK = 1;
+typedef struct {
+    std::string Info;
+} EKG_PopupCallback;
 
 /**
  * Name: Popup
