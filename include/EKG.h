@@ -36,12 +36,21 @@ void EKG_FlagRemove(unsigned int &Flags, unsigned int Flag);
 void EKG_FlagAdd(unsigned int &Flags, unsigned int Flag);
 /* End of helper functions. */
 
-/*
- * Events of game.
- */
+/**
+ * Popup event.
+ **/
 typedef struct {
     std::string Info;
 } EKG_PopupEvent;
+
+/**
+ * Event structure.
+ **/
+struct EKG_Event {
+    Sint32 Type;
+
+    EKG_PopupEvent Popup;
+};
 
 // Global runtime variable.
 extern EKG_Core* const EKG_CORE;
@@ -77,10 +86,10 @@ public:
      * Get elements value released in popup.
      **/
     struct Event {
-        static const unsigned int EKG_POPUP = 1;
+        static const Sint32  POPUP = 1;
 
-        static unsigned int Type(SDL_Event Event);
-        static unsigned int String(SDL_Event Event, std::string &Callback);
+        static void Dispatch(Sint32 Type, void* Data1, void* Data2);
+        static EKG_Event Read(SDL_Event Event);
     };
 
     /* Start of UI helpers method. */
@@ -118,7 +127,7 @@ public:
 
     static void Kill(EKG_AbstractElement* &Element);
     static void Context();
-    static void PollEvents(SDL_Event Event);
+    static void PollEvent(SDL_Event Event);
     static void Update(const float &DeltaTicks);
     static void Render(const float &PartialTicks);
     /* End of setup/concurrent static methods. */

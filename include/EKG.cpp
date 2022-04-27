@@ -200,7 +200,7 @@ void EKG::Quit() {
     EKG_Log("Core quited successfully.");
 }
 
-void EKG::PollEvents(SDL_Event Event) {
+void EKG::PollEvent(SDL_Event Event) {
     EKG_CORE->OnEvent(Event);
 }
 
@@ -511,29 +511,32 @@ EKG_Timing* EKG::Timing() {
     return EKG_CORE->Timing;
 }
 
-unsigned int EKG::Event::Type(SDL_Event Event) {
-    return Event.user.code;
+EKG_Event EKG::Event::Read(SDL_Event Event) {
+    switch (Event.user.code) {
+        case EKG::Event::POPUP: {
+            std::string* Callback = (static_cast<std::string*>(Event.user.data1));
+            EKG_Event EKGEvent;
+
+            EKGEvent.Type = Event.user.code;
+            EKGEvent.Popup.Info = *Callback;
+
+            delete Callback;
+            return EKGEvent;
+        }
+    }
+
+    return EKG_Event();
 }
 
-unsigned int EKG::Event::String(SDL_Event Event, std::string &Callback) {
-    std::string* String;
-    Callback = *(static_cast<std::string*>(Event.user.data1));
+void EKG::Event::Dispatch(Sint32 Type, void *Data1, void *Data2) {
+    SDL_Event Event;
 
-    return ;
-}
+    Event.type = SDL_USEREVENT;
+    Event.user.type = SDL_USEREVENT;
+    Event.user.code = Type;
 
-unsigned int EKG::Event::Double(SDL_Event Event, double &Callback) {
-    return 0;
-}
+    Event.user.data1 = Data1;
+    Event.user.data2 = Data2;
 
-unsigned int EKG::Event::Float(SDL_Event Event, float &Callback) {
-    return 0;
-}
-
-unsigned int EKG::Event::Integer(SDL_Event Event, int &Callback) {
-    return 0;
-}
-
-unsigned int EKG::Event::Boolean(SDL_Event Event, bool &Callback) {
-    return 0;
+    SDL_PushEvent(&Event);
 }

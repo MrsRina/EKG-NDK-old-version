@@ -173,18 +173,10 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
 
             if (this->Focused != "NULL" && Component.Id == 0) {
                 std::string Path = this->Focused;
-                SDL_Event NewEvent;
-
                 this->GetPath(Path);
 
-                NewEvent.type = SDL_USEREVENT;
-                NewEvent.user.type = SDL_USEREVENT;
-
-                NewEvent.user.code = EKG::Event::EKG_POPUP;
-                NewEvent.user.data1 = static_cast<void*>(new std::string(Path));
-                NewEvent.user.data2 = 0;
-
-                SDL_PushEvent(&NewEvent);
+                // Send popup event using EKG events processor.
+                EKG::Event::Dispatch(EKG::Event::POPUP, static_cast<void*>(new std::string(Path)), (void*) 0);
             }
 
             this->Pressed = false;
