@@ -200,7 +200,7 @@ void EKG::Quit() {
     EKG_Log("Core quited successfully.");
 }
 
-void EKG::Event(SDL_Event Event) {
+void EKG::PollEvents(SDL_Event Event) {
     EKG_CORE->OnEvent(Event);
 }
 
@@ -509,4 +509,31 @@ unsigned int EKG::CurrentFocusedId() {
 
 EKG_Timing* EKG::Timing() {
     return EKG_CORE->Timing;
+}
+
+unsigned int EKG::Event::Type(SDL_Event Event) {
+    return Event.user.code;
+}
+
+unsigned int EKG::Event::String(SDL_Event Event, std::string &Callback) {
+    std::string* String;
+    Callback = *(static_cast<std::string*>(Event.user.data1));
+
+    return ;
+}
+
+unsigned int EKG::Event::Double(SDL_Event Event, double &Callback) {
+    return 0;
+}
+
+unsigned int EKG::Event::Float(SDL_Event Event, float &Callback) {
+    return 0;
+}
+
+unsigned int EKG::Event::Integer(SDL_Event Event, int &Callback) {
+    return 0;
+}
+
+unsigned int EKG::Event::Boolean(SDL_Event Event, bool &Callback) {
+    return 0;
 }

@@ -11,14 +11,6 @@
 #define EKG_UI_ELEMENT_POPUP_H
 
 /**
- * Event to get elements value released in popup.
- */
-const Uint32 EKG_POPUPCALLBACK = 1;
-typedef struct {
-    std::string Info;
-} EKG_PopupCallback;
-
-/**
  * Name: Popup
  * Type: Container
  * Description: List elements and make selectable
@@ -36,7 +28,7 @@ protected:
     /* Metrics of popup & buttons. */
     float MaximumHeight, MaximumWidth, TextOffset, TextScale;
 
-    /* Help to returns hovered components. */
+    /* Help to return hovered components. */
     EKG_Texture GetHoveredComponent(float FX, float FY);
 
     /* Sync menus hovering. */
@@ -69,9 +61,11 @@ public:
     float GetScale();
 
     std::vector<EKG_Texture> GetList();
-    std::string GetFocused();
 
+    std::string GetFocused();
     std::string GetClicked();
+
+    void GetPath(std::string &PreviousPath);
     /* End of setters & getters. */
 
     /* Start of action methods. */

@@ -172,21 +172,19 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
             }
 
             if (this->Focused != "NULL" && Component.Id == 0) {
-                if (EKG_POPUPCALLBACK != ((Uint32) -1)) {
-                    auto* Callback = new EKG_PopupCallback;
-                    Callback->Info = "oi";
+                std::string Path = this->Focused;
+                SDL_Event NewEvent;
 
-                    SDL_Event event;
-                    SDL_memset(&event, 0, sizeof(event)); /* or SDL_zero(event) */
-                    event.type = SDL_USEREVENT;
-                    event.user.code = EKG_POPUPCALLBACK;
-                    event.user.data1 = &Callback;
-                    event.user.data2 = 0;
-                    SDL_PushEvent(&event);
+                this->GetPath(Path);
 
-                    EKG_Log("Evento foi");
-                    delete Callback;
-                }
+                NewEvent.type = SDL_USEREVENT;
+                NewEvent.user.type = SDL_USEREVENT;
+
+                NewEvent.user.code = EKG::Event::EKG_POPUP;
+                NewEvent.user.data1 = static_cast<void*>(new std::string(Path));
+                NewEvent.user.data2 = 0;
+
+                SDL_PushEvent(&NewEvent);
             }
 
             this->Pressed = false;
@@ -413,6 +411,18 @@ void EKG_Popup::Kill() {
 
         if (Element != NULL) {
             Element->Kill();
+        }
+    }
+}
+
+void EKG_Popup::GetPath(std::string &PreviousPath) {
+    PreviousPath = this->GetTag() + "|" + PreviousPath;
+
+    if (this->GetMasterId() != 0) {
+        auto* Element = (EKG_Popup*) EKG::Find(this->GetMasterId());
+
+        if (Element != NULL) {
+            Element->GetPath(PreviousPath);
         }
     }
 }
