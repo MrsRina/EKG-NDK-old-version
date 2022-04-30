@@ -2,6 +2,9 @@
 #include "EKG.h"
 
 void EKG_Scissor(int X, int Y, int W, int H) {
+    W++;
+    H++;
+
     int FactorW = X + W;
     int FactorH = Y + H;
 
@@ -177,6 +180,11 @@ float EKG_Clampf(float V, float Min, float Max) {
 
 bool EKG_StringContains(const std::string &StringOne, const std::string &StringTwo) {
     return StringOne.find(StringTwo) != std::string::npos;
+}
+
+float EKG_AnimationSmooth(float Duration, float Time) {
+    float Factor = Time / Duration;
+    return EKG_Clampf(6 * pow(Factor, 5) - (15 * pow(Factor, 4)) + (10 * pow(Factor, 3)), 0.0F, 1.0f);
 }
 
 float EKG_Color::GetRedf() {
@@ -414,6 +422,7 @@ void EKG_ColorTheme::Init() {
 
     this->OutlineButton = true;
     this->OutlineFrame = true;
+    this->OutlineCombobox = true;
 
     this->StringColor.Set(255, 255, 255);
 }
@@ -432,6 +441,10 @@ void EKG_ColorTheme::Quit() {
 
 bool EKG_ColorTheme::IsOutlineSliderEnabled() {
     return this->OutlineSlider;
+}
+
+bool EKG_ColorTheme::isOutlineComboboxEnabled() {
+    return this->OutlineCombobox;
 }
 
 void EKG_Smooth::Update(float PartialTicks) {

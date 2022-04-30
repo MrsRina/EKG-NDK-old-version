@@ -155,7 +155,7 @@ void EKG_Slider::OnRender(const float &PartialTicks) {
 }
 
 void EKG_Slider::Orientation(const std::string& Orientation) {
-    int Flag = Orientation == "Horizontal" ? 0 : 1;
+    unsigned int Flag = Orientation == "Horizontal" ? 0 : 1;
 
     if (this->BarOrientation != Flag) {
         this->BarOrientation = Flag;

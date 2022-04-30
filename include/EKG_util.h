@@ -6,6 +6,15 @@
 #include "EKG_includes.h"
 
 /**
+ * Smooth animation.
+ * @param Progress
+ * @param Duration
+ * @param Time
+ * @return
+ */
+float EKG_AnimationSmooth(float Duration, float Time);
+
+/**
  * Compare strings and find equals char.
  * @param StringOne
  * @param StringTwo
@@ -122,6 +131,7 @@ private:
     bool OutlineFrame;
     bool OutlineButton;
     bool OutlineSlider;
+    bool OutlineCombobox;
 public:
     static const unsigned int BACKGROUND = 0;
     static const unsigned int HIGHLIGHT  = 1;
@@ -148,6 +158,7 @@ public:
     unsigned int WidgetActivy[4];
 
     EKG_Color StringColor = EKG_Color(255, 255, 255);
+    EKG_Color StringFadeColor = EKG_Color(255, 255, 255, 150);
 
     void Init();
     void Quit();
@@ -155,6 +166,7 @@ public:
     bool IsOutlineFrameEnabled();
     bool IsOutlineButtonEnabled();
     bool IsOutlineSliderEnabled();
+    bool isOutlineComboboxEnabled();
 
     void Frame(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue);
     void Container(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue);

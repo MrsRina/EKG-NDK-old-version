@@ -78,22 +78,21 @@ void EKG_Button::OnEvent(SDL_Event Event) {
 void EKG_Button::OnPostEvent(SDL_Event Event) {
     EKG_AbstractElement::OnPostEvent(Event);
     this->HoveredBox = false;
-}
-
-void EKG_Button::OnUpdate(const float &DeltaTicks) {
-    EKG_AbstractElement::OnUpdate(DeltaTicks);
 
     this->SmoothPressed.NextFactory = this->Pressed && !this->HoveredBox? (float) EKG_CORE->ColorTheme.WidgetPressed[3] : 0;
     this->SmoothBoxPressed.NextFactory = this->HoveredBox && this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[3] : 0;
     this->SmoothBoxActivy.NextFactory = this->Checked ? (float) EKG_CORE->ColorTheme.WidgetActivy[3] : 0;
+}
 
-    if (this->Clicked) {
-        this->Clicked = false;
-    }
+void EKG_Button::OnUpdate(const float &DeltaTicks) {
+    EKG_AbstractElement::OnUpdate(DeltaTicks);
 }
 
 void EKG_Button::OnRender(const float &PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
+
+    // Reset stuff.
+    this->Clicked = false;
 
     // Update animations.
     this->SmoothPressed.Update(PartialTicks);
@@ -196,7 +195,7 @@ void EKG_Button::SetScale(float ButtonScale) {
     }
 }
 
-float EKG_Button::GetScale() {
+float EKG_Button::GetScale() const {
     return this->Scale;
 }
 
@@ -238,12 +237,12 @@ void EKG_Button::SyncSize() {
 
     switch (this->AlignTextDocking) {
         case EKG::Dock::LEFT: {
-            this->AlignOffsetText = 0;
+            this->AlignOffsetText = 4.0f;
             break;
         }
 
         case EKG::Dock::RIGHT: {
-            this->AlignOffsetText = this->Rect.W - this->TextWidth;
+            this->AlignOffsetText = this->Rect.W - this->TextWidth - 4.0f;
             break;
         }
 
@@ -294,7 +293,7 @@ void EKG_Button::SetClicked(bool IsClicked) {
     this->Clicked = IsClicked;
 }
 
-void EKG_Button::Mode(std::string Mode) {
+void EKG_Button::Mode(const std::string& Mode) {
     bool ShouldSync = this->Box != true;
 
     if (Mode == "CheckBoxScaled") {

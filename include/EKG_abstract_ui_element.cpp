@@ -111,6 +111,19 @@ void EKG_AbstractElement::Kill() {
     this->Dead = true;
     this->NoRender = true;
     this->Visible = false;
+
+    // Set all children master ID to 0.
+    for (unsigned int IDs : this->Children.StackedIds) {
+        auto* Element = EKG_CORE->GetElementById(IDs);
+
+        if (Element == NULL) {
+            continue;
+        }
+
+        Element->SetMasterId(0);
+    }
+
+    EKG_CORE->Refresh();
 }
 
 void EKG_AbstractElement::OnKilled() {
@@ -122,7 +135,7 @@ void EKG_AbstractElement::OnCreated() {
 }
 
 void EKG_AbstractElement::OnPreEvent(SDL_Event Event) {
-    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION) {
+    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION || Event.type == SDL_FINGERUP) {
         float FX = Event.tfinger.x;
         float FY = Event.tfinger.y;
 

@@ -1,7 +1,7 @@
 #include "EKG_ui_element_popup.h"
 #include "EKG.h"
 
-void EKG_Popup::Insert(const std::list<std::string> &ToAddList) {
+void EKG_Popup::Insert(const std::vector<std::string> &ToAddList) {
     this->List.clear();
 
     for (const std::string& String : ToAddList) {
@@ -38,11 +38,15 @@ void EKG_Popup::Delete(const std::string &Pattern) {
 }
 
 void EKG_Popup::Disable(const std::string &Pattern) {
+    if (Pattern.empty()) {
+        return;
+    }
+
     std::vector<EKG_Texture> NewList;
 
     for (EKG_Texture Components : this->List) {
         if (EKG_StringContains(Pattern, Components.Name)) {
-            Components.Tag = "0";
+            Components.Tag = "";
         }
 
         NewList.push_back(Components);
@@ -106,15 +110,15 @@ void EKG_Popup::SetWidth(float Width) {
     }
 }
 
-std::vector<EKG_Texture> EKG_Popup::GetList() {
+std::vector<EKG_Texture> &EKG_Popup::GetList() {
     return this->List;
 }
 
-std::string EKG_Popup::GetFocused() {
+std::string &EKG_Popup::GetFocused() {
     return this->Focused;
 }
 
-std::string EKG_Popup::GetClicked() {
+std::string &EKG_Popup::GetClicked() {
     return this->Selected;
 }
 
@@ -190,32 +194,60 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
             float FY = Event.tfinger.y;
 
             EKG::ScaledFingerPos(FX, FY);
-            EKG_Texture Component = this->GetHoveredComponent(FX, FY);
 
-            this->Focused = Component.Name;
-            this->Pressed = this->Focused != "NULL";
+            if (this->Hovered) {
+                float Y = this->GetY();
+                float X, W, H;
 
-            if (this->Pressed) {
-                float FullHeight = this->GetY();
+                EKG_Texture Component;
+                Component.Name = "NULL";
 
                 for (const EKG_Texture &Components : this->List) {
-                    bool Flag = Components.Name == Component.Name;
+                    X = this->GetX();
 
-                    if (Components.Id != 0) {
-                        auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(Components.Id);
+                    W = X + this->GetWidth();
+                    H = Y + Components.Height;
 
-                        if (Element != NULL) {
-                            Element->SetShow(Flag);
-                            Element->Place(this->GetX() +  this->GetWidth(), FullHeight, this->GetX(), this->GetY());
+                    if (Components.Tag == "1" && FX > X && FX < W && FY > Y && FY < H) {
+                        Component = Components;
+                        break;
+                    }
+
+                    Y += Components.Height;
+                }
+
+                this->Focused = Component.Name;
+
+                if (this->Focused != "NULL") {
+                    this->Pressed = true;
+
+                    if (Component.Id != 0) {
+                        auto* ElementOut = (EKG_Popup*) EKG_CORE->GetElementById(Component.Id);
+
+                        if (ElementOut != NULL) {
+                            ElementOut->SetShow(true);
+                            ElementOut->Place(this->GetX() +  this->GetWidth(), Y, this->GetX());
 
                             this->Activy = Component.Name;
+
+                            for (const EKG_Texture &Components : this->List) {
+                                auto *ElementIn = (EKG_Popup*) EKG_CORE->GetElementById(Components.Id);
+
+                                if (ElementIn != NULL && ElementOut->GetId() != Components.Id) {
+                                    ElementIn->SetShow(false);
+                                }
+                            }
                         }
                     }
 
-                    FullHeight += Components.Height;
+                    EKG_CORE->ActionHappen();
                 }
+            }
 
-                EKG_CORE->ActionHappen();
+            if (EKG::CurrentFocusedType() != "Popup") {
+                this->Kill();
+                this->Focused = "NULL";
+                this->Pressed = false;
             }
 
             break;
@@ -234,11 +266,10 @@ void EKG_Popup::OnUpdate(const float &DeltaTicks) {
 void EKG_Popup::OnRender(const float &PartialTicks) {
     EKG_AbstractElement::OnRender(PartialTicks);
 
-    // Animation of rect.
-    this->Rect.H = EKG_LinearInterpolation(this->Rect.H, this->Show ? this->MaximumHeight : 0.0F, PartialTicks);
-
     // Render only if is open.
-    if (this->Rect.H > 10) {
+    if (this->Show) {
+        this->Rect.H = EKG_AnimationSmooth(100, SDL_GetTicks() - this->LastTicks) * this->MaximumHeight;
+
         // Background container.
         EKG_Color Color(EKG_CORE->ColorTheme.ContainerBackground);
         EKG_DrawFilledRect(this->Rect, Color);
@@ -259,7 +290,7 @@ void EKG_Popup::OnRender(const float &PartialTicks) {
             }
 
             // Draw the name of component.
-            EKG_CORE->FontRenderer.DrawString(Components.Name,this->GetX() + 2.0F + this->TextOffset, FullHeight + this->TextScale, EKG_CORE->ColorTheme.StringColor);
+            EKG_CORE->FontRenderer.DrawString(Components.Name,this->GetX() + 2.0F + this->TextOffset, FullHeight + this->TextScale, Components.Tag != "1" ? EKG_CORE->ColorTheme.StringFadeColor : EKG_CORE->ColorTheme.StringColor);
 
             // Update the height to the next element be rendered property.
             FullHeight += Components.Height;
@@ -302,7 +333,7 @@ void EKG_Popup::SetScale(float Scale) {
     }
 }
 
-float EKG_Popup::GetScale() {
+float EKG_Popup::GetScale() const {
     return this->TextScale;
 }
 
@@ -334,7 +365,25 @@ void EKG_Popup::Place(EKG_Popup* Popup) {
 }
 
 void EKG_Popup::SetShow(bool State) {
-    this->Show = State;
+    if (this->Show != State) {
+        this->LastTicks = SDL_GetTicks();
+
+        for (unsigned int IDs : this->Children.StackedIds) {
+            auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(IDs);
+
+            if (Element != NULL) {
+                Element->SetShow(false);
+            }
+        }
+
+        if (!State) {
+            // Animation of rect.
+            this->Rect.H = 0;
+        }
+
+        this->Show = State;
+    }
+
 }
 
 bool EKG_Popup::IsShow() {
@@ -361,7 +410,7 @@ std::string EKG_Popup::InfoClass() {
     return "Popup";
 }
 
-void EKG_Popup::Place(float X, float Y, float BoundingX, float BoundingY) {
+void EKG_Popup::Place(float X, float Y, float BoundingX) {
     float FactoredX = X < 0 ? 0 : X;
     float FactoredY = Y < 0 ? 0 : Y;
 

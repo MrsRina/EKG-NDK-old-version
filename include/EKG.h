@@ -10,6 +10,7 @@
 #include "EKG_ui_element_button.h"
 #include "EKG_ui_element_slider.h"
 #include "EKG_ui_element_popup.h"
+#include "EKG_ui_element_combobox.h"
 
 /* Start of shader util functions. */
 void EKG_StartUseShader(GLuint ShaderId);
@@ -44,11 +45,20 @@ typedef struct {
 } EKG_PopupEvent;
 
 /**
+ * Action in element.
+ **/
+struct EKG_ElementActionEvent {
+    static const unsigned int KILLED = 1;
+    unsigned int Action, ElementId;
+};
+
+/**
  * Event structure.
  **/
 struct EKG_Event {
     Sint32 Type;
 
+    EKG_ElementActionEvent ElementActionEvent;
     EKG_PopupEvent Popup;
 };
 
@@ -67,7 +77,8 @@ public:
     static float DeviceScreenWidth, DeviceScreenHeight;
 
     /* Flags used in environment. */
-    static const int NOPOS = -256;
+    static const int NOPOS    = -256;
+    static const int ABSOLUTE = -255;
 
     /**
      * Coordinates used in EKG.
@@ -86,9 +97,11 @@ public:
      * Get elements value released in popup.
      **/
     struct Event {
-        static const Sint32  POPUP = 1;
+        static Uint32 REGISTER;
+        static Uint32 POPUP;
+        static Uint32 ELEMENT;
 
-        static void Dispatch(Sint32 Type, void* Data1, void* Data2);
+        static void Dispatch(Uint32 Type, void* Data1, void* Data2);
         static EKG_Event Read(SDL_Event Event);
     };
 
@@ -97,8 +110,8 @@ public:
     static EKG_Rect GetRectDock(unsigned int p_Dock, float InitialOffset, float SizeOffset, const EKG_Rect &Origin);
     static void ScaledFingerPos(float &X, float &Y);
 
-    static std::string CurrentFocusedTag();
-    static std::string CurrentFocusedType();
+    static std::string &CurrentFocusedTag();
+    static std::string &CurrentFocusedType();
     static unsigned int CurrentFocusedId();
 
     static EKG_Timing* Timing();
@@ -120,7 +133,8 @@ public:
     static EKG_Frame* Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight);
     static EKG_Button* Button(const std::string &Name, float InitialPosX, float InitialPosY, float InitialScale);
     static EKG_Slider* Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale);
-    static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::list<std::string> &List);
+    static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::vector<std::string> &List);
+    static EKG_Combobox* Combobox(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialScale, const std::vector<std::string> &List);
 
     static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
     static EKG_AbstractElement* Find(unsigned int Id);

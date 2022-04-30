@@ -436,9 +436,9 @@ EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float Initi
     return Element;
 }
 
-EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::list<std::string> &List) {
+EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::vector<std::string> &List) {
     // Instead we create a new popup, we need to verify what element is at top (focused);
-    if (EKG_CORE->IsActionHappening() || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS)) {
+    if (((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) && (EKG::CurrentFocusedType() != "Popup" && InitialPosX != EKG::ABSOLUTE && InitialPosY != EKG::ABSOLUTE)) && (EKG_CORE->IsActionHappening() || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS))) {
         return NULL;
     }
 
@@ -447,7 +447,7 @@ EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialP
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
     Element->SetScale(2);
-    Element->SetShow(InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS);
+    Element->SetShow((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) || (InitialPosX == EKG::ABSOLUTE && InitialPosY == EKG::ABSOLUTE));
     Element->SetWidth(InitialSizeWidth);
     Element->Place(InitialPosX, InitialPosY);
     Element->Insert(List);
@@ -460,15 +460,33 @@ EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialP
 EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale) {
     auto* Element = new EKG_Slider();
 
-    Element->Orientation("Horizontal");
     Element->SetTag(Name);
+    Element->Orientation("Horizontal");
     Element->SetId(EKG_CORE->NewId());
     Element->SetSize(20);
     Element->SetScale(InitialScale);
+    Element->LabelAlign(EKG::Dock::CENTER);
     Element->Place(InitialPosX, InitialPosY);
     Element->SetMin(Min);
     Element->SetMax(Max);
     Element->SetValue(Value);
+    Element->SyncSize();
+
+    EKG_CORE->AddElement(Element);
+    return Element;
+}
+
+EKG_Combobox* EKG::Combobox(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialScale, const std::vector<std::string> &List) {
+    auto* Element = new EKG_Combobox();
+
+    Element->SetTag(Name);
+    Element->SetId(EKG_CORE->NewId());
+    Element->SetList(List);
+    Element->SetCurrent(" ");
+    Element->AlignText(EKG::Dock::LEFT);
+    Element->SetScale(InitialScale);
+    Element->Place(InitialPosX, InitialPosY);
+    Element->SetWidth(InitialSizeWidth);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
@@ -495,11 +513,11 @@ void EKG::Kill(EKG_AbstractElement* &Element) {
     Element = NULL;
 }
 
-std::string EKG::CurrentFocusedTag() {
+std::string &EKG::CurrentFocusedTag() {
     return EKG_CORE->GetFocusedTag();
 }
 
-std::string EKG::CurrentFocusedType() {
+std::string &EKG::CurrentFocusedType() {
     return EKG_CORE->GetFocusedType();
 }
 
@@ -511,28 +529,44 @@ EKG_Timing* EKG::Timing() {
     return EKG_CORE->Timing;
 }
 
+Uint32 EKG::Event::REGISTER = SDL_RegisterEvents(2);
+Uint32 EKG::Event::ELEMENT = REGISTER++;
+Uint32 EKG::Event::POPUP = REGISTER++;
+
 EKG_Event EKG::Event::Read(SDL_Event Event) {
-    switch (Event.user.code) {
-        case EKG::Event::POPUP: {
-            std::string* Callback = (static_cast<std::string*>(Event.user.data1));
-            EKG_Event EKGEvent;
+    if (Event.type == POPUP) {
+        EKG_Event EKGEvent;
 
-            EKGEvent.Type = Event.user.code;
-            EKGEvent.Popup.Info = *Callback;
-
-            delete Callback;
+        if (Event.user.data1 == 0) {
             return EKGEvent;
         }
+
+        std::string *Callback = (static_cast<std::string *>(Event.user.data1));
+
+        EKGEvent.Type = Event.user.code;
+        EKGEvent.Popup.Info = *Callback;
+
+        return EKGEvent;
+    } else if (Event.type == ELEMENT) {
+        EKG_Event EKGEvent;
+
+        unsigned int* CallbackElementId = (static_cast<unsigned int*>(Event.user.data1));
+        unsigned int* CallbackAction = (static_cast<unsigned int*>(Event.user.data2));
+
+        EKGEvent.Type = Event.user.code;
+        EKGEvent.ElementActionEvent.ElementId = *CallbackElementId;
+        EKGEvent.ElementActionEvent.Action = *CallbackAction;
+
+        return EKGEvent;
     }
 
     return EKG_Event();
 }
 
-void EKG::Event::Dispatch(Sint32 Type, void *Data1, void *Data2) {
+void EKG::Event::Dispatch(Uint32 Type, void *Data1, void *Data2) {
     SDL_Event Event;
 
-    Event.type = SDL_USEREVENT;
-    Event.user.type = SDL_USEREVENT;
+    Event.type = Type;
     Event.user.code = Type;
 
     Event.user.data1 = Data1;

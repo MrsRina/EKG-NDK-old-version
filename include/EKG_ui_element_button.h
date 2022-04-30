@@ -40,7 +40,7 @@ public:
     void BoxTexture(const EKG_Texture &Texture);
     void AlignBox(unsigned int Dock);
     void AlignText(unsigned int Dock);
-    void Mode(std::string Mode);
+    void Mode(const std::string& Mode);
     /* end of configurable methods. */
 
     /* Start of setters & getters. */
@@ -68,7 +68,7 @@ public:
     bool IsHoveredBox();
 
     void SetScale(float ButtonScale);
-    float GetScale();
+    float GetScale() const;
 
     float GetTextWidth();
     float GetTextHeight();

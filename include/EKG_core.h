@@ -28,9 +28,10 @@ protected:
     /* Stack control methods. */
     void ResetStack();
     void ReorderStack();
+    void RefreshStack();
 
     /* Environment. */
-    bool ActionHappening;
+    bool ActionHappening, NeededRefresh, NeededReorder;
 public:
     float PartialTicks;
     float DeltaTicks;
@@ -47,13 +48,17 @@ public:
     /* Start of setters & getters. */
     int GetSizeOfUpdateElements();
     int GetSizeOfRenderElements();
-    int GetFocusedElementId();
+    int GetFocusedElementId() const;
 
-    std::string GetFocusedTag();
-    std::string GetFocusedType();
+    std::string &GetFocusedTag();
+    std::string &GetFocusedType();
 
     void ActionHappen();
-    bool IsActionHappening();
+    void RefreshNeeded();
+
+    bool IsActionHappening() const;
+
+    void Refresh();
     /* End of setters & getters. */
 
     /* Start of important methods. */

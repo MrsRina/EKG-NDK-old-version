@@ -26,7 +26,7 @@ protected:
     bool Pressed, Clicked, Show;
 
     /* Metrics of popup & buttons. */
-    float MaximumHeight, MaximumWidth, TextOffset, TextScale;
+    float LastTicks, MaximumHeight, MaximumWidth, TextOffset, TextScale;
 
     /* Help to return hovered components. */
     EKG_Texture GetHoveredComponent(float FX, float FY);
@@ -35,7 +35,7 @@ protected:
     bool IsUpdate(float FX, float FY);
 public:
     /* Start of configurable methods. */
-    void Insert(const std::list<std::string> &List);
+    void Insert(const std::vector<std::string> &List);
     void Delete(const std::string &Pattern);
     void Disable(const std::string &Pattern);
     void Enable(const std::string &Pattern);
@@ -58,19 +58,19 @@ public:
 
     void SetScale(float TextScale);
 
-    float GetScale();
+    float GetScale() const;
 
-    std::vector<EKG_Texture> GetList();
+    std::vector<EKG_Texture> &GetList();
 
-    std::string GetFocused();
-    std::string GetClicked();
+    std::string &GetFocused();
+    std::string &GetClicked();
 
     void GetPath(std::string &PreviousPath);
     /* End of setters & getters. */
 
     /* Start of action methods. */
     void Place(EKG_Popup* Element);
-    void Place(float X, float Y, float BoundingX, float BoundingY);
+    void Place(float X, float Y, float BoundingX);
     /* End of action methods. */
 
     /* Start of override methods. */
