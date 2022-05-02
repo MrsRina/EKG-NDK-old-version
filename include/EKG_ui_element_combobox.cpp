@@ -106,7 +106,7 @@ std::string &EKG_Combobox::GetCurrent() {
 }
 
 std::string EKG_Combobox::InfoClass() {
-    return "Combobox";
+    return "combobox";
 }
 
 void EKG_Combobox::SyncSize() {
@@ -169,14 +169,17 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
         }
 
         case SDL_FINGERUP: {
-            if (this->Pressed && this->Hovered && EKG::CurrentFocusedType() == "Combobox") {
-                EKG_Popup* Popup = EKG::Popup(this->GetTag() + "-combobox", EKG::NOPOS, EKG::NOPOS, this->GetWidth(), this->PopupElementList);
+            if (this->Pressed && this->Hovered && EKG::CurrentFocusedType() == "combobox" && this->Children.StackedIds.empty()) {
+                EKG_Popup* Popup = EKG::Popup(this->GetTag() + "-combobox", EKG::NOPOS, EKG::NOPOS, this->PopupElementList);
 
+                Popup->SetWidth(this->GetWidth());
                 Popup->Place(this->GetX(), this->GetY() + this->GetHeight());
                 Popup->SetShow(true);
                 Popup->SetScale(this->TextScale);
                 Popup->SetHovered(true);
+                Popup->SetMasterId(this->GetId());
 
+                this->Children.Put(Popup->GetId());
                 this->Activy = true;
 
                 EKG_CORE->RefreshNeeded();

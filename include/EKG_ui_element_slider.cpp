@@ -265,5 +265,5 @@ float EKG_Slider::GetOffsetLabel() {
 
 std::string EKG_Slider::InfoClass() {
     EKG_AbstractElement::InfoClass();
-    return "Slider";
+    return "slider";
 }

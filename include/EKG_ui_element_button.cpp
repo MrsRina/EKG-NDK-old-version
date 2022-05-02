@@ -346,5 +346,5 @@ void EKG_Button::AlignText(unsigned int Dock) {
 
 std::string EKG_Button::InfoClass() {
     EKG_AbstractElement::InfoClass();
-    return "Button";
+    return "button";
 }

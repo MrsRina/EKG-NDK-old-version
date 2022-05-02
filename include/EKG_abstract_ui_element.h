@@ -90,6 +90,7 @@ public:
 
     /* Start of action methods. */
     virtual void Place(float X, float Y);
+    virtual void Remove(unsigned int ElementId);
     virtual void Kill();
 
     virtual void SyncPos();

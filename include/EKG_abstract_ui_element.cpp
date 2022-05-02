@@ -112,15 +112,21 @@ void EKG_AbstractElement::Kill() {
     this->NoRender = true;
     this->Visible = false;
 
+    if (this->MasterId != 0) {
+        auto* Element = EKG_CORE->GetElementById(this->MasterId);
+
+        if (Element != NULL) {
+            Element->Remove(this->GetId());
+        }
+    }
+
     // Set all children master ID to 0.
     for (unsigned int IDs : this->Children.StackedIds) {
         auto* Element = EKG_CORE->GetElementById(IDs);
 
-        if (Element == NULL) {
-            continue;
+        if (Element != NULL) {
+            Element->SetMasterId(0);
         }
-
-        Element->SetMasterId(0);
     }
 
     EKG_CORE->Refresh();
@@ -257,5 +263,9 @@ EKG_AbstractElement::~EKG_AbstractElement() {
 }
 
 std::string EKG_AbstractElement::InfoClass() {
-    return "Abstract";
+    return "abstract";
+}
+
+void EKG_AbstractElement::Remove(unsigned int ElementId) {
+    this->Children.Rem(ElementId);
 }

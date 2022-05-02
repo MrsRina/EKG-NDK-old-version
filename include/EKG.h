@@ -130,11 +130,11 @@ public:
     /* End of main EKG static methods. */
 
     /* Start of setup/concurrent static methods. */
-    static EKG_Frame* Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight);
-    static EKG_Button* Button(const std::string &Name, float InitialPosX, float InitialPosY, float InitialScale);
-    static EKG_Slider* Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale);
-    static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::vector<std::string> &List);
-    static EKG_Combobox* Combobox(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialScale, const std::vector<std::string> &List);
+    static EKG_Frame* Frame(const std::string &Name);
+    static EKG_Button* Button(const std::string &Name);
+    static EKG_Slider* Slider(const std::string &Name, float Value, float Min, float Max);
+    static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, const std::vector<std::string> &List);
+    static EKG_Combobox* Combobox(const std::string &Name, const std::vector<std::string> &List);
 
     static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
     static EKG_AbstractElement* Find(unsigned int Id);

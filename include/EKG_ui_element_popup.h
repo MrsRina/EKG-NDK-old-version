@@ -23,7 +23,7 @@ protected:
     std::string Selected, Focused, Activy;
 
     /* States. */
-    bool Pressed, Clicked, Show;
+    bool Pressed, Clicked, Show, PopupMaster;
 
     /* Metrics of popup & buttons. */
     float LastTicks, MaximumHeight, MaximumWidth, TextOffset, TextScale;
@@ -43,21 +43,21 @@ public:
 
     /* Start of setters & getters. */
     void SetOffsetText(float OffsetText);
-
     float GetOffsetText();
+
     void SetPressed(bool State);
-
     bool IsPressed();
+
     void SetClicked(bool State);
-
     bool IsClicked();
-    void SetShow(bool State);
 
+    void SetShow(bool State);
     bool IsShow();
+
     void SetWidth(float Width);
+    void SetMasterId(unsigned int Id);
 
     void SetScale(float TextScale);
-
     float GetScale() const;
 
     std::vector<EKG_Texture> &GetList();

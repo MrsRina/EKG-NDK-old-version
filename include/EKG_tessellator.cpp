@@ -73,8 +73,6 @@ void EKG_Tessellator::Draw() {
 
     // Draw arrays.
     glDrawArrays(this->RenderType, 0, this->BufferSize);
-    glDisableVertexAttribArray(this->VertexAttribute);
-    glDisableVertexAttribArray(this->ColorAttribute);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     if (this->ContainsTexture) {

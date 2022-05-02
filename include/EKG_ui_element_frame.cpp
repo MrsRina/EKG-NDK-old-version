@@ -364,5 +364,5 @@ void EKG_Frame::SetLimit(float MinWidth, float MinHeight) {
 
 std::string EKG_Frame::InfoClass() {
     EKG_AbstractElement::InfoClass();
-    return "Frame";
+    return "frame";
 }

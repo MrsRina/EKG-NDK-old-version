@@ -57,12 +57,6 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         Element->OnPostEvent(Event);
     }
 
-    // Reset if is 0.
-    if (this->FocusedId == 0) {
-        this->FocusedTag = "NULL";
-        this->FocusedType = "NULL";
-    }
-
     this->BufferRender.clear();
 
     // Call all events.

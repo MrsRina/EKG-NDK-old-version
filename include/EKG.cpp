@@ -404,28 +404,28 @@ EKG_ColorTheme EKG::GetTheme() {
     return EKG_CORE->ColorTheme;
 }
 
-EKG_Frame *EKG::Frame(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialSizeHeight) {
+EKG_Frame *EKG::Frame(const std::string &Name) {
     auto* Element = new EKG_Frame();
 
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
-    Element->Place(InitialPosX, InitialPosY);
+    Element->Place(10, 10);
     Element->SetLimit(50, 50);
-    Element->SetWidth(InitialSizeWidth);
-    Element->SetHeight(InitialSizeHeight);
+    Element->SetWidth(250);
+    Element->SetHeight(250);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
     return Element;
 }
 
-EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float InitialPosX, float InitialPosY) {
+EKG_Button* EKG::Button(const std::string &Name) {
     auto* Element = new EKG_Button();
 
-    Element->SetScale(InitialScale);
+    Element->SetScale(6);
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
-    Element->Place(InitialPosX, InitialPosY);
+    Element->Place(10, 10);
     Element->AlignText(EKG::Dock::CENTER);
     Element->AlignBox(EKG::Dock::LEFT);
     Element->Mode("Normal");
@@ -436,9 +436,9 @@ EKG_Button* EKG::Button(const std::string &Name, float InitialScale, float Initi
     return Element;
 }
 
-EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, const std::vector<std::string> &List) {
+EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, const std::vector<std::string> &List) {
     // Instead we create a new popup, we need to verify what element is at top (focused);
-    if (((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) && (EKG::CurrentFocusedType() != "Popup" && InitialPosX != EKG::ABSOLUTE && InitialPosY != EKG::ABSOLUTE)) && (EKG_CORE->IsActionHappening() || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS))) {
+    if (((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) && (EKG::CurrentFocusedType() != "popup" && InitialPosX != EKG::ABSOLUTE && InitialPosY != EKG::ABSOLUTE)) && (EKG_CORE->IsActionHappening() || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS))) {
         return NULL;
     }
 
@@ -448,7 +448,7 @@ EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialP
     Element->SetId(EKG_CORE->NewId());
     Element->SetScale(2);
     Element->SetShow((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) || (InitialPosX == EKG::ABSOLUTE && InitialPosY == EKG::ABSOLUTE));
-    Element->SetWidth(InitialSizeWidth);
+    Element->SetWidth(125);
     Element->Place(InitialPosX, InitialPosY);
     Element->Insert(List);
     Element->SyncSize();
@@ -457,16 +457,16 @@ EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialP
     return Element;
 }
 
-EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max, float InitialPosX, float InitialPosY, float InitialScale) {
+EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max) {
     auto* Element = new EKG_Slider();
 
     Element->SetTag(Name);
     Element->Orientation("Horizontal");
     Element->SetId(EKG_CORE->NewId());
-    Element->SetSize(20);
-    Element->SetScale(InitialScale);
+    Element->SetSize(125);
+    Element->SetScale(6);
     Element->LabelAlign(EKG::Dock::CENTER);
-    Element->Place(InitialPosX, InitialPosY);
+    Element->Place(10, 10);
     Element->SetMin(Min);
     Element->SetMax(Max);
     Element->SetValue(Value);
@@ -476,7 +476,7 @@ EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float M
     return Element;
 }
 
-EKG_Combobox* EKG::Combobox(const std::string &Name, float InitialPosX, float InitialPosY, float InitialSizeWidth, float InitialScale, const std::vector<std::string> &List) {
+EKG_Combobox* EKG::Combobox(const std::string &Name, const std::vector<std::string> &List) {
     auto* Element = new EKG_Combobox();
 
     Element->SetTag(Name);
@@ -484,9 +484,9 @@ EKG_Combobox* EKG::Combobox(const std::string &Name, float InitialPosX, float In
     Element->SetList(List);
     Element->SetCurrent(" ");
     Element->AlignText(EKG::Dock::LEFT);
-    Element->SetScale(InitialScale);
-    Element->Place(InitialPosX, InitialPosY);
-    Element->SetWidth(InitialSizeWidth);
+    Element->SetScale(6);
+    Element->Place(10, 10);
+    Element->SetWidth(125);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);

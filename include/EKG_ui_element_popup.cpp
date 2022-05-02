@@ -144,7 +144,7 @@ void EKG_Popup::SyncSize() {
 
 void EKG_Popup::OnPreEvent(SDL_Event Event) {
     // There is no problem in finger pos out of master bound.
-    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION) {
+    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION || Event.type == SDL_FINGERUP) {
         float FX = Event.tfinger.x;
         float FY = Event.tfinger.y;
 
@@ -171,7 +171,15 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 this->Selected = this->Focused;
             }
 
-            if (EKG::CurrentFocusedType() != "Popup" || (this->Selected != "NULL" && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
+            bool FingerHoveredMasterOrCurrentFocusedIsNotPopup = EKG::CurrentFocusedType() != "popup";
+
+
+            if (!this->PopupMaster && this->GetMasterId() != 0) {
+                auto* Element = EKG_CORE->GetElementById(this->GetMasterId());
+                FingerHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && !Element->IsFingerOver(FX, FY);
+            }
+
+            if (FingerHoveredMasterOrCurrentFocusedIsNotPopup || (this->Selected != "NULL" && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
                 this->Kill();
             }
 
@@ -239,12 +247,17 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                             }
                         }
                     }
-
-                    EKG_CORE->ActionHappen();
                 }
             }
 
-            if (EKG::CurrentFocusedType() != "Popup") {
+            bool FingerHoveredMasterOrCurrentFocusedIsNotPopup = EKG::CurrentFocusedType() != "popup";
+
+            if (!this->PopupMaster && this->GetMasterId() != 0) {
+                auto* Element = EKG_CORE->GetElementById(this->GetMasterId());
+                FingerHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && Element->IsFingerOver(FX, FY);
+            }
+
+            if (FingerHoveredMasterOrCurrentFocusedIsNotPopup) {
                 this->Kill();
                 this->Focused = "NULL";
                 this->Pressed = false;
@@ -407,7 +420,7 @@ void EKG_Popup::Place(float X, float Y) {
 
 std::string EKG_Popup::InfoClass() {
     EKG_AbstractElement::InfoClass();
-    return "Popup";
+    return "popup";
 }
 
 void EKG_Popup::Place(float X, float Y, float BoundingX) {
@@ -427,7 +440,7 @@ void EKG_Popup::Place(float X, float Y, float BoundingX) {
 }
 
 bool EKG_Popup::IsUpdate(float FX, float FY) {
-    return EKG::CurrentFocusedType() == "Popup" && EKG::CurrentFocusedId() != 0 && (EKG::CurrentFocusedId() == this->MasterId || EKG::CurrentFocusedId() == this->GetId() || this->Children.Contains(EKG::CurrentFocusedId()));
+    return EKG::CurrentFocusedType() == "popup" && EKG::CurrentFocusedId() != 0 && (EKG::CurrentFocusedId() == this->MasterId || EKG::CurrentFocusedId() == this->GetId() || this->Children.Contains(EKG::CurrentFocusedId()));
 }
 
 void EKG_Popup::Kill() {
@@ -447,7 +460,7 @@ void EKG_Popup::Kill() {
 
     this->Children.StackedIds.clear();
 
-    if (this->GetMasterId() != 0) {
+    if (this->GetMasterId() != 0 && this->PopupMaster) {
         auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(this->GetMasterId());
 
         if (Element != NULL) {
@@ -465,5 +478,17 @@ void EKG_Popup::GetPath(std::string &PreviousPath) {
         if (Element != NULL) {
             Element->GetPath(PreviousPath);
         }
+    }
+}
+
+void EKG_Popup::SetMasterId(unsigned int ElementMasterId) {
+    EKG_AbstractElement::SetMasterId(ElementMasterId);
+
+    // We can use this as flag to prevent visual glitch.
+    this->PopupMaster = true;
+
+    if (this->MasterId != 0) {
+        auto* Element = EKG_CORE->GetElementById(ElementMasterId);
+        this->PopupMaster = Element != NULL && Element->InfoClass() == "popup";
     }
 }
