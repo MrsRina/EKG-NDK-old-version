@@ -164,35 +164,34 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
             EKG::ScaledFingerPos(FX, FY);
             EKG_Texture Component = this->GetHoveredComponent(FX, FY);
 
-            this->Selected = "NULL";
+            this->Selected = "";
 
-            if (this->Pressed && this->Focused != "NULL" && this->Focused == Component.Name) {
+            if (this->Pressed && !this->Focused.empty() && this->Focused == Component.Name) {
                 this->Clicked = true;
                 this->Selected = this->Focused;
             }
 
-            bool FingerHoveredMasterOrCurrentFocusedIsNotPopup = EKG::CurrentFocusedType() != "popup";
+            bool FingerNotHoveredMasterOrCurrentFocusedIsNotPopup = EKG::CurrentFocusedType() != "popup";
 
-
-            if (!this->PopupMaster && this->GetMasterId() != 0) {
+            if (!this->PopupMaster && this->GetMasterId() != 0 && FingerNotHoveredMasterOrCurrentFocusedIsNotPopup) {
                 auto* Element = EKG_CORE->GetElementById(this->GetMasterId());
-                FingerHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && !Element->IsFingerOver(FX, FY);
+                FingerNotHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && !Element->IsFingerOver(FX, FY);
             }
 
-            if (FingerHoveredMasterOrCurrentFocusedIsNotPopup || (this->Selected != "NULL" && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
+            if (FingerNotHoveredMasterOrCurrentFocusedIsNotPopup || (!this->Selected.empty() && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
                 this->Kill();
             }
 
-            if (this->Focused != "NULL" && Component.Id == 0) {
+            if (!this->Focused.empty() && Component.Id == 0) {
                 std::string Path = this->Focused;
                 this->GetPath(Path);
 
                 // Send popup event using EKG events processor.
-                EKG::Event::Dispatch(EKG::Event::POPUP, static_cast<void*>(new std::string(Path)), (void*) 0);
+                EKG::Event::Dispatch(EKG::Event::POPUP, reinterpret_cast<void*>(new std::string(Path)), (void*) 0);
             }
 
             this->Pressed = false;
-            this->Focused = "NULL";
+            this->Focused = "";
 
             break;
         }
@@ -208,7 +207,7 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 float X, W, H;
 
                 EKG_Texture Component;
-                Component.Name = "NULL";
+                Component.Name = "";
 
                 for (const EKG_Texture &Components : this->List) {
                     X = this->GetX();
@@ -226,7 +225,7 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
 
                 this->Focused = Component.Name;
 
-                if (this->Focused != "NULL") {
+                if (!this->Focused.empty()) {
                     this->Pressed = true;
 
                     if (Component.Id != 0) {
@@ -250,16 +249,16 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 }
             }
 
-            bool FingerHoveredMasterOrCurrentFocusedIsNotPopup = EKG::CurrentFocusedType() != "popup";
+            bool FingerNotHoveredMasterOrCurrentFocusedIsNotPopup = EKG::CurrentFocusedType() != "popup";
 
-            if (!this->PopupMaster && this->GetMasterId() != 0) {
+            if (!this->PopupMaster && this->GetMasterId() != 0 && FingerNotHoveredMasterOrCurrentFocusedIsNotPopup) {
                 auto* Element = EKG_CORE->GetElementById(this->GetMasterId());
-                FingerHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && Element->IsFingerOver(FX, FY);
+                FingerNotHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && !Element->IsFingerOver(FX, FY);
             }
 
-            if (FingerHoveredMasterOrCurrentFocusedIsNotPopup) {
+            if (FingerNotHoveredMasterOrCurrentFocusedIsNotPopup) {
                 this->Kill();
-                this->Focused = "NULL";
+                this->Focused = "";
                 this->Pressed = false;
             }
 
@@ -334,7 +333,7 @@ EKG_Texture EKG_Popup::GetHoveredComponent(float FX, float FY) {
     }
 
     EKG_Texture Component;
-    Component.Name = "NULL";
+    Component.Name = "";
 
     return Component;
 }
@@ -378,6 +377,14 @@ void EKG_Popup::Place(EKG_Popup* Popup) {
 }
 
 void EKG_Popup::SetShow(bool State) {
+    this->SetVisible(true);
+
+    if (!State) {
+        // Animation of rect.
+        this->Rect.H = 0;
+        this->SetVisible(false);
+    }
+
     if (this->Show != State) {
         this->LastTicks = SDL_GetTicks();
 
@@ -387,11 +394,6 @@ void EKG_Popup::SetShow(bool State) {
             if (Element != NULL) {
                 Element->SetShow(false);
             }
-        }
-
-        if (!State) {
-            // Animation of rect.
-            this->Rect.H = 0;
         }
 
         this->Show = State;

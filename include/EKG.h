@@ -103,6 +103,7 @@ public:
 
         static void Dispatch(Uint32 Type, void* Data1, void* Data2);
         static EKG_Event Read(SDL_Event Event);
+        static void Poll(SDL_Event Event);
     };
 
     /* Start of UI helpers method. */

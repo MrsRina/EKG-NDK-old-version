@@ -541,11 +541,12 @@ EKG_Event EKG::Event::Read(SDL_Event Event) {
             return EKGEvent;
         }
 
-        std::string *Callback = (static_cast<std::string *>(Event.user.data1));
+        auto* Callback = reinterpret_cast<std::string*>(Event.user.data1);
 
         EKGEvent.Type = Event.user.code;
-        EKGEvent.Popup.Info = *Callback;
+        EKGEvent.Popup.Info = "oi";
 
+        delete Callback;
         return EKGEvent;
     } else if (Event.type == ELEMENT) {
         EKG_Event EKGEvent;
@@ -573,4 +574,8 @@ void EKG::Event::Dispatch(Uint32 Type, void *Data1, void *Data2) {
     Event.user.data2 = Data2;
 
     SDL_PushEvent(&Event);
+}
+
+void EKG::Event::Poll(SDL_Event Event) {
+
 }

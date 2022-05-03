@@ -1,5 +1,5 @@
 /**
- * @author Diyng
+ * @author Rina
  * @since 28/04/2022 at 16:28
  **/
 
@@ -31,9 +31,7 @@ protected:
     unsigned int AlignTextDocking;
 
     /* Animations. */
-    EKG_Smooth SmoothBoxPressed;
     EKG_Smooth SmoothPressed;
-    EKG_Smooth SmoothBoxActivy;
 public:
     /* Start of configurable methods. */
     void Add(std::string &String);

@@ -1,5 +1,5 @@
 /**
- * @author Diyng
+ * @author Rina
  * @since 28/04/2022 at 16:27
  **/
 
@@ -147,7 +147,7 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
             EKG_Event CustomEvent = EKG::Event::Read(Event);
 
             if (CustomEvent.Type == EKG::Event::POPUP && this->Activy) {
-                EKG_Log(CustomEvent.Popup.Info);
+                EKG_Log(CustomEvent.Popup.Info + " dupe");
 
                 for (const std::string &Strings : this->PopupElementList) {
                     if (EKG_StringContains(CustomEvent.Popup.Info, Strings)) {
@@ -163,12 +163,19 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
         }
 
         case SDL_FINGERDOWN: {
-            this->Pressed = this->Hovered;
+            bool ShouldRenderPressed = this->Hovered;
 
-            break;
-        }
+            if (this->Hovered && !this->Children.StackedIds.empty()) {
+                auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(this->Children.StackedIds.at(0));
 
-        case SDL_FINGERUP: {
+                if (Element != NULL) {
+                    Element->SetShow(!Element->IsShow());
+                    ShouldRenderPressed = Element->IsShow();
+                }
+            }
+
+            this->Pressed = ShouldRenderPressed;
+
             if (this->Pressed && this->Hovered && EKG::CurrentFocusedType() == "combobox" && this->Children.StackedIds.empty()) {
                 EKG_Popup* Popup = EKG::Popup(this->GetTag() + "-combobox", EKG::NOPOS, EKG::NOPOS, this->PopupElementList);
 
@@ -204,8 +211,7 @@ void EKG_Combobox::OnRender(const float &PartialTicks) {
 
     // Update animations.
     this->SmoothPressed.Update(PartialTicks);
-    this->SmoothBoxPressed.Update(PartialTicks);
-    this->SmoothBoxActivy.Update(PartialTicks);
+    this->SmoothPressed.NextFactory = this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[3] : 0;
 
     // Enable scissor test and cut off the fragments.
     EKG_Scissor(this->GetScissorX(), this->GetScissorY(), this->GetScissorW(), this->GetScissorH());
