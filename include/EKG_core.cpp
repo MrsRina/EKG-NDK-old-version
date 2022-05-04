@@ -105,7 +105,7 @@ void EKG_Core::OnUpdate(const float &DeltaTicks) {
 }
 
 void EKG_Core::OnRender(const float &PartialTicks) {
-    for (EKG_AbstractElement* Element : this->BufferRender) {
+    for (EKG_AbstractElement* &Element : this->BufferRender) {
         Element->OnRender(PartialTicks);
     }
 }

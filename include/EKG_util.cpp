@@ -1,6 +1,8 @@
 #include "EKG_util.h"
 #include "EKG.h"
 
+static float MaskQuadMaterialColor[6*4], MaskQuadMaterialTexture[6*2], MaskQuadVertex[6*3];
+
 void EKG_Scissor(int X, int Y, int W, int H) {
     W++;
     H++;
@@ -88,28 +90,122 @@ void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top) {
 
 void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6);
-    EKG_TESSELLATOR->SetRectColor(Color);
-    EKG_StoreShape(X, Y, W, H);
-    EKG_TESSELLATOR->Draw();
+
+    float R = (float) Color.R / 255.0F;
+    float G = (float) Color.G / 255.0F;
+    float B = (float) Color.B / 255.0F;
+    float A = (float) Color.A / 255.0F;
+
+    MaskQuadMaterialColor[0] = R;
+    MaskQuadMaterialColor[1] = G;
+    MaskQuadMaterialColor[2] = B;
+    MaskQuadMaterialColor[3] = A;
+
+    MaskQuadMaterialColor[4] = R;
+    MaskQuadMaterialColor[5] = G;
+    MaskQuadMaterialColor[6] = B;
+    MaskQuadMaterialColor[7] = A;
+
+    MaskQuadMaterialColor[8] = R;
+    MaskQuadMaterialColor[9] = G;
+    MaskQuadMaterialColor[10] = B;
+    MaskQuadMaterialColor[11] = A;
+
+    MaskQuadMaterialColor[12] = R;
+    MaskQuadMaterialColor[13] = G;
+    MaskQuadMaterialColor[14] = B;
+    MaskQuadMaterialColor[15] = A;
+
+    MaskQuadMaterialColor[16] = R;
+    MaskQuadMaterialColor[17] = G;
+    MaskQuadMaterialColor[18] = B;
+    MaskQuadMaterialColor[19] = A;
+
+    MaskQuadMaterialColor[20] = R;
+    MaskQuadMaterialColor[21] = G;
+    MaskQuadMaterialColor[22] = B;
+    MaskQuadMaterialColor[23] = A;
+
+    u_int8_t I = 0;
+
+    MaskQuadVertex[0]= X;
+    MaskQuadVertex[1]= Y;
+    MaskQuadVertex[2]= 0;
+    MaskQuadVertex[3]= X;
+    MaskQuadVertex[4]= Y + H;
+    MaskQuadVertex[5]= 0;
+    MaskQuadVertex[6]= X + W;
+    MaskQuadVertex[7]= Y + H;
+    MaskQuadVertex[8]= 0;
+    MaskQuadVertex[9]= X + W;
+    MaskQuadVertex[10]= Y + H;
+    MaskQuadVertex[11]= 0;
+    MaskQuadVertex[12]= X;
+    MaskQuadVertex[13]= Y;
+    MaskQuadVertex[14]= 0;
+    MaskQuadVertex[15]= X + W;
+    MaskQuadVertex[16]= Y;
+    MaskQuadVertex[17]= 0;
+
+    EKG_TESSELLATOR->Draw(18, 24, MaskQuadVertex, MaskQuadMaterialColor);
 }
 
 void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_LINE_STRIP, 6);
-    EKG_TESSELLATOR->SetRectColor(Color);
+    EKG_TESSELLATOR->SetTextureColor(Color);
 
-    // First triangle.
-    EKG_TESSELLATOR->Vertex(X, Y, 0);
-    EKG_TESSELLATOR->Vertex(X, Y + H, 0);
-    EKG_TESSELLATOR->Vertex(X + W, Y + H, 0);
+    MaskQuadVertex[0] = X;
+    MaskQuadVertex[1] = Y;
+    MaskQuadVertex[2] = 0;
+    MaskQuadVertex[3] = X;
+    MaskQuadVertex[4] = Y + H;
+    MaskQuadVertex[5] = 0;
+    MaskQuadVertex[6] = X + W;
+    MaskQuadVertex[7] = Y + H;
+    MaskQuadVertex[8] = 0;
+    MaskQuadVertex[9] = X + W;
+    MaskQuadVertex[10] = Y + H;
+    MaskQuadVertex[11] = 0;
+    MaskQuadVertex[12] = X + W;
+    MaskQuadVertex[13] = Y;
+    MaskQuadVertex[14] = 0;
+    MaskQuadVertex[15] = X;
+    MaskQuadVertex[16] = Y;
+    MaskQuadVertex[17] = 0;
 
-    // Second triangle.
-    EKG_TESSELLATOR->Vertex(X + W, Y + H, 0);
-    EKG_TESSELLATOR->Vertex(X + W, Y, 0);
-    EKG_TESSELLATOR->Vertex(X, Y, 0);
+    float R = (float) Color.R / 255.0F;
+    float G = (float) Color.G / 255.0F;
+    float B = (float) Color.B / 255.0F;
+    float A = (float) Color.A / 255.0F;
+
+    MaskQuadMaterialColor[0] = R;
+    MaskQuadMaterialColor[1] = G;
+    MaskQuadMaterialColor[2] = B;
+    MaskQuadMaterialColor[3] = A;
+    MaskQuadMaterialColor[4] = R;
+    MaskQuadMaterialColor[5] = G;
+    MaskQuadMaterialColor[6] = B;
+    MaskQuadMaterialColor[7] = A;
+    MaskQuadMaterialColor[8] = R;
+    MaskQuadMaterialColor[9] = G;
+    MaskQuadMaterialColor[10] = B;
+    MaskQuadMaterialColor[11] = A;
+    MaskQuadMaterialColor[12] = R;
+    MaskQuadMaterialColor[13] = G;
+    MaskQuadMaterialColor[14] = B;
+    MaskQuadMaterialColor[15] = A;
+    MaskQuadMaterialColor[16] = R;
+    MaskQuadMaterialColor[17] = G;
+    MaskQuadMaterialColor[18] = B;
+    MaskQuadMaterialColor[19] = A;
+    MaskQuadMaterialColor[20] = R;
+    MaskQuadMaterialColor[21] = G;
+    MaskQuadMaterialColor[22] = B;
+    MaskQuadMaterialColor[23] = A;
 
     // Draw.
     glLineWidth(LineThickness);
-    EKG_TESSELLATOR->Draw();
+    EKG_TESSELLATOR->Draw(18, 24, MaskQuadVertex, MaskQuadMaterialColor);
 }
 
 void EKG_DrawFilledRect(const EKG_Rect &Rect, const EKG_Color &Color) {
@@ -121,15 +217,7 @@ void EKG_DrawOutlineRect(const EKG_Rect &Rect, float LineThickness, const EKG_Co
 }
 
 void EKG_StoreShape(float X, float Y, float W, float H) {
-    // First triangle.
-    EKG_TESSELLATOR->Vertex(X, Y, 0);
-    EKG_TESSELLATOR->Vertex(X, Y + H, 0);
-    EKG_TESSELLATOR->Vertex(X + W, Y + H, 0);
 
-    // Second triangle.
-    EKG_TESSELLATOR->Vertex(X + W, Y + H, 0);
-    EKG_TESSELLATOR->Vertex(X, Y, 0);
-    EKG_TESSELLATOR->Vertex(X + W, Y, 0);
 }
 
 void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Texture &Texture, const EKG_Color &Color) {
@@ -139,23 +227,47 @@ void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, f
 void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Texture &Texture, const EKG_Color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6);
     EKG_TESSELLATOR->BindTexture(Texture);
-    EKG_TESSELLATOR->SetRectColor(Color);
-    EKG_StoreTextureCoordinates(TextureX, TextureY, TextureW, TextureH);
-    EKG_StoreShape(X, Y, W, H);
-    EKG_TESSELLATOR->Draw();
-}
+    EKG_TESSELLATOR->SetTextureColor(Color);
 
-void EKG_StoreTextureCoordinates(float TextureX, float TextureY, float TextureW, float TextureH) {
+    unsigned int I = 0;
+
+    MaskQuadVertex[I]   = X;
+    MaskQuadVertex[I++] = Y;
+    MaskQuadVertex[I++] = 0;
+    MaskQuadVertex[I++] = X;
+    MaskQuadVertex[I++] = Y;
+    MaskQuadVertex[I++] = H;
+    MaskQuadVertex[I++] = 0;
+    MaskQuadVertex[I++] = X + W;
+    MaskQuadVertex[I++] = Y + H;
+    MaskQuadVertex[I++] = 0;
+    MaskQuadVertex[I++] = X + W;
+    MaskQuadVertex[I++] = Y + H;
+    MaskQuadVertex[I++] = 0;
+    MaskQuadVertex[I++] = X;
+    MaskQuadVertex[I++] = Y;
+    MaskQuadVertex[I++] = 0;
+    MaskQuadVertex[I++] = X + W;
+    MaskQuadVertex[I++] = Y;
+    MaskQuadVertex[I++] = 0;
+
     float U = 1.0F + (TextureW != 1 ? ((TextureW - (float) EKG_TESSELLATOR->GetTextureWidth()) / (float) EKG_TESSELLATOR->GetTextureWidth()) : 0.0F);
     float V = 1.0F + (TextureH != 1 ? ((TextureH - (float) EKG_TESSELLATOR->GetTextureHeight()) / (float) EKG_TESSELLATOR->GetTextureHeight()) : 0.0F);
 
-    EKG_TESSELLATOR->TextCoord2f(0, 0);
-    EKG_TESSELLATOR->TextCoord2f(0, V);
-    EKG_TESSELLATOR->TextCoord2f(U, V);
+    MaskQuadMaterialTexture[0] = 0;
+    MaskQuadMaterialTexture[1] = 0;
+    MaskQuadMaterialTexture[2] = 0;
+    MaskQuadMaterialTexture[3] = V;
+    MaskQuadMaterialTexture[4] = U;
+    MaskQuadMaterialTexture[5] = V;
+    MaskQuadMaterialTexture[6] = U;
+    MaskQuadMaterialTexture[7] = V;
+    MaskQuadMaterialTexture[8] = 0;
+    MaskQuadMaterialTexture[9] = 0;
+    MaskQuadMaterialTexture[10] = U;
+    MaskQuadMaterialTexture[11] = 0;
 
-    EKG_TESSELLATOR->TextCoord2f(U, V);
-    EKG_TESSELLATOR->TextCoord2f(0, 0);
-    EKG_TESSELLATOR->TextCoord2f(U, 0);
+    EKG_TESSELLATOR->Draw(18, 12, MaskQuadVertex, MaskQuadMaterialTexture);
 }
 
 std::string EKG_Print(const std::string& Tag, unsigned int Id) {

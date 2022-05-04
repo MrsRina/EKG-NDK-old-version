@@ -1,4 +1,3 @@
-
 #include "EKG_tessellator.h"
 #include "EKG_util.h"
 #include "EKG.h"
@@ -7,38 +6,14 @@ void EKG_Tessellator::Init() {
     unsigned int TessellatorShaderId = EKG_CORE->ShaderManager.FindShader("Tessellator");
     EKG_StartUseShader(TessellatorShaderId);
 
-    this->VertexList.push_back(0);
-    this->VertexList.push_back(0);
-    this->VertexList.push_back(0);
-
-    // Position buffer.
-    glGenBuffers(1, &this->VertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, this->VertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->VertexList.size(), &this->VertexList[0], GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    this->ColorList.push_back(0);
-    this->ColorList.push_back(0);
-    this->ColorList.push_back(0);
-    this->ColorList.push_back(0);
-
-    // Color buffer.
-    glGenBuffers(1, &this->ColorBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, this->ColorBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->ColorList.size(), &this->ColorList[0], GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     // Fetch attribute from shader with object buffer.
     this->ColorAttribute = EKG_GetShaderAttribute("Tessellator", TessellatorShaderId, "VertexColor");
     this->VertexAttribute = EKG_GetShaderAttribute("Tessellator", TessellatorShaderId, "VertexPosition");
 
     EKG_EndUseShader();
-
-    this->VertexList.clear();
-    this->ColorList.clear();
 }
 
-void EKG_Tessellator::Draw() {
+void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float VertexDataArray[VertexLength], float MaterialDataArray[MaterialLength]) {
     unsigned int TessellatorShaderId = EKG_CORE->ShaderManager.GetTessellatorShader();
 
     // Use object shader.
@@ -64,12 +39,12 @@ void EKG_Tessellator::Draw() {
     // Position buffer.
     glBindBuffer(GL_ARRAY_BUFFER, this->VertexBuffer);
     glVertexAttribPointer(this->VertexAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->VertexList.size(), &this->VertexList[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VertexLength, VertexDataArray, GL_DYNAMIC_DRAW);
 
     // Color buffer.
     glBindBuffer(GL_ARRAY_BUFFER, this->ColorBuffer);
     glVertexAttribPointer(this->ColorAttribute, this->ContainsTexture ? 2 : 4, GL_FLOAT, GL_FALSE, 0, (void*) 0);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->ColorList.size(), &this->ColorList[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MaterialLength, MaterialDataArray, GL_DYNAMIC_DRAW);
 
     // Draw arrays.
     glDrawArrays(this->RenderType, 0, this->BufferSize);
@@ -83,67 +58,14 @@ void EKG_Tessellator::Draw() {
     EKG_EndUseShader();
 }
 
-void EKG_Tessellator::Vertex(double X, double Y, double Z) {
-    this->VertexList.push_back(X);
-    this->VertexList.push_back(Y);
-    this->VertexList.push_back(Z);
-}
-
-void EKG_Tessellator::Color(unsigned int R, unsigned int G, unsigned int B) {
-    if (this->ContainsTexture) {
-        return;
-    }
-
-    this->ColorList.push_back(((float) R) / 255.0F);
-    this->ColorList.push_back(((float) G) / 255.0F);
-    this->ColorList.push_back(((float) B) / 255.0F);
-    this->ColorList.push_back(1.0F);
-}
-
-void EKG_Tessellator::Color(unsigned int R, unsigned int G, unsigned int B, unsigned int A) {
-    if (this->ContainsTexture) {
-        return;
-    }
-
-    this->ColorList.push_back(((float) R) / 255.0F);
-    this->ColorList.push_back(((float) G) / 255.0F);
-    this->ColorList.push_back(((float) B) / 255.0F);
-    this->ColorList.push_back(((float) A) / 255.0F);
-}
-
-void EKG_Tessellator::Color(EKG_Color Color) {
-    if (this->ContainsTexture) {
-        return;
-    }
-
-    this->ColorList.push_back(Color.GetRedf());
-    this->ColorList.push_back(Color.GetBluef());
-    this->ColorList.push_back(Color.GetGreenf());
-    this->ColorList.push_back(Color.GetAlphaf());
-}
-
 void EKG_Tessellator::NewDraw(int DrawType, int DrawSize) {
     this->BufferSize = DrawSize;
     this->RenderType = DrawType;
     this->ContainsTexture = false;
-
-    // Clean lists.
-    this->VertexList.clear();
-    this->ColorList.clear();
 }
 
-void EKG_Tessellator::SetRectColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A) {
-    if (this->ContainsTexture) {
-        this->TextureColor.Set(R, G, B, A);
-    } else {
-        // BearingY rect is 2 triangles (3 vertex by triangle).
-        this->Color(R, G, B, A);
-        this->Color(R, G, B, A);
-        this->Color(R, G, B, A);
-        this->Color(R, G, B, A);
-        this->Color(R, G, B, A);
-        this->Color(R, G, B, A);
-    }
+void EKG_Tessellator::SetTextureColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A) {
+    this->TextureColor.Set(R, G, B, A);
 }
 
 void EKG_Tessellator::Quit() {
@@ -155,15 +77,6 @@ void EKG_Tessellator::Quit() {
 void EKG_Tessellator::BindTexture(GLuint Id) {
     this->TextureId = Id;
     this->ContainsTexture = true;
-}
-
-void EKG_Tessellator::TextCoord2f(float U, float V) {
-    if (!this->ContainsTexture) {
-        return;
-    }
-
-    this->ColorList.push_back(U);
-    this->ColorList.push_back(V);
 }
 
 float EKG_Tessellator::GetTextureWidth() {
@@ -189,16 +102,8 @@ void EKG_Tessellator::BindTexture(const EKG_Texture &Texture) {
     this->BindTexture(Texture.Id);
 }
 
-void EKG_Tessellator::SetRectColor(EKG_Color Color) {
-    this->SetRectColor(Color.R, Color.G, Color.B, Color.A);
-}
-
-void EKG_Tessellator::SetVertex(const std::vector<GLfloat> &NewVertexList) {
-    this->VertexList = NewVertexList;
-}
-
-void EKG_Tessellator::SetUV(const std::vector<GLfloat> &UV) {
-    this->ColorList = UV;
+void EKG_Tessellator::SetTextureColor(EKG_Color Color) {
+    this->SetTextureColor(Color.R, Color.G, Color.B, Color.A);
 }
 
 void EKG_FontRenderer::Init() {
@@ -296,7 +201,7 @@ void EKG_FontRenderer::Reload() {
 }
 
 void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, float PositionY, const EKG_Color &Color) {
-    std::vector<GLfloat> VertexVector, TextureVector;
+    std::vector<float> VertexVector, TextureVector;
     FT_Vector PreviousCharVector;
 
     float RenderX, RenderY, RenderW, RenderH;
@@ -355,10 +260,8 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
     // Draw string.
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6 * (int) strlen(CharString));
     EKG_TESSELLATOR->BindTexture(this->BitmapTextureId);
-    EKG_TESSELLATOR->SetRectColor(255 - Color.R, 255 - Color.G, 255 - Color.B, Color.A);
-    EKG_TESSELLATOR->SetVertex(VertexVector);
-    EKG_TESSELLATOR->SetUV(TextureVector);
-    EKG_TESSELLATOR->Draw();
+    EKG_TESSELLATOR->SetTextureColor(255 - Color.R, 255 - Color.G, 255 - Color.B, Color.A);
+    EKG_TESSELLATOR->Draw(VertexVector.size(), TextureVector.size(), &VertexVector[0], &TextureVector[0]);
 }
 
 void EKG_FontRenderer::DrawStringClamped(const std::string &String, float PositionX, float PositionY, float W, const EKG_Color &Color) {
@@ -428,10 +331,8 @@ void EKG_FontRenderer::DrawStringClamped(const std::string &String, float Positi
     // Draw string.
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6 * (int) CountChar);
     EKG_TESSELLATOR->BindTexture(this->BitmapTextureId);
-    EKG_TESSELLATOR->SetRectColor(255 - Color.R, 255 - Color.G, 255 - Color.B, Color.A);
-    EKG_TESSELLATOR->SetVertex(VertexVector);
-    EKG_TESSELLATOR->SetUV(TextureVector);
-    EKG_TESSELLATOR->Draw();
+    EKG_TESSELLATOR->SetTextureColor(255 - Color.R, 255 - Color.G, 255 - Color.B, Color.A);
+    //EKG_TESSELLATOR->Draw(&VertexVector[0], &TextureVector[0]);
 }
 
 float EKG_FontRenderer::GetStringWidth(const std::string &String) {

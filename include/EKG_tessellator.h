@@ -30,9 +30,6 @@ private:
     bool ContainsTexture;
     GLint TextureId;
 
-    /* Data vertex and color (UV). */
-    std::vector<GLfloat> VertexList, ColorList;
-
     /* VBOs id and attributes. */
     GLuint VertexBuffer, ColorBuffer, VertexAttribute, ColorAttribute;
 
@@ -47,26 +44,18 @@ public:
     /* End of main methods. */
 
     /* Start of action methods. */
-    void Vertex(double X, double Y, double Z);
-    void TextCoord2f(float U, float V);
-    void Color(unsigned int R, unsigned int G, unsigned int B);
-    void Color(unsigned int R, unsigned int G, unsigned int B, unsigned int A);
-    void Color(EKG_Color Color);
     void BindTexture(GLuint Id);
     void BindTexture(const EKG_Texture &Texture);
     void NewDraw(int DrawType, int DrawSize);
-    void Draw();
+    void Draw(int VertexLength, int MaterialLength, float VertexDataArray[VertexLength], float MaterialDataArray[MaterialLength]);
     /* End of actions methods. */
 
     /* Start of getters and setters. */
     float GetTextureWidth();
     float GetTextureHeight();
 
-    void SetRectColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A);
-    void SetRectColor(EKG_Color Color);
-
-    void SetVertex(const std::vector<GLfloat> &NewVertexList);
-    void SetUV(const std::vector<GLfloat> &UV);
+    void SetTextureColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A);
+    void SetTextureColor(EKG_Color Color);
     /* End of getters and setters. */
 };
 

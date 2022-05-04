@@ -7,10 +7,12 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <iterator>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <vector>
+#include <array>
 #include <list>
 #include <glm.hpp>
 #include <SDL_opengles2.h>

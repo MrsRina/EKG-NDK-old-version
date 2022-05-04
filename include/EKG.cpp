@@ -530,8 +530,8 @@ EKG_Timing* EKG::Timing() {
 }
 
 Uint32 EKG::Event::REGISTER = SDL_RegisterEvents(2);
-Uint32 EKG::Event::ELEMENT = REGISTER++;
-Uint32 EKG::Event::POPUP = REGISTER++;
+Uint32 EKG::Event::ELEMENT  = REGISTER++;
+Uint32 EKG::Event::POPUP    = REGISTER++;
 
 EKG_Event EKG::Event::Read(SDL_Event Event) {
     if (Event.type == POPUP) {
@@ -544,9 +544,8 @@ EKG_Event EKG::Event::Read(SDL_Event Event) {
         auto* Callback = reinterpret_cast<std::string*>(Event.user.data1);
 
         EKGEvent.Type = Event.user.code;
-        EKGEvent.Popup.Info = "oi";
+        EKGEvent.Popup.Info = *Callback;
 
-        delete Callback;
         return EKGEvent;
     } else if (Event.type == ELEMENT) {
         EKG_Event EKGEvent;
