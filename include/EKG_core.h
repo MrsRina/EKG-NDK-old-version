@@ -14,7 +14,10 @@
 class EKG_Core {
 protected:
     /* Buffers element used in context gui. */
-    std::vector<EKG_AbstractElement*> BufferUpdate, BufferRender;
+    std::vector<EKG_AbstractElement*> BufferUpdate;
+    std::array<EKG_AbstractElement*, 256> ElementList = {};
+
+    int IteratorIndexBuffer;
 
     /* Stacks. */
     EKG_Stack StackedIdsSelected;
@@ -47,7 +50,7 @@ public:
 
     /* Start of setters & getters. */
     int GetSizeOfUpdateElements();
-    int GetSizeOfRenderElements();
+    int GetSizeOfRenderElements() const;
     int GetFocusedElementId() const;
 
     std::string &GetFocusedTag();

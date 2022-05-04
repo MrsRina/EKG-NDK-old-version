@@ -18,7 +18,7 @@
  **/
 class EKG_Tab : public EKG_AbstractElement {
 protected:
-
+    /* Settings. */
 public:
     /* Start of override methods. */
     std::string InfoClass();

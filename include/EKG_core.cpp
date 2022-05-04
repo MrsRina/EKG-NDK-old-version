@@ -5,6 +5,9 @@ void EKG_Core::RemoveElement(unsigned int ElementId) {
     std::vector<EKG_AbstractElement*> NewBufferRender;
     std::vector<EKG_AbstractElement*> NewBufferUpdate;
 
+    this->ElementList.fill(0);
+    this->IteratorIndexBuffer = 0;
+
     for (EKG_AbstractElement* Elements : this->BufferUpdate) {
         if (Elements->GetId() == ElementId) {
             Elements->Kill();
@@ -16,19 +19,18 @@ void EKG_Core::RemoveElement(unsigned int ElementId) {
         NewBufferUpdate.push_back(Elements);
 
         if (Elements->IsVisible() && Elements->IsRender()) {
-            NewBufferRender.push_back(Elements);
+            this->ElementList[this->IteratorIndexBuffer++] = Elements;
         }
     }
 
     this->BufferUpdate = NewBufferUpdate;
-    this->BufferRender = NewBufferRender;
 }
 
 void EKG_Core::AddElement(EKG_AbstractElement* Element) {
     this->BufferUpdate.push_back(Element);
 
     if (Element->IsVisible()) {
-        this->BufferRender.push_back(Element);
+        this->ElementList[this->IteratorIndexBuffer++] = Element;
     }
 }
 
@@ -57,7 +59,8 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         Element->OnPostEvent(Event);
     }
 
-    this->BufferRender.clear();
+    this->ElementList.fill(0);
+    this->IteratorIndexBuffer = 0;
 
     // Call all events.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
@@ -72,7 +75,7 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         Element->OnEvent(Event);
 
         if (Element->IsVisible() && Element->IsRender()) {
-            this->BufferRender.push_back(Element);
+            this->ElementList[this->IteratorIndexBuffer++] = Element;
         }
 
         this->SyncScissor(Element);
@@ -105,7 +108,11 @@ void EKG_Core::OnUpdate(const float &DeltaTicks) {
 }
 
 void EKG_Core::OnRender(const float &PartialTicks) {
-    for (EKG_AbstractElement* &Element : this->BufferRender) {
+    for (EKG_AbstractElement* &Element : this->ElementList) {
+        if (Element == NULL) {
+            continue;
+        }
+
         Element->OnRender(PartialTicks);
     }
 }
@@ -125,8 +132,6 @@ void EKG_Core::Quit() {
     }
 
     this->BufferUpdate.clear();
-    this->BufferRender.clear();
-
     EKG_Log("Killed all alive elements.");
 
     this->ShaderManager.Quit();
@@ -140,7 +145,8 @@ void EKG_Core::ResetStack() {
     EKG_Stack Stack;
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
 
-    this->BufferRender.clear();
+    this->ElementList.fill(0);
+    this->IteratorIndexBuffer = 0;
 
     // Get current elements list.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
@@ -154,7 +160,7 @@ void EKG_Core::ResetStack() {
             NewBufferOfUpdate.push_back(Element);
 
             if (Element->IsVisible() && Element->IsRender()) {
-                this->BufferRender.push_back(Element);
+                this->ElementList[this->IteratorIndexBuffer++] = Element;
             }
         } else {
             // If is master we add every child in.
@@ -208,7 +214,8 @@ void EKG_Core::ReorderStack() {
     }
 
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
-    this->BufferRender.clear();
+    this->ElementList.fill(0);
+    this->IteratorIndexBuffer = 0;
 
     // Put current.
     for (unsigned int IDs : Current.StackedIds) {
@@ -221,7 +228,7 @@ void EKG_Core::ReorderStack() {
         NewBufferOfUpdate.push_back(Element);
 
         if (Element->IsVisible() && Element->IsRender()) {
-            this->BufferRender.push_back(Element);
+            this->ElementList[this->IteratorIndexBuffer++] = Element;
         }
     }
 
@@ -236,7 +243,7 @@ void EKG_Core::ReorderStack() {
         NewBufferOfUpdate.push_back(Element);
 
         if (Element->IsVisible() && Element->IsRender()) {
-            this->BufferRender.push_back(Element);
+            this->ElementList[this->IteratorIndexBuffer++] = Element;
         }
     }
 
@@ -329,12 +336,12 @@ int EKG_Core::GetSizeOfUpdateElements() {
     return this->BufferUpdate.size();
 }
 
-int EKG_Core::GetSizeOfRenderElements() {
-    return this->BufferRender.size();
+int EKG_Core::GetSizeOfRenderElements() const {
+    return this->IteratorIndexBuffer;
 }
 
 int EKG_Core::GetFocusedElementId() const {
-    return this->FocusedId;
+    return (int) this->FocusedId;
 }
 
 std::string &EKG_Core::GetFocusedTag() {
@@ -359,7 +366,8 @@ void EKG_Core::Refresh() {
 
 void EKG_Core::RefreshStack() {
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
-    this->BufferRender.clear();
+    this->ElementList.fill(0);
+    this->IteratorIndexBuffer = 0;
 
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
         if (Element->IsDead()) {
@@ -370,7 +378,7 @@ void EKG_Core::RefreshStack() {
         NewBufferOfUpdate.push_back(Element);
 
         if (Element->IsRender() && Element->IsVisible()) {
-            this->BufferRender.push_back(Element);
+            this->ElementList[this->IteratorIndexBuffer++] = Element;
         }
     }
 
