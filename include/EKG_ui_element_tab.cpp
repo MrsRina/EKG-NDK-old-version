@@ -44,7 +44,8 @@ std::vector<EKG_Texture> &EKG_Tab::GetList() {
 }
 
 std::string EKG_Tab::InfoClass() {
-    return EKG_AbstractElement::InfoClass();
+    EKG_AbstractElement::InfoClass();
+    return "frame-tab";
 }
 
 void EKG_Tab::SyncSize() {
@@ -85,6 +86,14 @@ void EKG_Tab::OnEvent(SDL_Event Event) {
             EKG_Texture Component = this->GetComponentHovered(FX, FY);
 
             if (!Component.Name.empty()) {
+                for (EKG_Texture &Components : this->List) {
+                    auto* Element = EKG_CORE->GetElementById(Components.Id);
+
+                    if (Element != NULL) {
+                        Element->SetVisible(Element->GetTag() == Component.Name);
+                    }
+                }
+
                 this->Focused = Component.Name;
             }
 
@@ -109,11 +118,11 @@ void EKG_Tab::OnRender(const float &PartialTicks) {
     EKG_DrawFilledRect(this->Rect, Color);
 
     this->Size = 0;
-    float X = this->GetX(), Y;
+    float X = this->GetX(), Y = this->GetY();
 
     switch (this->DockTab) {
         case EKG::Dock::BOTTOM: {
-            Y = this->Rect.Y = this->Rect.W - this->MinimumHeight;
+            Y = this->GetY() + this->Rect.W - this->MinimumHeight;
             break;
         }
     }
@@ -127,7 +136,7 @@ void EKG_Tab::OnRender(const float &PartialTicks) {
 
         EKG_DrawFilledRect(this->Rect, Color);
 
-        EKG_CORE->FontRenderer.DrawString(Component.Tag, X + this->Size, Y, Color);
+        EKG_CORE->FontRenderer.DrawString(Component.Tag, X + this->Size, Y, Component.Tag.empty() ? EKG_CORE->ColorTheme.StringColor : EKG_CORE->ColorTheme.StringFadeColor);
         this->Size += this->ButtonSize;
     }
 }
@@ -221,8 +230,6 @@ void EKG_Tab::Enable(const std::string &Pattern) {
 void EKG_Tab::TabSide(unsigned int Dock) {
     if (Dock == EKG::Dock::TOP || Dock == EKG::Dock::BOTTOM) {
         this->DockTab = Dock;
-    } else {
-
     }
 }
 
@@ -239,7 +246,7 @@ EKG_Texture EKG_Tab::GetComponentHovered(float FX, float FY) {
     EKG_Texture Component;
 
     for (EKG_Texture &Components : this->List) {
-        if (!Components.Tag.empty() && FX > X && FX < X + Components.Width && FY < Y && FY < Y + Components.Height) {
+        if (!Components.Tag.empty() && FX > X && FX < X + Components.Width && FY > Y && FY < Y + Components.Height) {
             Component = Components;
             break;
         }

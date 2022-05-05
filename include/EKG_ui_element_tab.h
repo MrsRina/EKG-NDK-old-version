@@ -5,7 +5,7 @@
 #pragma once
 
 #include "EKG_includes.h"
-#include "EKG_abstract_ui_element.h"
+#include "EKG_ui_element_frame.h"
 
 #ifndef EKG_UI_ELEMENT_TAB_H
 #define EKG_UI_ELEMENT_TAB_H
@@ -16,7 +16,7 @@
  * Description: A container with frames.
  * Features: Lists elements and set current.
  **/
-class EKG_Tab : public EKG_AbstractElement {
+class EKG_Tab : public EKG_Frame {
 protected:
     /* Settings. */
     std::vector<EKG_Texture> List;
