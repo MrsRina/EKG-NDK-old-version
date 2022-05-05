@@ -366,3 +366,11 @@ std::string EKG_Frame::InfoClass() {
     EKG_AbstractElement::InfoClass();
     return "frame";
 }
+
+float EKG_Frame::GetMinimumWidth() {
+    return this->MinimumWidth;
+}
+
+float EKG_Frame::GetMinimumHeight() {
+    return this->MinimumHeight;
+}

@@ -65,6 +65,9 @@ public:
 
     void SetBorderColor(unsigned int R, unsigned int G, unsigned B, unsigned int A);
     EKG_Color GetBorderColor();
+
+    float GetMinimumWidth();
+    float GetMinimumHeight();
     /* End of setters and getters. */
 
     /* Start of override methods. */

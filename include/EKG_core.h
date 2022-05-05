@@ -15,9 +15,9 @@ class EKG_Core {
 protected:
     /* Buffers element used in context gui. */
     std::vector<EKG_AbstractElement*> BufferUpdate;
-    std::array<EKG_AbstractElement*, 256> ElementList = {};
+    std::array<EKG_AbstractElement*, 256> BufferRender = {};
 
-    int IteratorIndexBuffer;
+    int BufferSize;
 
     /* Stacks. */
     EKG_Stack StackedIdsSelected;
@@ -60,7 +60,6 @@ public:
     void RefreshNeeded();
 
     bool IsActionHappening() const;
-
     void Refresh();
     /* End of setters & getters. */
 

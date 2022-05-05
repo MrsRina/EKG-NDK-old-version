@@ -11,6 +11,7 @@
 #include "EKG_ui_element_slider.h"
 #include "EKG_ui_element_popup.h"
 #include "EKG_ui_element_combobox.h"
+#include "EKG_ui_element_tab.h"
 
 /* Start of shader util functions. */
 void EKG_StartUseShader(GLuint ShaderId);
@@ -136,6 +137,7 @@ public:
     static EKG_Slider* Slider(const std::string &Name, float Value, float Min, float Max);
     static EKG_Popup* Popup(const std::string &Name, float InitialPosX, float InitialPosY, const std::vector<std::string> &List);
     static EKG_Combobox* Combobox(const std::string &Name, const std::vector<std::string> &List);
+    static EKG_Tab* Tab(const std::string &Name);
 
     static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
     static EKG_AbstractElement* Find(unsigned int Id);

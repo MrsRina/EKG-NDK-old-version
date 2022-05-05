@@ -494,3 +494,11 @@ void EKG_Popup::SetMasterId(unsigned int ElementMasterId) {
         this->PopupMaster = Element != NULL && Element->InfoClass() == "popup";
     }
 }
+
+float EKG_Popup::GetMaximumWidth() {
+    return this->MaximumWidth;
+}
+
+float EKG_Popup::GetMaximumHeight() {
+    return this->MaximumHeight;
+}

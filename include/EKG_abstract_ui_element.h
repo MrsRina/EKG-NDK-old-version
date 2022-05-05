@@ -47,7 +47,7 @@ public:
     void SetId(unsigned int ElementId);
     unsigned int GetId();
 
-    void SetMasterId(unsigned int ElementMasterId);
+    virtual void SetMasterId(unsigned int ElementMasterId);
     unsigned int GetMasterId();
 
     void SetChildren(const EKG_Stack &Stack);

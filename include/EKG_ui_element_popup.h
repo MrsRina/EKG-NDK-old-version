@@ -66,6 +66,9 @@ public:
     std::string &GetClicked();
 
     void GetPath(std::string &PreviousPath);
+
+    float GetMaximumWidth();
+    float GetMaximumHeight();
     /* End of setters & getters. */
 
     /* Start of action methods. */
