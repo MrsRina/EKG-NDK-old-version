@@ -84,7 +84,18 @@ bool EKG_AbstractElement::IsHovered() {
 }
 
 void EKG_AbstractElement::SetVisible(bool State) {
-    this->Visible = State;
+
+    if (this->Visible != State) {
+        this->Visible = State;
+
+        for (unsigned int Ids : this->Children.StackedIds) {
+            auto* Element = EKG_CORE->GetElementById(Ids);
+
+            if (Element != NULL) {
+                Element->SetVisible(State);
+            }
+        }
+    }
 }
 
 bool EKG_AbstractElement::IsVisible() {

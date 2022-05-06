@@ -61,6 +61,7 @@ public:
     void SetWidth(float Width);
     void SetHeight(float Height);
 
+    void SetSize(float Width, float Height);
     void SetLimit(float MinWidth, float MinHeight);
 
     void SetBorderColor(unsigned int R, unsigned int G, unsigned B, unsigned int A);

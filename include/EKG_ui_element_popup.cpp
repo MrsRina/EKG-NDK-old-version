@@ -9,7 +9,7 @@ void EKG_Popup::Insert(const std::vector<std::string> &ToAddList) {
             continue;
         }
 
-        EKG_Texture Component;
+        EKG_Data Component;
 
         Component.Name = String;
         Component.Tag = "1";
@@ -19,9 +19,9 @@ void EKG_Popup::Insert(const std::vector<std::string> &ToAddList) {
 }
 
 void EKG_Popup::Delete(const std::string &Pattern) {
-    std::vector<EKG_Texture> NewList;
+    std::vector<EKG_Data> NewList;
 
-    for (const EKG_Texture &Components : this->List) {
+    for (const EKG_Data &Components : this->List) {
         if (EKG_StringContains(Pattern, Components.Name)) {
             continue;
         }
@@ -42,9 +42,9 @@ void EKG_Popup::Disable(const std::string &Pattern) {
         return;
     }
 
-    std::vector<EKG_Texture> NewList;
+    std::vector<EKG_Data> NewList;
 
-    for (EKG_Texture Components : this->List) {
+    for (EKG_Data Components : this->List) {
         if (EKG_StringContains(Pattern, Components.Name)) {
             Components.Tag = "";
         }
@@ -61,9 +61,9 @@ void EKG_Popup::Disable(const std::string &Pattern) {
 }
 
 void EKG_Popup::Enable(const std::string &Pattern) {
-    std::vector<EKG_Texture> NewList;
+    std::vector<EKG_Data> NewList;
 
-    for (EKG_Texture Components : this->List) {
+    for (EKG_Data Components : this->List) {
         if (EKG_StringContains(Pattern, Components.Name)) {
             Components.Tag = "1";
         }
@@ -110,7 +110,7 @@ void EKG_Popup::SetWidth(float Width) {
     }
 }
 
-std::vector<EKG_Texture> &EKG_Popup::GetList() {
+std::vector<EKG_Data> &EKG_Popup::GetList() {
     return this->List;
 }
 
@@ -127,16 +127,16 @@ void EKG_Popup::SyncSize() {
 
     // This method is invoked too many times.
     // So we call 'ConcurrentList' instead 'NewList'.
-    std::vector<EKG_Texture> ConcurrentList;
+    std::vector<EKG_Data> ConcurrentList;
 
     this->MaximumHeight = 0.0F;
 
-    for (EKG_Texture &Components : this->List) {
+    for (EKG_Data &Components : this->List) {
         // It cost too many ticks (hardware) to get string height.
-        Components.Height = EKG_CORE->FontRenderer.GetStringHeight(Components.Name) + (this->TextScale * 2);
+        Components.DataHeight = EKG_CORE->FontRenderer.GetStringHeight(Components.Name) + (this->TextScale * 2);
         ConcurrentList.push_back(Components);
 
-        this->MaximumHeight += Components.Height;
+        this->MaximumHeight += Components.DataHeight;
     }
 
     this->List = ConcurrentList;
@@ -162,7 +162,7 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
             float FY = Event.tfinger.y;
 
             EKG::ScaledFingerPos(FX, FY);
-            EKG_Texture Component = this->GetHoveredComponent(FX, FY);
+            EKG_Data Component = this->GetHoveredComponent(FX, FY);
 
             this->Selected = "";
 
@@ -186,8 +186,11 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 std::string Path = this->Focused;
                 this->GetPath(Path);
 
+                // We use smart pointers instead explicit pointer.
+                std::shared_ptr<std::string> Pointer = std::make_shared<std::string>(Path);
+
                 // Send popup event using EKG events processor.
-                EKG::Event::Dispatch(EKG::Event::POPUP, reinterpret_cast<void*>(new std::string(Path)), (void*) 0);
+                EKG::Event::Dispatch(EKG::Event::POPUP, Pointer.get(), (void*) 0);
             }
 
             this->Pressed = false;
@@ -206,21 +209,21 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 float Y = this->GetY();
                 float X, W, H;
 
-                EKG_Texture Component;
+                EKG_Data Component;
                 Component.Name = "";
 
-                for (const EKG_Texture &Components : this->List) {
+                for (const EKG_Data &Components : this->List) {
                     X = this->GetX();
 
                     W = X + this->GetWidth();
-                    H = Y + Components.Height;
+                    H = Y + Components.DataHeight;
 
                     if (Components.Tag == "1" && FX > X && FX < W && FY > Y && FY < H) {
                         Component = Components;
                         break;
                     }
 
-                    Y += Components.Height;
+                    Y += Components.DataHeight;
                 }
 
                 this->Focused = Component.Name;
@@ -237,7 +240,7 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
 
                             this->Activy = Component.Name;
 
-                            for (const EKG_Texture &Components : this->List) {
+                            for (const EKG_Data &Components : this->List) {
                                 auto *ElementIn = (EKG_Popup*) EKG_CORE->GetElementById(Components.Id);
 
                                 if (ElementIn != NULL && ElementOut->GetId() != Components.Id) {
@@ -295,17 +298,17 @@ void EKG_Popup::OnRender(const float &PartialTicks) {
         EKG_Scissor((int) this->Rect.X, (int) this->Rect.Y, (int) this->Rect.W, (int) this->Rect.H);
 
         // I do not like iterations in loops but need use here.
-        for (const EKG_Texture &Components : this->List) {
+        for (const EKG_Data &Components : this->List) {
             // Background when is focused.
             if (Components.Name == this->Focused) {
-                EKG_DrawFilledShape(this->GetX(), FullHeight, this->Rect.W, Components.Height, Color);
+                EKG_DrawFilledShape(this->GetX(), FullHeight, this->Rect.W, Components.DataHeight, Color);
             }
 
             // Draw the name of component.
             EKG_CORE->FontRenderer.DrawString(Components.Name,this->GetX() + 2.0F + this->TextOffset, FullHeight + this->TextScale, Components.Tag != "1" ? EKG_CORE->ColorTheme.StringFadeColor : EKG_CORE->ColorTheme.StringColor);
 
             // Update the height to the next element be rendered property.
-            FullHeight += Components.Height;
+            FullHeight += Components.DataHeight;
         }
 
         EKG_EndScissor();
@@ -315,24 +318,24 @@ void EKG_Popup::OnRender(const float &PartialTicks) {
     }
 }
 
-EKG_Texture EKG_Popup::GetHoveredComponent(float FX, float FY) {
+EKG_Data EKG_Popup::GetHoveredComponent(float FX, float FY) {
     float Y = this->GetY();
     float X, W, H;
 
-    for (const EKG_Texture &Components : this->List) {
+    for (const EKG_Data &Components : this->List) {
         X = this->GetX();
 
         W = X + this->GetWidth();
-        H = Y + Components.Height;
+        H = Y + Components.DataHeight;
 
         if (Components.Tag == "1" && FX > X && FX < W && FY > Y && FY < H) {
             return Components;
         }
 
-        Y += Components.Height;
+        Y += Components.DataHeight;
     }
 
-    EKG_Texture Component;
+    EKG_Data Component;
     Component.Name = "";
 
     return Component;
@@ -355,9 +358,9 @@ void EKG_Popup::Place(EKG_Popup* Popup) {
     }
 
     bool Contains;
-    std::vector<EKG_Texture> NewList;
+    std::vector<EKG_Data> NewList;
 
-    for (EKG_Texture Components : this->List) {
+    for (EKG_Data Components : this->List) {
         if (Components.Name == Popup->GetTag()) {
             Components.Id = Popup->GetId();
             Contains = true;

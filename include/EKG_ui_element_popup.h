@@ -19,7 +19,7 @@
 class EKG_Popup : public EKG_AbstractElement {
 protected:
     /* Settings. */
-    std::vector<EKG_Texture> List;
+    std::vector<EKG_Data> List;
     std::string Selected, Focused, Activy;
 
     /* States. */
@@ -29,7 +29,7 @@ protected:
     float LastTicks, MaximumHeight, MaximumWidth, TextOffset, TextScale;
 
     /* Help to return hovered components. */
-    EKG_Texture GetHoveredComponent(float FX, float FY);
+    EKG_Data GetHoveredComponent(float FX, float FY);
 
     /* Sync menus hovering. */
     bool IsUpdate(float FX, float FY);
@@ -60,7 +60,7 @@ public:
     void SetScale(float TextScale);
     float GetScale() const;
 
-    std::vector<EKG_Texture> &GetList();
+    std::vector<EKG_Data> &GetList();
 
     std::string &GetFocused();
     std::string &GetClicked();

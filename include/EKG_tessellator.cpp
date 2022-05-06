@@ -95,9 +95,9 @@ float EKG_Tessellator::GetTextureHeight() {
     return 0;
 }
 
-void EKG_Tessellator::BindTexture(const EKG_Texture &Texture) {
-    this->TextureWidth = Texture.Width;
-    this->TextureHeight = Texture.Height;
+void EKG_Tessellator::BindTexture(const EKG_Data &Texture) {
+    this->TextureWidth = Texture.DataWidth;
+    this->TextureHeight = Texture.DataHeight;
 
     this->BindTexture(Texture.Id);
 }

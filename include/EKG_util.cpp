@@ -220,11 +220,11 @@ void EKG_StoreShape(float X, float Y, float W, float H) {
 
 }
 
-void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Texture &Texture, const EKG_Color &Color) {
+void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color) {
     EKG_DrawTextureShape(Rect.X, Rect.Y, Rect.W, Rect.H, TextureX, TextureY, TextureW, TextureH, Texture, Color);
 }
 
-void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Texture &Texture, const EKG_Color &Color) {
+void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6);
     EKG_TESSELLATOR->BindTexture(Texture);
     EKG_TESSELLATOR->SetTextureColor(Color);
@@ -524,7 +524,7 @@ void EKG_ColorTheme::Init() {
     Container(HIGHLIGHT, 0, 0, 0, 0);
     Container(PRESSED, 255, 255, 255, 50);
     Container(FOCUSED, 0, 0, 0, 0);
-    Container(ACTIVY, 0, 0, 0, 0);
+    Container(ACTIVY, 255, 0, 255, 50);
 
     Widget(BACKGROUND, 0, 0, 0, 100);
     Widget(HIGHLIGHT, 255, 0, 255, 50);

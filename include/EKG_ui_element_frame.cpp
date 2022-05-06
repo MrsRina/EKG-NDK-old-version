@@ -131,7 +131,7 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
                         this->SyncPos();
                     }
 
-                    // Diff Width & Height. Not prediction anymore, recycled.
+                    // Diff DataWidth & DataHeight. Not prediction anymore, recycled.
                     PredictionW = this->PreviousW + (this->PreviousX - this->Rect.X);
                     PredictionH = this->PreviousH + (this->PreviousY - this->Rect.Y);
 
@@ -373,4 +373,12 @@ float EKG_Frame::GetMinimumWidth() {
 
 float EKG_Frame::GetMinimumHeight() {
     return this->MinimumHeight;
+}
+
+void EKG_Frame::SetSize(float Width, float Height) {
+    if (this->Rect.W != Width || this->Rect.H != Height) {
+        this->Rect.W = Width;
+        this->Rect.H = Height;
+        this->SyncSize();
+    }
 }

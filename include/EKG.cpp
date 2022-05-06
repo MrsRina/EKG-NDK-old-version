@@ -493,6 +493,25 @@ EKG_Combobox* EKG::Combobox(const std::string &Name, const std::vector<std::stri
     return Element;
 }
 
+EKG_Tab *EKG::Tab(const std::string &Name) {
+    auto* Element = new EKG_Tab();
+
+    Element->SetTag(Name);
+    Element->SetId(EKG_CORE->NewId());
+    Element->Place(10, 10);
+    Element->SetLimit(50, 50);
+    Element->SetWidth(250);
+    Element->SetButtonSize(3);
+    Element->SetScale(3);
+    Element->SetBorderOffset(10);
+    Element->SetHeight(250);
+    Element->TabSide(EKG::Dock::TOP);
+    Element->SyncSize();
+
+    EKG_CORE->AddElement(Element);
+    return Element;
+}
+
 EKG_AbstractElement *EKG::Find(unsigned int Id) {
     return EKG_CORE->GetElementById(Id);
 }
@@ -541,7 +560,7 @@ EKG_Event EKG::Event::Read(SDL_Event Event) {
             return EKGEvent;
         }
 
-        auto* Callback = reinterpret_cast<std::string*>(Event.user.data1);
+        auto* Callback = static_cast<std::string*>(Event.user.data1);
 
         EKGEvent.Type = Event.user.code;
         EKGEvent.Popup.Info = *Callback;

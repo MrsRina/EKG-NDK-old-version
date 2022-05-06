@@ -1,7 +1,7 @@
 #include "EKG_ui_element_button.h"
 #include "EKG.h"
 
-void EKG_Button::BoxTexture(const EKG_Texture &Texture) {
+void EKG_Button::BoxTexture(const EKG_Data &Texture) {
     this->TextureBox = Texture;
 }
 
@@ -140,7 +140,7 @@ void EKG_Button::OnRender(const float &PartialTicks) {
     EKG_EndScissor();
 }
 
-EKG_Texture EKG_Button::GetBoxTexture() {
+EKG_Data EKG_Button::GetBoxTexture() {
     return this->TextureBox;
 }
 

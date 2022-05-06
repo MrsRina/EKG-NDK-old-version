@@ -174,12 +174,12 @@ public:
 };
 
 /**
- * Save texture id, width & height of original size.
+ * Save texture id, position or store into memory.
  */
-struct EKG_Texture {
+struct EKG_Data {
     std::string Name, Tag;
 
-    float Width, Height;
+    float DataX, DataY, DataWidth, DataHeight;
     unsigned int Id = 0;
 };
 
@@ -217,6 +217,6 @@ void EKG_DrawFilledRect(const EKG_Rect &Rect, const EKG_Color &Color);
 void EKG_DrawOutlineRect(const EKG_Rect &Rect, float LineThickness, const EKG_Color &Color);
 void EKG_StoreShape(float X, float Y, float W, float H);
 void EKG_StoreTextureCoordinates(float TextureX, float TextureY, float TextureW, float TextureH);
-void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Texture &Texture, const EKG_Color &Color);
-void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Texture &Texture, const EKG_Color &Color);
+void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color);
+void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color);
 /* End of draw functions. */

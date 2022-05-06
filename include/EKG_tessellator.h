@@ -45,7 +45,7 @@ public:
 
     /* Start of action methods. */
     void BindTexture(GLuint Id);
-    void BindTexture(const EKG_Texture &Texture);
+    void BindTexture(const EKG_Data &Texture);
     void NewDraw(int DrawType, int DrawSize);
     void Draw(int VertexLength, int MaterialLength, float VertexDataArray[VertexLength], float MaterialDataArray[MaterialLength]);
     /* End of actions methods. */

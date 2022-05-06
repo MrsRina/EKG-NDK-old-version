@@ -51,7 +51,7 @@ void EKG_Core::OnEvent(SDL_Event Event) {
         Element->OnPreEvent(Event);
 
         // The next superior element is set.
-        if (Element->IsHovered()) {
+        if (Element->IsHovered() && Element->IsVisible()) {
             this->FocusedId = Element->GetId();
         }
 
@@ -64,6 +64,10 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 
     // Call all events.
     for (EKG_AbstractElement* Element : this->BufferUpdate) {
+        if (Element == NULL) {
+            continue;
+        }
+
         if (Element->GetId() == this->FocusedId) {
             Element->OnPreEvent(Event);
 
@@ -84,7 +88,7 @@ void EKG_Core::OnEvent(SDL_Event Event) {
     if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERUP) {
         if (this->NeededReorder) {
             for (EKG_AbstractElement* Element : this->BufferUpdate) {
-                if (Element->IsHovered()) {
+                if (Element->IsHovered() && Element->IsVisible()) {
                     this->FocusedId = Element->GetId();
 
                     // Communicate for EKG environment the current focused element.
@@ -102,6 +106,7 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 
 void EKG_Core::OnUpdate(const float &DeltaTicks) {
     if (this->NeededRefresh) {
+        this->ResetStack();
         this->RefreshStack();
         this->NeededRefresh = false;
     }
@@ -142,7 +147,6 @@ void EKG_Core::Quit() {
 }
 
 void EKG_Core::ResetStack() {
-    EKG_Stack Stack;
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
 
     this->BufferRender.fill(0);
@@ -156,23 +160,43 @@ void EKG_Core::ResetStack() {
         }
 
         // If is not one master we add in new list.
-        if (Element->GetMasterId() == 0) {
+        if (Element->GetMasterId() == 0 && !Element->IsMaster()) {
             NewBufferOfUpdate.push_back(Element);
 
             if (Element->IsVisible() && Element->IsRender()) {
                 this->BufferRender[this->BufferSize++] = Element;
             }
-        } else {
-            // If is master we add every child in.
-            Element->Stack(Stack);
         }
     }
 
-    // Update stack now pushing back the fixed stack list.
-    for (unsigned int IDs : Stack.StackedIds) {
-        auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
-        NewBufferOfUpdate.push_back(Element);
+    EKG_Stack Stack;
 
+    // Get current elements list.
+    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+        if (Element->IsDead()) {
+            delete Element;
+            continue;
+        }
+
+        if (Element->IsMaster()) {
+            EKG_Stack ConcurrentStack;
+            Element->Stack(ConcurrentStack);
+
+            // Update stack now pushing back the fixed stack list.
+            for (unsigned int IDs : ConcurrentStack.StackedIds) {
+                auto* Elements = (EKG_AbstractElement *) this->GetElementById(IDs);
+
+                if (Elements != NULL) {
+                    NewBufferOfUpdate.push_back(Elements);
+
+                    if (Elements->IsVisible() && Elements->IsRender()) {
+                        this->BufferRender[this->BufferSize++] = Elements;
+                    }
+                }
+            }
+
+            Stack = ConcurrentStack;
+        }
     }
 
     this->BufferUpdate = NewBufferOfUpdate;

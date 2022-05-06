@@ -22,7 +22,7 @@ protected:
     bool Pressed, Clicked, Checked, Box, BoxScaled, HoveredBox;
 
     /* Checkbox texture, metrics & scale. */
-    EKG_Texture TextureBox;
+    EKG_Data TextureBox;
     float BoxRect[4], AlignOffsetText, AlignOffsetBox, OffsetText, OffsetBox, TextWidth, TextHeight, Scale;
     unsigned int AlignTextDocking, AlignBoxDocking;
 
@@ -37,7 +37,7 @@ protected:
     /* End of helper methods. */
 public:
     /* Start of configurable methods. */
-    void BoxTexture(const EKG_Texture &Texture);
+    void BoxTexture(const EKG_Data &Texture);
     void AlignBox(unsigned int Dock);
     void AlignText(unsigned int Dock);
     void Mode(const std::string& Mode);
@@ -54,7 +54,7 @@ public:
     bool IsChecked();
 
     bool IsCheckBox();
-    EKG_Texture GetBoxTexture();
+    EKG_Data GetBoxTexture();
 
     void SetOffsetText(float Offset);
     float GetOffsetText();
