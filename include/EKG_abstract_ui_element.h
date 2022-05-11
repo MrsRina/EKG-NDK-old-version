@@ -32,7 +32,8 @@ protected:
     int ScissorX, ScissorY, ScissorW, ScissorH;
 
     /* Main flags. */
-    bool Hovered, Visible = true, Disabled, Dead, NoRender;
+    bool Hovered, Disabled, Dead, NoRender;
+    unsigned int Visible;
 public:
     EKG_AbstractElement();
     ~EKG_AbstractElement();
@@ -59,9 +60,6 @@ public:
     void SetRect(const EKG_Rect &Rectangle);
     EKG_Rect GetRect();
 
-    void SetRender(bool ApplyNoRender) ;
-    bool IsRender();
-
     float GetX();
     float GetY();
     float GetWidth();
@@ -73,8 +71,7 @@ public:
     void SetHovered(bool State);
     bool IsHovered();
 
-    void SetVisible(bool Visible);
-    bool IsVisible();
+    unsigned int GetVisibility();
 
     void SetDisabled(bool State);
     bool IsDisabled();
@@ -92,6 +89,7 @@ public:
     virtual void Place(float X, float Y);
     virtual void Remove(unsigned int ElementId);
     virtual void Kill();
+    virtual void Visibility(unsigned int VisibilityFlag);
 
     virtual void SyncPos();
     virtual void SyncSize();

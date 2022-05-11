@@ -413,6 +413,7 @@ EKG_Frame *EKG::Frame(const std::string &Name) {
     Element->SetLimit(50, 50);
     Element->SetWidth(250);
     Element->SetHeight(250);
+    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
@@ -428,6 +429,7 @@ EKG_Button* EKG::Button(const std::string &Name) {
     Element->Place(10, 10);
     Element->AlignText(EKG::Dock::CENTER);
     Element->AlignBox(EKG::Dock::LEFT);
+    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
     Element->Mode("Normal");
     Element->SetWidth(Element->GetTextWidth());
     Element->SyncSize();
@@ -447,7 +449,9 @@ EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialP
     Element->SetTag(Name);
     Element->SetId(EKG_CORE->NewId());
     Element->SetScale(2);
-    Element->SetShow((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) || (InitialPosX == EKG::ABSOLUTE && InitialPosY == EKG::ABSOLUTE));
+    Element->Visibility((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) ||
+                        (InitialPosX == EKG::ABSOLUTE && InitialPosY == EKG::ABSOLUTE)
+                        ? EKG::Visibility::VISIBLE : EKG::Visibility::INVISIBLE);
     Element->SetWidth(125);
     Element->Place(InitialPosX, InitialPosY);
     Element->Insert(List);
@@ -466,6 +470,7 @@ EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float M
     Element->SetSize(125);
     Element->SetScale(6);
     Element->LabelAlign(EKG::Dock::CENTER);
+    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
     Element->Place(10, 10);
     Element->SetMin(Min);
     Element->SetMax(Max);
@@ -484,6 +489,7 @@ EKG_Combobox* EKG::Combobox(const std::string &Name, const std::vector<std::stri
     Element->SetList(List);
     Element->SetCurrent(" ");
     Element->AlignText(EKG::Dock::LEFT);
+    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
     Element->SetScale(6);
     Element->Place(10, 10);
     Element->SetWidth(125);
@@ -506,6 +512,7 @@ EKG_Tab *EKG::Tab(const std::string &Name) {
     Element->SetBorderOffset(10);
     Element->SetHeight(250);
     Element->TabSide(EKG::Dock::TOP);
+    Element->Visibility(EKG::Visibility::VISIBLE);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
@@ -516,7 +523,7 @@ EKG_AbstractElement *EKG::Find(unsigned int Id) {
     return EKG_CORE->GetElementById(Id);
 }
 
-std::vector<unsigned int> EKG::Children(EKG_AbstractElement* Element) {
+std::vector<unsigned int> &EKG::Children(EKG_AbstractElement* Element) {
     std::vector<unsigned int> Stack;
 
     if (Element == NULL) {
@@ -532,11 +539,11 @@ void EKG::Kill(EKG_AbstractElement* &Element) {
     Element = NULL;
 }
 
-std::string &EKG::CurrentFocusedTag() {
+std::string EKG::CurrentFocusedTag() {
     return EKG_CORE->GetFocusedTag();
 }
 
-std::string &EKG::CurrentFocusedType() {
+std::string EKG::CurrentFocusedType() {
     return EKG_CORE->GetFocusedType();
 }
 
@@ -555,10 +562,6 @@ Uint32 EKG::Event::POPUP    = REGISTER++;
 EKG_Event EKG::Event::Read(SDL_Event Event) {
     if (Event.type == POPUP) {
         EKG_Event EKGEvent;
-
-        if (Event.user.data1 == 0) {
-            return EKGEvent;
-        }
 
         auto* Callback = static_cast<std::string*>(Event.user.data1);
 

@@ -137,7 +137,7 @@ void EKG_Tab::OnEvent(SDL_Event Event) {
                     auto* Element = EKG_CORE->GetElementById(Components.Id);
 
                     if (Element != NULL) {
-                        Element->SetVisible(Element->GetTag() == Component.Name);
+                        Element->Visibility(Element->GetTag() == Component.Name ? EKG::Visibility::VISIBLE : EKG::Visibility::INVISIBLE);
                     }
                 }
 
@@ -317,8 +317,6 @@ void EKG_Tab::Place(EKG_Frame *Frame) {
     Frame->SetScaled(this->GetX(), this->GetY(), this->GetWidth(), this->GetHeight());
     Frame->Place(0, this->DockTab == EKG::Dock::TOP ? this->MinimumHeight : 0);
     Frame->SetHeight(this->GetHeight() - this->MinimumHeight);
-
-    EKG_CORE->Refresh();
 }
 
 void EKG_Tab::Place(float X, float Y) {

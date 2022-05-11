@@ -144,11 +144,13 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
 
     switch (Event.type) {
         default: {
+            if (!this->Activy) {
+                return;
+            }
+
             EKG_Event CustomEvent = EKG::Event::Read(Event);
 
-            if (CustomEvent.Type == EKG::Event::POPUP && this->Activy) {
-                EKG_Log(CustomEvent.Popup.Info + " dupe");
-
+            if (CustomEvent.Type == EKG::Event::POPUP) {
                 for (const std::string &Strings : this->PopupElementList) {
                     if (EKG_StringContains(CustomEvent.Popup.Info, Strings)) {
                         this->SetCurrent(Strings);
@@ -169,8 +171,9 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
                 auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(this->Children.StackedIds.at(0));
 
                 if (Element != NULL) {
-                    Element->SetShow(!Element->IsShow());
-                    ShouldRenderPressed = Element->IsShow();
+                    Element->Visibility(Element->GetVisibility() == EKG::Visibility::VISIBLE
+                                        ? EKG::Visibility::INVISIBLE : EKG::Visibility::VISIBLE);
+                    ShouldRenderPressed = Element->GetVisibility() == EKG::Visibility::VISIBLE;
                 }
             }
 
@@ -181,7 +184,7 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
 
                 Popup->SetWidth(this->GetWidth());
                 Popup->Place(this->GetX(), this->GetY() + this->GetHeight());
-                Popup->SetShow(true);
+                Popup->Visibility(EKG::Visibility::VISIBLE);
                 Popup->SetScale(this->TextScale);
                 Popup->SetHovered(true);
                 Popup->SetMasterId(this->GetId());

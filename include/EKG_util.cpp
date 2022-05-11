@@ -49,11 +49,9 @@ bool EKG_Stack::Put(unsigned int Id) {
     return true;
 }
 
-void EKG_Log(const std::string& Log) {
-    std::string FullLog = "[EKG] " + Log;
-
+void EKG_Log(const std::string &Log) {
     // Send log using SDL function.
-    SDL_Log("%s", FullLog.c_str());
+    SDL_Log("%s", ("[EKG] " + Log).c_str());
 }
 
 void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top) {
@@ -270,8 +268,8 @@ void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, fl
     EKG_TESSELLATOR->Draw(18, 12, MaskQuadVertex, MaskQuadMaterialTexture);
 }
 
-std::string EKG_Print(const std::string& Tag, unsigned int Id) {
-    return " [" + Tag + + "-" + std::to_string(Id) + "] ";
+std::string EKG_Print(const std::string &Tag, unsigned int Id) {
+    return " [" + Tag + "-" + std::to_string(Id) + "] ";;
 }
 
 float EKG_LinearInterpolation(float A, float B, float T) {

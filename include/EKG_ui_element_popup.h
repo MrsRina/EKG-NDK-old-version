@@ -23,7 +23,7 @@ protected:
     std::string Selected, Focused, Activy;
 
     /* States. */
-    bool Pressed, Clicked, Show, PopupMaster;
+    bool Pressed, Clicked, PopupMaster, Show;
 
     /* Metrics of popup & buttons. */
     float LastTicks, MaximumHeight, MaximumWidth, TextOffset, TextScale;
@@ -51,9 +51,6 @@ public:
     void SetClicked(bool State);
     bool IsClicked();
 
-    void SetShow(bool State);
-    bool IsShow();
-
     void SetWidth(float Width);
     void SetMasterId(unsigned int Id);
 
@@ -78,6 +75,7 @@ public:
 
     /* Start of override methods. */
     std::string InfoClass();
+    void Visibility(unsigned int VisibilityFlag);
 
     void Kill();
     void Place(float X, float Y);

@@ -45,7 +45,7 @@ EKG_Stack EKG_AbstractElement::GetCollided() {
 }
 
 void EKG_AbstractElement::SetRect(const EKG_Rect &Rectangle) {
-     this->Rect = Rectangle;
+    this->Rect = Rectangle;
 }
 
 EKG_Rect EKG_AbstractElement::GetRect() {
@@ -83,23 +83,26 @@ bool EKG_AbstractElement::IsHovered() {
     return this->Hovered;
 }
 
-void EKG_AbstractElement::SetVisible(bool State) {
+void EKG_AbstractElement::Visibility(unsigned int VisibilityFlag) {
+    if (this->Visible != VisibilityFlag) {
+        this->Visible = VisibilityFlag;
 
-    if (this->Visible != State) {
-        this->Visible = State;
+        if (this->Visible != EKG::Visibility::VISIBLE_ONCE && this->Visible != EKG::Visibility::INVISIBLE_ONCE && !this->Children.StackedIds.empty()) {
+            for (unsigned int Ids : this->Children.StackedIds) {
+                auto* Element = EKG_CORE->GetElementById(Ids);
 
-        for (unsigned int Ids : this->Children.StackedIds) {
-            auto* Element = EKG_CORE->GetElementById(Ids);
-
-            if (Element != NULL) {
-                Element->SetVisible(State);
+                if (Element != NULL) {
+                    Element->Visibility(VisibilityFlag);
+                }
             }
         }
+
+        this->Visible = this->Visible == EKG::Visibility::VISIBLE_ONCE ? EKG::Visibility::VISIBLE : (this->Visible == EKG::Visibility::INVISIBLE_ONCE ? EKG::Visibility::INVISIBLE : this->Visible);
     }
 }
 
-bool EKG_AbstractElement::IsVisible() {
-    return this->Visible && !this->Dead;
+unsigned int EKG_AbstractElement::GetVisibility() {
+    return this->Visible;
 }
 
 void EKG_AbstractElement::SetDisabled(bool State) {
@@ -120,8 +123,7 @@ bool EKG_AbstractElement::IsDead() {
 
 void EKG_AbstractElement::Kill() {
     this->Dead = true;
-    this->NoRender = true;
-    this->Visible = false;
+    this->Visible = EKG::Visibility::EXISTED;
 
     if (this->MasterId != 0) {
         auto* Element = EKG_CORE->GetElementById(this->MasterId);
@@ -229,8 +231,12 @@ int EKG_AbstractElement::GetScissorH() {
 bool EKG_AbstractElement::IsFingerOver(float X, float Y) {
     bool Flag = this->Rect.CollideWithPoint(X, Y);
 
-    if (Flag && this->GetMasterId() != 0 && !EKG_CORE->GetElementById(this->GetMasterId())->IsFingerOver(X, Y)) {
-        return false;
+    if (Flag && this->GetMasterId() != 0) {
+        auto* Element = EKG_CORE->GetElementById(this->GetMasterId());
+
+        if (Element != NULL && !Element->IsFingerOver(X, Y)) {
+            return false;
+        }
     }
 
     return Flag;
@@ -255,14 +261,6 @@ void EKG_AbstractElement::SyncPos() {
 
 void EKG_AbstractElement::SyncSize() {
 
-}
-
-bool EKG_AbstractElement::IsRender() {
-    return !this->NoRender && !this->Dead;
-}
-
-void EKG_AbstractElement::SetRender(bool ApplyNoRender) {
-    this->NoRender = !ApplyNoRender;
 }
 
 EKG_AbstractElement::EKG_AbstractElement() {

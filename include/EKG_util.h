@@ -54,7 +54,7 @@ void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top);
  * Send log to console (remember before call this, invoke EKG::Init() to prevent errors using this function)
  * @param Log - The log.
  */
-void EKG_Log(const std::string& Log);
+void EKG_Log(const std::string &Log);
 
 /**
  * Convert to a pattern design.
@@ -62,7 +62,7 @@ void EKG_Log(const std::string& Log);
  * @param Id - The id of some element.
  * @return [TAG-ID] pattern.
  */
-std::string EKG_Print(const std::string& Tag, unsigned int Id);
+std::string EKG_Print(const std::string &Tag, unsigned int Id);
 
 /**
  * A lerp fuction.
@@ -179,7 +179,7 @@ public:
 struct EKG_Data {
     std::string Name, Tag;
 
-    float DataX, DataY, DataWidth, DataHeight;
+    float DataX = 0.0F, DataY = 0.0F, DataWidth = 0.0F, DataHeight = 0.0F;
     unsigned int Id = 0;
 };
 

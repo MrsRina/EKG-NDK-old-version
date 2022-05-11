@@ -2,24 +2,23 @@
 #include "EKG.h"
 
 void EKG_Core::RemoveElement(unsigned int ElementId) {
-    std::vector<EKG_AbstractElement*> NewBufferRender;
     std::vector<EKG_AbstractElement*> NewBufferUpdate;
 
     this->BufferRender.fill(0);
     this->BufferSize = 0;
 
-    for (EKG_AbstractElement* Elements : this->BufferUpdate) {
-        if (Elements->GetId() == ElementId) {
-            Elements->Kill();
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
+        if (Element->GetId() == ElementId) {
+            Element->Kill();
 
-            delete Elements;
+            delete Element;
             continue;
         }
 
-        NewBufferUpdate.push_back(Elements);
+        NewBufferUpdate.push_back(Element);
 
-        if (Elements->IsVisible() && Elements->IsRender()) {
-            this->BufferRender[this->BufferSize++] = Elements;
+        if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
+            this->BufferRender[this->BufferSize++] = Element;
         }
     }
 
@@ -27,11 +26,8 @@ void EKG_Core::RemoveElement(unsigned int ElementId) {
 }
 
 void EKG_Core::AddElement(EKG_AbstractElement* Element) {
-    this->BufferUpdate.push_back(Element);
-
-    if (Element->IsVisible()) {
-        this->BufferRender[this->BufferSize++] = Element;
-    }
+    this->BufferNew.push_back(Element);
+    this->ShouldSwapBuffers = true;
 }
 
 void EKG_Core::OnEvent(SDL_Event Event) {
@@ -46,12 +42,16 @@ void EKG_Core::OnEvent(SDL_Event Event) {
     this->FocusedId = 0;
 
     // Get focusing element id.
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
+        if (Element == NULL || Element->IsDead()) {
+            continue;
+        }
+
         // Update flags.
         Element->OnPreEvent(Event);
 
         // The next superior element is set.
-        if (Element->IsHovered() && Element->IsVisible()) {
+        if (Element->IsHovered() && Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->FocusedId = Element->GetId();
         }
 
@@ -63,8 +63,8 @@ void EKG_Core::OnEvent(SDL_Event Event) {
     this->BufferSize = 0;
 
     // Call all events.
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
-        if (Element == NULL) {
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
+        if (Element == NULL || Element->IsDead()) {
             continue;
         }
 
@@ -78,17 +78,25 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 
         Element->OnEvent(Event);
 
-        if (Element->IsVisible() && Element->IsRender()) {
+        if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
 
         this->SyncScissor(Element);
     }
 
+    if (this->ShouldSwapBuffers) {
+        this->SwapBuffers();
+    }
+
     if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERUP) {
         if (this->NeededReorder) {
-            for (EKG_AbstractElement* Element : this->BufferUpdate) {
-                if (Element->IsHovered() && Element->IsVisible()) {
+            for (EKG_AbstractElement* &Element : this->BufferUpdate) {
+                if (Element == NULL || Element->IsDead()) {
+                    continue;
+                }
+
+                if (Element->IsHovered() && Element->GetVisibility() == EKG::Visibility::VISIBLE) {
                     this->FocusedId = Element->GetId();
 
                     // Communicate for EKG environment the current focused element.
@@ -105,9 +113,12 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 }
 
 void EKG_Core::OnUpdate(const float &DeltaTicks) {
+    if (this->ShouldSwapBuffers) {
+        this->SwapBuffers();
+    }
+
     if (this->NeededRefresh) {
-        this->ResetStack();
-        this->RefreshStack();
+        //this->RefreshStack();
         this->NeededRefresh = false;
     }
 }
@@ -131,7 +142,7 @@ void EKG_Core::Init() {
 }
 
 void EKG_Core::Quit() {
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
         Element->Kill();
         delete Element;
     }
@@ -153,7 +164,7 @@ void EKG_Core::ResetStack() {
     this->BufferSize = 0;
 
     // Get current elements list.
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
         if (Element->IsDead()) {
             delete Element;
             continue;
@@ -163,7 +174,7 @@ void EKG_Core::ResetStack() {
         if (Element->GetMasterId() == 0 && !Element->IsMaster()) {
             NewBufferOfUpdate.push_back(Element);
 
-            if (Element->IsVisible() && Element->IsRender()) {
+            if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
                 this->BufferRender[this->BufferSize++] = Element;
             }
         }
@@ -172,7 +183,7 @@ void EKG_Core::ResetStack() {
     EKG_Stack Stack;
 
     // Get current elements list.
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
         if (Element->IsDead()) {
             delete Element;
             continue;
@@ -186,10 +197,10 @@ void EKG_Core::ResetStack() {
             for (unsigned int IDs : ConcurrentStack.StackedIds) {
                 auto* Elements = (EKG_AbstractElement *) this->GetElementById(IDs);
 
-                if (Elements != NULL) {
+                if (Elements != NULL && !Elements->IsDead()) {
                     NewBufferOfUpdate.push_back(Elements);
 
-                    if (Elements->IsVisible() && Elements->IsRender()) {
+                    if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
                         this->BufferRender[this->BufferSize++] = Elements;
                     }
                 }
@@ -213,7 +224,11 @@ void EKG_Core::ReorderStack() {
     EKG_Stack Current;
     EKG_Stack Focused;
 
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
+        if (Element == NULL) {
+            continue;
+        }
+
         if (Element->IsDead()) {
             delete Element;
             continue;
@@ -246,13 +261,18 @@ void EKG_Core::ReorderStack() {
     for (unsigned int IDs : Current.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
 
-        if (Element == NULL) {
+        if (Element == nullptr || Element == NULL) {
+            continue;
+        }
+
+        if (Element->IsDead()) {
+            delete Element;
             continue;
         }
 
         NewBufferOfUpdate.push_back(Element);
 
-        if (Element->IsVisible() && Element->IsRender()) {
+        if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
     }
@@ -261,13 +281,18 @@ void EKG_Core::ReorderStack() {
     for (unsigned int IDs : Focused.StackedIds) {
         auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
 
-        if (Element == NULL) {
+        if (Element == nullptr || Element == NULL) {
+            continue;
+        }
+
+        if (Element->IsDead()) {
+            delete Element;
             continue;
         }
 
         NewBufferOfUpdate.push_back(Element);
 
-        if (Element->IsVisible() && Element->IsRender()) {
+        if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
     }
@@ -276,7 +301,13 @@ void EKG_Core::ReorderStack() {
 }
 
 EKG_AbstractElement* EKG_Core::GetElementById(unsigned int Id) {
-    for (EKG_AbstractElement* Element : this->BufferUpdate) {
+    for (EKG_AbstractElement* &Element : this->BufferNew) {
+        if (Element->GetId() == Id) {
+            return Element;
+        }
+    }
+
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
         if (Element->GetId() == Id) {
             return Element;
         }
@@ -292,7 +323,7 @@ unsigned int EKG_Core::NewId() {
 
 void EKG_Core::Sync(float X, float Y, float W, float H, const EKG_Stack &Stack) {
     for (unsigned int IDs : Stack.StackedIds) {
-        auto* Element = (EKG_AbstractElement*) this->GetElementById(IDs);
+        auto* Element =  this->GetElementById(IDs);
 
         if (Element == NULL) {
             continue;
@@ -300,7 +331,17 @@ void EKG_Core::Sync(float X, float Y, float W, float H, const EKG_Stack &Stack) 
 
         Element->SetScaled(X, Y, W, H);
         Element->SyncPos();
-        Element->SetRender(Element->GetRect().CollideWithRect(X, Y, W, H));
+
+        auto PreviousVisibility = (EKG::Visibility) Element->GetVisibility();
+        bool Visible = Element->GetRect().CollideWithRect(X, Y, W, H);
+
+        EKG_Log(std::to_string(Visible) + " " + Element->GetTag());
+
+        if (PreviousVisibility == EKG::Visibility::VISIBLE && !Visible) {
+            Element->Visibility(EKG::Visibility::LOW_PRIORITY);
+        } else if (PreviousVisibility == EKG::LOW_PRIORITY && Visible) {
+            Element->Visibility(EKG::Visibility::VISIBLE);
+        }
 
         if (Element->IsMaster()) {
             EKG_Core::Sync(Element->GetX(), Element->GetY(), Element->GetWidth(), Element->GetHeight(), Element->GetChildren());
@@ -320,40 +361,40 @@ void EKG_Core::SyncScissor(EKG_AbstractElement* Element) {
     int W = Element->GetScissorW();
     int H = Element->GetScissorH();
 
-  // if (X < (int) Element->GetX()) {
-  //     Element->SetScissor((int) Element->GetX(), Element->GetScissorY(), Element->GetScissorW(), Element->GetScissorH());
-  // }
+    // if (X < (int) Element->GetX()) {
+    //     Element->SetScissor((int) Element->GetX(), Element->GetScissorY(), Element->GetScissorW(), Element->GetScissorH());
+    // }
 
-  // if (Y < (int) Element->GetY()) {
-  //     Element->SetScissor(Element->GetScissorX(), (int) Element->GetY(), Element->GetScissorW(), Element->GetScissorH());
-  // }
+    // if (Y < (int) Element->GetY()) {
+    //     Element->SetScissor(Element->GetScissorX(), (int) Element->GetY(), Element->GetScissorW(), Element->GetScissorH());
+    // }
 
-  // if (W < (int) Element->GetWidth()) {
-  //     Element->SetScissor(Element->GetScissorX(), Element->GetScissorY(), (int) Element->GetWidth(), Element->GetScissorH());
-  // }
+    // if (W < (int) Element->GetWidth()) {
+    //     Element->SetScissor(Element->GetScissorX(), Element->GetScissorY(), (int) Element->GetWidth(), Element->GetScissorH());
+    // }
 
-  // if (H < (int) Element->GetHeight()) {
-  //     Element->SetScissor(Element->GetScissorX(), Element->GetScissorY(), Element->GetScissorW(), (int) Element->GetHeight());
+    // if (H < (int) Element->GetHeight()) {
+    //     Element->SetScissor(Element->GetScissorX(), Element->GetScissorY(), Element->GetScissorW(), (int) Element->GetHeight());
     //}
 
     for (unsigned int Ids : Element->GetChildren().StackedIds) {
         auto* Elements = (EKG_AbstractElement*) this->GetElementById(Ids);
 
-       // if (X < (int) Elements->GetX()) {
-       //     Elements->SetScissor((int) Elements->GetX(), Elements->GetScissorY(), Elements->GetScissorW(), Elements->GetScissorH());
-       // }
+        // if (X < (int) Elements->GetX()) {
+        //     Elements->SetScissor((int) Elements->GetX(), Elements->GetScissorY(), Elements->GetScissorW(), Elements->GetScissorH());
+        // }
 //
-       // if (Y < (int) Element->GetY()) {
-       //     Elements->SetScissor(Elements->GetScissorX(), (int) Elements->GetY(), Elements->GetScissorW(), Elements->GetScissorH());
-       // }
+        // if (Y < (int) Element->GetY()) {
+        //     Elements->SetScissor(Elements->GetScissorX(), (int) Elements->GetY(), Elements->GetScissorW(), Elements->GetScissorH());
+        // }
 //
-       // if (W < (int) Elements->GetWidth()) {
-       //     Elements->SetScissor(Elements->GetScissorX(), Elements->GetScissorY(), (int) Elements->GetWidth(), Elements->GetScissorH());
-       // }
+        // if (W < (int) Elements->GetWidth()) {
+        //     Elements->SetScissor(Elements->GetScissorX(), Elements->GetScissorY(), (int) Elements->GetWidth(), Elements->GetScissorH());
+        // }
 //
-       // if (H < (int) Elements->GetHeight()) {
-       //     Elements->SetScissor(Elements->GetScissorX(), Elements->GetScissorY(), Elements->GetScissorW(), (int) Elements->GetHeight());
-       // }
+        // if (H < (int) Elements->GetHeight()) {
+        //     Elements->SetScissor(Elements->GetScissorX(), Elements->GetScissorY(), Elements->GetScissorW(), (int) Elements->GetHeight());
+        // }
     }
 }
 
@@ -361,19 +402,19 @@ int EKG_Core::GetSizeOfUpdateElements() {
     return this->BufferUpdate.size();
 }
 
-int EKG_Core::GetSizeOfRenderElements() const {
+int EKG_Core::GetSizeOfRenderElements() {
     return this->BufferSize;
 }
 
-int EKG_Core::GetFocusedElementId() const {
-    return (int) this->FocusedId;
+unsigned int EKG_Core::GetFocusedElementId() {
+    return this->FocusedId;
 }
 
-std::string &EKG_Core::GetFocusedTag() {
+std::string EKG_Core::GetFocusedTag() {
     return this->FocusedTag;
 }
 
-std::string &EKG_Core::GetFocusedType() {
+std::string EKG_Core::GetFocusedType() {
     return this->FocusedType;
 }
 
@@ -391,6 +432,7 @@ void EKG_Core::Refresh() {
 
 void EKG_Core::RefreshStack() {
     std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
+
     this->BufferRender.fill(0);
     this->BufferSize = 0;
 
@@ -402,7 +444,7 @@ void EKG_Core::RefreshStack() {
 
         NewBufferOfUpdate.push_back(Element);
 
-        if (Element->IsRender() && Element->IsVisible()) {
+        if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
     }
@@ -412,4 +454,39 @@ void EKG_Core::RefreshStack() {
 
 void EKG_Core::RefreshNeeded() {
     this->NeededReorder = true;
+}
+
+void EKG_Core::SwapBuffers() {
+    this->BufferRender.fill(0);
+    this->BufferSize = 0;
+
+    std::vector<EKG_AbstractElement*> NewBuffer;
+
+    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
+        if (Element == NULL || Element == nullptr) {
+            continue;
+        }
+
+        NewBuffer.push_back(Element);
+
+        if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
+            this->BufferRender[this->BufferSize++] = Element;
+        }
+    }
+
+    for (EKG_AbstractElement* &Element : this->BufferNew) {
+        if (Element == NULL || Element == nullptr) {
+            continue;
+        }
+
+        NewBuffer.push_back(Element);
+
+        if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
+            this->BufferRender[this->BufferSize++] = Element;
+        }
+    }
+
+    this->BufferUpdate = NewBuffer;
+    this->BufferNew.clear();
+    this->ShouldSwapBuffers = false;
 }

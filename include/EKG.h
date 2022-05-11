@@ -95,6 +95,13 @@ public:
     };
 
     /**
+     * Element context.
+     **/
+    enum Visibility {
+        EXISTED, VISIBLE_ONCE, INVISIBLE_ONCE, LOW_PRIORITY, INVISIBLE, VISIBLE
+    };
+
+    /**
      * Get elements value released in popup.
      **/
     struct Event {
@@ -112,8 +119,8 @@ public:
     static EKG_Rect GetRectDock(unsigned int p_Dock, float InitialOffset, float SizeOffset, const EKG_Rect &Origin);
     static void ScaledFingerPos(float &X, float &Y);
 
-    static std::string &CurrentFocusedTag();
-    static std::string &CurrentFocusedType();
+    static std::string CurrentFocusedTag();
+    static std::string CurrentFocusedType();
     static unsigned int CurrentFocusedId();
 
     static EKG_Timing* Timing();
@@ -139,7 +146,7 @@ public:
     static EKG_Combobox* Combobox(const std::string &Name, const std::vector<std::string> &List);
     static EKG_Tab* Tab(const std::string &Name);
 
-    static std::vector<unsigned int> Children(EKG_AbstractElement* Element);
+    static std::vector<unsigned int> &Children(EKG_AbstractElement* Element);
     static EKG_AbstractElement* Find(unsigned int Id);
 
     static void Kill(EKG_AbstractElement* &Element);

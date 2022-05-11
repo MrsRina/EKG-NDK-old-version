@@ -14,10 +14,11 @@
 class EKG_Core {
 protected:
     /* Buffers element used in context gui. */
-    std::vector<EKG_AbstractElement*> BufferUpdate;
+    std::vector<EKG_AbstractElement*> BufferUpdate, BufferNew;
     std::array<EKG_AbstractElement*, 256> BufferRender = {};
 
-    int BufferSize;
+    uint8_t BufferSize;
+    bool ShouldSwapBuffers;
 
     /* Stacks. */
     EKG_Stack StackedIdsSelected;
@@ -32,6 +33,7 @@ protected:
     void ResetStack();
     void ReorderStack();
     void RefreshStack();
+    void SwapBuffers();
 
     /* Environment. */
     bool ActionHappening, NeededRefresh, NeededReorder;
@@ -50,11 +52,11 @@ public:
 
     /* Start of setters & getters. */
     int GetSizeOfUpdateElements();
-    int GetSizeOfRenderElements() const;
-    int GetFocusedElementId() const;
+    int GetSizeOfRenderElements();
+    unsigned int GetFocusedElementId();
 
-    std::string &GetFocusedTag();
-    std::string &GetFocusedType();
+    std::string GetFocusedTag();
+    std::string GetFocusedType();
 
     void ActionHappen();
     void RefreshNeeded();

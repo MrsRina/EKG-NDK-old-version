@@ -178,7 +178,7 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 FingerNotHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && !Element->IsFingerOver(FX, FY);
             }
 
-            if (FingerNotHoveredMasterOrCurrentFocusedIsNotPopup || (!this->Selected.empty() && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
+            if (FingerNotHoveredMasterOrCurrentFocusedIsNotPopup || (!this->Focused.empty() && !this->Hovered) || (!this->Selected.empty() && Component.Id == 0) || (EKG_CORE->GetElementById(Component.Id) == NULL && Component.Id != 0)) {
                 this->Kill();
             }
 
@@ -186,11 +186,11 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 std::string Path = this->Focused;
                 this->GetPath(Path);
 
-                // We use smart pointers instead explicit pointer.
-                std::shared_ptr<std::string> Pointer = std::make_shared<std::string>(Path);
+                // We use smart pointers instead directly pointers.
+                std::shared_ptr<void> P = std::make_shared<std::string>(Path);
 
                 // Send popup event using EKG events processor.
-                EKG::Event::Dispatch(EKG::Event::POPUP, Pointer.get(), (void*) 0);
+                EKG::Event::Dispatch(EKG::Event::POPUP, static_cast<void*>(P.get()), nullptr);
             }
 
             this->Pressed = false;
@@ -235,16 +235,16 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                         auto* ElementOut = (EKG_Popup*) EKG_CORE->GetElementById(Component.Id);
 
                         if (ElementOut != NULL) {
-                            ElementOut->SetShow(true);
-                            ElementOut->Place(this->GetX() +  this->GetWidth(), Y, this->GetX());
+                            ElementOut->Visibility(EKG::Visibility::VISIBLE);
+                            ElementOut->Place(this->GetX() + this->GetWidth(), Y, this->GetX());
 
                             this->Activy = Component.Name;
 
                             for (const EKG_Data &Components : this->List) {
-                                auto *ElementIn = (EKG_Popup*) EKG_CORE->GetElementById(Components.Id);
+                                auto *ElementIn = EKG_CORE->GetElementById(Components.Id);
 
                                 if (ElementIn != NULL && ElementOut->GetId() != Components.Id) {
-                                    ElementIn->SetShow(false);
+                                    ElementIn->Visibility(EKG::Visibility::INVISIBLE);
                                 }
                             }
                         }
@@ -373,39 +373,10 @@ void EKG_Popup::Place(EKG_Popup* Popup) {
         this->Children.Put(Popup->GetId());
 
         Popup->SetMasterId(this->GetId());
-        Popup->SetShow(false);
+        Popup->Visibility(EKG::Visibility::INVISIBLE);
     }
 
     this->List = NewList;
-}
-
-void EKG_Popup::SetShow(bool State) {
-    this->SetVisible(true);
-
-    if (!State) {
-        // Animation of rect.
-        this->Rect.H = 0;
-        this->SetVisible(false);
-    }
-
-    if (this->Show != State) {
-        this->LastTicks = SDL_GetTicks();
-
-        for (unsigned int IDs : this->Children.StackedIds) {
-            auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(IDs);
-
-            if (Element != NULL) {
-                Element->SetShow(false);
-            }
-        }
-
-        this->Show = State;
-    }
-
-}
-
-bool EKG_Popup::IsShow() {
-    return this->Show;
 }
 
 void EKG_Popup::Place(float X, float Y) {
@@ -456,7 +427,7 @@ void EKG_Popup::Kill() {
     EKG_AbstractElement::Kill();
 
     for (unsigned int IDs : this->Children.StackedIds) {
-        auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(IDs);
+        auto* Element = EKG_CORE->GetElementById(IDs);
 
         if (Element != NULL) {
             Element->Kill();
@@ -466,7 +437,7 @@ void EKG_Popup::Kill() {
     this->Children.StackedIds.clear();
 
     if (this->GetMasterId() != 0 && this->PopupMaster) {
-        auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(this->GetMasterId());
+        auto* Element = EKG_CORE->GetElementById(this->GetMasterId());
 
         if (Element != NULL) {
             Element->Kill();
@@ -504,4 +475,20 @@ float EKG_Popup::GetMaximumWidth() {
 
 float EKG_Popup::GetMaximumHeight() {
     return this->MaximumHeight;
+}
+
+void EKG_Popup::Visibility(unsigned int VisibilityFlag) {
+    if (VisibilityFlag == EKG::Visibility::INVISIBLE) {
+        this->Rect.H = 0;
+    }
+
+    bool Flag = (VisibilityFlag == EKG::Visibility::VISIBLE);
+
+    if (this->Show != Flag) {
+        this->LastTicks = SDL_GetTicks();
+        EKG_AbstractElement::Visibility(EKG::Visibility::INVISIBLE);
+        this->Show = Flag;
+    }
+
+    this->Visible = VisibilityFlag;
 }
