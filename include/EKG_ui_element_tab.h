@@ -34,6 +34,7 @@ protected:
 
     EKG_Data GetComponentHovered(float FX, float FY);
     void SyncLayout();
+    void SortCloseComponent();
 public:
     /* Start of configurable methods. */
     void Delete(const std::string &Pattern);

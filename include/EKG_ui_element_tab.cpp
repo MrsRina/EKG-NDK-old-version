@@ -369,5 +369,60 @@ void EKG_Tab::OnChildKilled(unsigned int ChildElementId) {
 
     if (Element != nullptr) {
         this->Disable(Element->GetTag());
+        this->SortCloseComponent();
     }
+}
+
+void EKG_Tab::SortCloseComponent() {
+    if (this->List.empty()) {
+        this->Focused = "";
+        return;
+    }
+
+    int CurrentIndexPos = 0;
+
+    if (this->List.size() != 1) {
+        int ConcurrentIndexPos = -1;
+        CurrentIndexPos = -1;
+        bool Phase = true;
+
+        for (int I = 0; I < this->List.size(); I++) {
+            Phase = this->List.at(I).Name == this->Focused;
+
+            if (Phase) {
+                ConcurrentIndexPos = I;
+                break;
+            }
+        }
+
+        if (ConcurrentIndexPos != -1) {
+            for (int I = ConcurrentIndexPos; I > 0; I--) {
+                Phase = !this->List.at(I).Tag.empty();
+
+                if (Phase) {
+                    CurrentIndexPos = I;
+                    break;
+                }
+            }
+
+            if (CurrentIndexPos == -1) {
+                for (int I = ConcurrentIndexPos; I < this->List.size(); I--) {
+                    Phase = !this->List.at(I).Tag.empty();
+
+                    if (Phase) {
+                        CurrentIndexPos = I;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (CurrentIndexPos == -1) {
+        this->Focused = "";
+        return;
+    }
+
+    EKG_Data Component = this->List.at(CurrentIndexPos);
+    this->Focused = Component.Tag.empty() ? "" : this->List.at(CurrentIndexPos).Name;
 }
