@@ -573,8 +573,6 @@ EKG_Event EKG::Event::Read(SDL_Event Event) {
 
         auto* Callback = static_cast<std::string*>(Event.user.data1);
 
-        EKG_Log(*Callback);
-
         EKGEvent.Type = Event.user.code;
         EKGEvent.Popup.Info = *Callback;
 

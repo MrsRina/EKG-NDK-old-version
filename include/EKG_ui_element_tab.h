@@ -67,6 +67,7 @@ public:
     std::string InfoClass();
     void Place(float X, float Y);
     void SyncSize();
+    void OnChildKilled(unsigned int ChildElementId);
     void OnPreEvent(SDL_Event Event);
     void OnEvent(SDL_Event Event);
     void OnPostEvent(SDL_Event Event);

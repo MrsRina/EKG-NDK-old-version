@@ -363,3 +363,11 @@ void EKG_Tab::SyncLayout() {
         }
     }
 }
+
+void EKG_Tab::OnChildKilled(unsigned int ChildElementId) {
+    auto* Element = EKG_CORE->GetElementById(ChildElementId);
+
+    if (Element != nullptr) {
+        this->Disable(Element->GetTag());
+    }
+}

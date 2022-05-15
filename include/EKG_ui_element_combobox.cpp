@@ -150,7 +150,7 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
 
             EKG_Event CustomEvent = EKG::Event::Read(Event);
 
-            if (CustomEvent.Type == EKG::Event::POPUP) {
+            if (CustomEvent.Type == EKG::Event::POPUP && EKG_StringContains(CustomEvent.Popup.Info, this->GetTag() + "-combobox")) {
                 for (const std::string &Strings : this->PopupElementList) {
                     if (EKG_StringContains(CustomEvent.Popup.Info, Strings)) {
                         this->SetCurrent(Strings);
@@ -190,7 +190,6 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
                 Popup->SetMasterId(this->GetId());
 
                 this->Children.Put(Popup->GetId());
-                this->Activy = true;
 
                 EKG::Task(EKG::Task::REFOCUS);
                 EKG::Task(EKG::Task::BLOCKED);
@@ -242,5 +241,5 @@ void EKG_Combobox::OnRender(const float &PartialTicks) {
 }
 
 void EKG_Combobox::OnChildKilled(unsigned int ChildElementId) {
-    this->Activy = false;
+    this->Activy = true;
 }

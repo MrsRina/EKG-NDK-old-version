@@ -375,7 +375,6 @@ void EKG_Core::RefreshStack() {
     }
 }
 
-
 void EKG_Core::FreeStack() {
     this->BufferRender.fill(0);
     this->BufferSize = 0;
