@@ -26,7 +26,11 @@ protected:
     bool Pressed, Clicked, PopupMaster, Show;
 
     /* Metrics of popup & buttons. */
-    float LastTicks, MaximumHeight, MaximumWidth, TextOffset, TextScale;
+    float MaximumHeight, MaximumWidth, TextOffset, TextScale;
+
+    /* Animations. */
+    float LastTicks;
+    EKG_Smooth SmoothPressed;
 
     /* Help to return hovered components. */
     EKG_Data GetHoveredComponent(float FX, float FY);
@@ -55,7 +59,7 @@ public:
     void SetMasterId(unsigned int Id);
 
     void SetScale(float TextScale);
-    float GetScale() const;
+    float GetScale();
 
     std::vector<EKG_Data> &GetList();
 

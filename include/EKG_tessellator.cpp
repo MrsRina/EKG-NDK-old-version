@@ -201,18 +201,22 @@ void EKG_FontRenderer::Reload() {
 }
 
 void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, float PositionY, const EKG_Color &Color) {
-    std::vector<float> VertexVector, TextureVector;
-    FT_Vector PreviousCharVector;
+    const char* CharString = String.c_str();
+    const int ConcurrentSize = (int) strlen(CharString);
+
+    auto* MASK_QUAD_VERTEX         = new float[ConcurrentSize * 18];
+    auto* MASK_QUAD_MATERIAL_COLOR = new float[ConcurrentSize * 12];
 
     float RenderX, RenderY, RenderW, RenderH;
     float TextureX, TextureY = 0.0F, TextureW, TextureH;
 
-    const char* CharString = String.c_str();
+    uint32_t FragmentBufferSize = 0;
+    uint32_t VertexBufferSize = 0;
 
     for (const char* I = CharString; *I; I++) {
         if (this->UseKerning && this->Previous && *I) {
-            FT_Get_Kerning(this->Face, this->Previous, *I, 0, &PreviousCharVector);
-            PositionX += (PreviousCharVector.x >> 6);
+            FT_Get_Kerning(this->Face, this->Previous, *I, 0, &this->PreviousCharacter);
+            PositionX += (this->PreviousCharacter.x >> 6);
         }
 
         EKG_CharData Data = Chars[*I];
@@ -225,6 +229,30 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
         TextureX = Data.StoreX;
         TextureW = Data.W / (float) this->TextureWidth;
         TextureH = Data.H / (float) this->TextureHeight;
+
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderX;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderY;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = 0;
+
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderX;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderY + RenderH;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = 0;
+
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderX + RenderW;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderY + RenderH;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = 0;
+
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderX + RenderW;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderY + RenderH;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = 0;
+
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderX;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderY;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = 0;
+
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderX + RenderW;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = RenderY;
+        MASK_QUAD_VERTEX[VertexBufferSize++] = 0;
 
         float VertexList[] = {
                 // First triangle.
@@ -250,18 +278,36 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
                 TextureX + TextureW, TextureY
         };
 
-        VertexVector.insert(VertexVector.end(), VertexList, VertexList + 18);
-        TextureVector.insert(TextureVector.end(), TextCoordList, TextCoordList + 12);
+
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureX;
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureY;
+
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureX;
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureY + TextureH;
+
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureX + TextureW;
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureY + TextureH;
+
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureX + TextureW;
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureY + TextureH;
+
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureX;
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureY;
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureX + TextureW;
+        MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureY;
 
         PositionX += Data.TextureX;
         this->Previous = (int) *I;
     }
 
     // Draw string.
-    EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6 * (int) strlen(CharString));
+    EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6 * ConcurrentSize);
     EKG_TESSELLATOR->BindTexture(this->BitmapTextureId);
     EKG_TESSELLATOR->SetTextureColor(255 - Color.R, 255 - Color.G, 255 - Color.B, Color.A);
-    EKG_TESSELLATOR->Draw(VertexVector.size(), TextureVector.size(), &VertexVector[0], &TextureVector[0]);
+    EKG_TESSELLATOR->Draw(VertexBufferSize, FragmentBufferSize, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
+
+    delete[] MASK_QUAD_VERTEX;
+    delete[] MASK_QUAD_MATERIAL_COLOR;
 }
 
 void EKG_FontRenderer::DrawStringClamped(const std::string &String, float PositionX, float PositionY, float W, const EKG_Color &Color) {

@@ -69,6 +69,7 @@ class EKG_FontRenderer {
     FT_GlyphSlot GlyphSlot;
     FT_Bool UseKerning;
     FT_UInt Previous;
+    FT_Vector_ PreviousCharacter;
     /* End of FT main variables. */
 
     /* Metrics of bitmap texture. */

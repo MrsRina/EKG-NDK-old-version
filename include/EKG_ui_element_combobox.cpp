@@ -192,8 +192,8 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
                 this->Children.Put(Popup->GetId());
                 this->Activy = true;
 
-                EKG_CORE->RefreshNeeded();
-                EKG_CORE->ActionHappen();
+                EKG::Task(EKG::Task::REFOCUS);
+                EKG::Task(EKG::Task::BLOCKED);
             }
 
             break;
@@ -239,4 +239,8 @@ void EKG_Combobox::OnRender(const float &PartialTicks) {
 
     // End scissor.
     EKG_EndScissor();
+}
+
+void EKG_Combobox::OnChildKilled(unsigned int ChildElementId) {
+    this->Activy = false;
 }

@@ -74,13 +74,6 @@ class EKG {
 protected:
     static bool ContextOkay;
 public:
-    /* Metrics of device. */
-    static float DeviceScreenWidth, DeviceScreenHeight;
-
-    /* Flags used in environment. */
-    static const int NOPOS    = -256;
-    static const int ABSOLUTE = -255;
-
     /**
      * Coordinates used in EKG.
      **/
@@ -95,10 +88,14 @@ public:
     };
 
     /**
-     * Element context.
+     * Task in UI core.
      **/
-    enum Visibility {
-        EXISTED, VISIBLE_ONCE, INVISIBLE_ONCE, LOW_PRIORITY, INVISIBLE, VISIBLE
+    struct Task {
+        const static unsigned int REFRESH = 1 << 1;
+        const static unsigned int REORDER = 1 << 2;
+        const static unsigned int BLOCKED = 1 << 3;
+        const static unsigned int REFOCUS = 1 << 4;
+        const static unsigned int FREE    = 1 << 5;
     };
 
     /**
@@ -114,6 +111,20 @@ public:
         static void Poll(SDL_Event Event);
     };
 
+    /**
+    * Element context.
+    **/
+    enum Visibility {
+        EXISTED, VISIBLE_ONCE, INVISIBLE_ONCE, LOW_PRIORITY, INVISIBLE, VISIBLE
+    };
+
+    /* Metrics of device. */
+    static float DeviceScreenWidth, DeviceScreenHeight;
+
+    /* Flags used in environment. */
+    static const int NOPOS    = -256;
+    static const int ABSOLUTE = -255;
+
     /* Start of UI helpers method. */
     static unsigned int PointCollideDock(unsigned int Flags, float PointX, float PointY, float MinOffset, float MaxOffset, const EKG_Rect &Rect);
     static EKG_Rect GetRectDock(unsigned int p_Dock, float InitialOffset, float SizeOffset, const EKG_Rect &Origin);
@@ -123,6 +134,8 @@ public:
     static std::string CurrentFocusedType();
     static unsigned int CurrentFocusedId();
 
+    static void Task(unsigned int TaskId, unsigned int Id = 0);
+    static bool TaskOn(unsigned int TaskId);
     static EKG_Timing* Timing();
     /* End of UI helpers method. */
 

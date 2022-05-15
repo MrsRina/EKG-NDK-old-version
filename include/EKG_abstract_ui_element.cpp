@@ -128,7 +128,7 @@ void EKG_AbstractElement::Kill() {
     if (this->MasterId != 0) {
         auto* Element = EKG_CORE->GetElementById(this->MasterId);
 
-        if (Element != NULL) {
+        if (Element != nullptr) {
             Element->Remove(this->GetId());
         }
     }
@@ -137,19 +137,21 @@ void EKG_AbstractElement::Kill() {
     for (unsigned int IDs : this->Children.StackedIds) {
         auto* Element = EKG_CORE->GetElementById(IDs);
 
-        if (Element != NULL) {
+        if (Element != nullptr) {
             Element->SetMasterId(0);
+            Element->OnMasterKilled(this->GetId());
+            Element->Kill();
         }
     }
 
-    EKG_CORE->Refresh();
+    EKG::Task(EKG::Task::REFRESH);
 }
 
-void EKG_AbstractElement::OnKilled() {
+void EKG_AbstractElement::OnChildKilled(unsigned int ChildElementId) {
 
 }
 
-void EKG_AbstractElement::OnCreated() {
+void EKG_AbstractElement::OnMasterKilled(unsigned int MasterElementId) {
 
 }
 
@@ -276,5 +278,8 @@ std::string EKG_AbstractElement::InfoClass() {
 }
 
 void EKG_AbstractElement::Remove(unsigned int ElementId) {
-    this->Children.Rem(ElementId);
+    if (this->Children.Contains(ElementId)) {
+        this->Children.Rem(ElementId);
+        this->OnChildKilled(ElementId);
+    }
 }

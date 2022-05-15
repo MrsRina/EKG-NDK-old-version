@@ -89,26 +89,7 @@ void EKG_Tab::OnEvent(SDL_Event Event) {
         }
 
         case SDL_FINGERMOTION: {
-            for (unsigned int IDs : this->Children.StackedIds) {
-                auto* Element = (EKG_Frame*) EKG_CORE->GetElementById(IDs);
-
-                if (Element != NULL) {
-                    Element->SetSize(this->GetWidth() - this->BorderOffset * 2, this->GetHeight() - this->MinimumHeight - this->BorderOffset);
-
-                    switch (this->DockTab) {
-                        case EKG::Dock::TOP: {
-                            Element->Place(this->GetBorderOffset(), this->MinimumHeight);
-                            break;
-                        }
-
-                        case EKG::Dock::BOTTOM: {
-                            Element->Place(this->GetBorderOffset(), 0);
-                            break;
-                        }
-                    }
-                }
-            }
-
+            this->SyncLayout();
             break;
         }
 
@@ -128,24 +109,9 @@ void EKG_Tab::OnEvent(SDL_Event Event) {
             }
 
             EKG_Data Component = this->GetComponentHovered(FX, FY);
-
-            if (!Component.Name.empty()) {
-                this->Dragging = false;
-                this->Resizing = false;
-
-                for (EKG_Data &Components : this->List) {
-                    auto* Element = EKG_CORE->GetElementById(Components.Id);
-
-                    if (Element != NULL) {
-                        Element->Visibility(Element->GetTag() == Component.Name ? EKG::Visibility::VISIBLE : EKG::Visibility::INVISIBLE);
-                    }
-                }
-
-                this->Focused = Component.Name;
-                this->Activy = Component.Name;
-
-                EKG_CORE->ActionHappen();
-            }
+            this->Open(Component);
+            this->SyncLayout();
+            this->Activy = Component.Name;
 
             break;
         }
@@ -161,6 +127,9 @@ void EKG_Tab::OnUpdate(const float &DeltaTicks) {
 }
 
 void EKG_Tab::OnRender(const float &PartialTicks) {
+    this->SmoothActivy.NextFactory = this->Activy.empty() ? 0 : EKG_CORE->ColorTheme.FrameActivy[3];
+    this->SmoothActivy.Update(PartialTicks);
+
     // Background.
     EKG_Color Color(EKG_CORE->ColorTheme.ContainerBackground);
     EKG_DrawFilledRect(this->Rect, Color);
@@ -176,18 +145,15 @@ void EKG_Tab::OnRender(const float &PartialTicks) {
     }
 
     for (EKG_Data &Component : this->List) {
-        Color.Set(EKG_CORE->ColorTheme.ContainerBackground);
-
         if (Component.Name == this->Activy) {
-            Color.Set(EKG_CORE->ColorTheme.ContainerActivy);
+            Color.Set(EKG_CORE->ColorTheme.ContainerActivy, this->SmoothActivy.Factory);
             EKG_DrawFilledShape(X + this->Size, Y, Component.DataWidth, Component.DataHeight, Color);
         }
 
-        if (this->Focused == Component.Name) {
+        if (Component.Name == this->Focused) {
             float UniqueHeight = Component.DataHeight / 10;
             float UniqueY = Y + Component.DataHeight - UniqueHeight - (1);
 
-            Color.Set(EKG_CORE->ColorTheme.ContainerActivy);
             EKG_DrawOutlineShape(X + this->Size, UniqueY, Component.DataWidth, 1, 1.5f, EKG_CORE->ColorTheme.StringColor);
         }
 
@@ -317,6 +283,16 @@ void EKG_Tab::Place(EKG_Frame *Frame) {
     Frame->SetScaled(this->GetX(), this->GetY(), this->GetWidth(), this->GetHeight());
     Frame->Place(0, this->DockTab == EKG::Dock::TOP ? this->MinimumHeight : 0);
     Frame->SetHeight(this->GetHeight() - this->MinimumHeight);
+
+    if (this->Focused.empty()) {
+        this->Focused = Frame->GetTag();
+        this->SyncLayout();
+
+        EKG::Task(EKG::Task::REORDER, Frame->GetId());
+    }
+
+    this->Open(this->Focused);
+    EKG::Task(EKG::Task::REFRESH);
 }
 
 void EKG_Tab::Place(float X, float Y) {
@@ -333,4 +309,57 @@ void EKG_Tab::SetBorderOffset(float Offset) {
 
 float EKG_Tab::GetBorderOffset() {
     return this->BorderOffset;
+}
+
+void EKG_Tab::Open(const std::string &Name) {
+    EKG_Data Component;
+
+    for (EKG_Data &Components : this->List) {
+        if (Components.Name == Name) {
+            Component = Components;
+            break;
+        }
+    }
+
+    this->Open(Component);
+}
+
+void EKG_Tab::Open(EKG_Data &Component) {
+    if (!Component.Name.empty()) {
+        this->Dragging = false;
+        this->Resizing = false;
+
+        for (EKG_Data &Components : this->List) {
+            auto* Element = EKG_CORE->GetElementById(Components.Id);
+
+            if (Element != nullptr && !Element->IsDead()) {
+                Element->Visibility(Element->GetTag() == Component.Name ? EKG::Visibility::VISIBLE : EKG::Visibility::INVISIBLE);
+            }
+        }
+
+        this->Focused = Component.Name;
+        EKG::Task(EKG::Task::BLOCKED);
+    }
+}
+
+void EKG_Tab::SyncLayout() {
+    for (unsigned int IDs : this->Children.StackedIds) {
+        auto* Element = (EKG_Frame*) EKG_CORE->GetElementById(IDs);
+
+        if (Element != nullptr && !Element->IsDead() && Element->GetTag() == this->Focused) {
+            Element->SetSize(this->GetWidth() - this->BorderOffset * 2, this->GetHeight() - this->MinimumHeight - this->BorderOffset);
+
+            switch (this->DockTab) {
+                case EKG::Dock::TOP: {
+                    Element->Place(this->GetBorderOffset(), this->MinimumHeight);
+                    break;
+                }
+
+                case EKG::Dock::BOTTOM: {
+                    Element->Place(this->GetBorderOffset(), 0);
+                    break;
+                }
+            }
+        }
+    }
 }

@@ -105,17 +105,17 @@ struct EKG_Stack {
  * Color util.
  */
 struct EKG_Color {
-    EKG_Color(unsigned int Red, unsigned int Green, unsigned int Blue, unsigned int Alpha);
-    EKG_Color(unsigned int Red, unsigned int Green, unsigned int Blue);
-    EKG_Color(unsigned int Color[4]);
-    EKG_Color(unsigned int Color[3], unsigned int Alpha);
+    EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
+    EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue);
+    EKG_Color(uint8_t Color[4]);
+    EKG_Color(uint8_t Color[3], uint8_t Alpha);
 
-    void Set(unsigned int Red, unsigned int Green, unsigned int Blue, unsigned int Alpha);
-    void Set(unsigned int Red, unsigned int Green, unsigned int Blue);
-    void Set(unsigned int Color[4]);
-    void Set(unsigned int Color[3], unsigned int Alpha);
+    void Set(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
+    void Set(uint8_t Red, uint8_t Green, uint8_t Blue);
+    void Set(uint8_t Color[4]);
+    void Set(uint8_t Color[3], uint8_t Alpha);
 
-    unsigned int R, G, B, A;
+    uint8_t R, G, B, A;
 
     float GetRedf();
     float GetGreenf();
@@ -133,29 +133,29 @@ private:
     bool OutlineSlider;
     bool OutlineCombobox;
 public:
-    static const unsigned int BACKGROUND = 0;
-    static const unsigned int HIGHLIGHT  = 1;
-    static const unsigned int FOCUSED    = 2;
-    static const unsigned int PRESSED    = 3;
-    static const unsigned int ACTIVY     = 5;
+    static const uint8_t BACKGROUND = 0;
+    static const uint8_t HIGHLIGHT  = 1;
+    static const uint8_t FOCUSED    = 2;
+    static const uint8_t PRESSED    = 3;
+    static const uint8_t ACTIVY     = 5;
 
-    unsigned int FrameBackground[4];
-    unsigned int FrameHighlight[4];
-    unsigned int FrameFocused[4];
-    unsigned int FramePressed[4];
-    unsigned int FrameActivy[4];
+    uint8_t FrameBackground[4];
+    uint8_t FrameHighlight[4];
+    uint8_t FrameFocused[4];
+    uint8_t FramePressed[4];
+    uint8_t FrameActivy[4];
 
-    unsigned int ContainerBackground[4];
-    unsigned int ContainerHighlight[4];
-    unsigned int ContainerFocused[4];
-    unsigned int ContainerPressed[4];
-    unsigned int ContainerActivy[4];
+    uint8_t ContainerBackground[4];
+    uint8_t ContainerHighlight[4];
+    uint8_t ContainerFocused[4];
+    uint8_t ContainerPressed[4];
+    uint8_t ContainerActivy[4];
 
-    unsigned int WidgetBackground[4];
-    unsigned int WidgetHighlight[4];
-    unsigned int WidgetFocused[4];
-    unsigned int WidgetPressed[4];
-    unsigned int WidgetActivy[4];
+    uint8_t WidgetBackground[4];
+    uint8_t WidgetHighlight[4];
+    uint8_t WidgetFocused[4];
+    uint8_t WidgetPressed[4];
+    uint8_t WidgetActivy[4];
 
     EKG_Color StringColor = EKG_Color(255, 255, 255);
     EKG_Color StringFadeColor = EKG_Color(255, 255, 255, 150);
@@ -168,9 +168,9 @@ public:
     bool IsOutlineSliderEnabled();
     bool isOutlineComboboxEnabled();
 
-    void Frame(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue);
-    void Container(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue);
-    void Widget(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue);
+    void Frame(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue);
+    void Container(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue);
+    void Widget(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue);
 };
 
 /**

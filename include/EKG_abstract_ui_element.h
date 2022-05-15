@@ -103,8 +103,8 @@ public:
     /* Start of overrides methods. */
     virtual std::string InfoClass();
 
-    virtual void OnKilled();
-    virtual void OnCreated();
+    virtual void OnChildKilled(unsigned int ChildElementId);
+    virtual void OnMasterKilled(unsigned int MasterElementId);
 
     virtual void OnPreEvent(SDL_Event Event);
     virtual void OnEvent(SDL_Event Event);

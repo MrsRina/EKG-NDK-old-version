@@ -24,19 +24,20 @@ protected:
     EKG_Stack StackedIdsSelected;
 
     /* Focused id & most high id to generate unique ids. */
-    unsigned int FocusedId, HighId;
+    unsigned int FocusedId, HighId = 1;
 
     /* References. */
     std::string FocusedTag, FocusedType;
 
     /* Stack control methods. */
-    void ResetStack();
-    void ReorderStack();
+    void ReorderStack(unsigned int ElementId);
     void RefreshStack();
+    void FreeStack();
     void SwapBuffers();
 
     /* Environment. */
-    bool ActionHappening, NeededRefresh, NeededReorder;
+    bool TaskBlocked, TaskRefresh, TaskReorder, TaskRefocus, TaskFree;
+    unsigned int IdFromTask;
 public:
     float PartialTicks;
     float DeltaTicks;
@@ -57,12 +58,6 @@ public:
 
     std::string GetFocusedTag();
     std::string GetFocusedType();
-
-    void ActionHappen();
-    void RefreshNeeded();
-
-    bool IsActionHappening() const;
-    void Refresh();
     /* End of setters & getters. */
 
     /* Start of important methods. */
@@ -80,6 +75,9 @@ public:
     /* End of important methods. */
 
     /* Start of concurrent methods. */
+    void Task(unsigned int Task, unsigned int Id = 0);
+    bool VerifyTask(unsigned int Task);
+
     void OnEvent(SDL_Event Event);
     void OnUpdate(const float &DeltaTicks);
     void OnRender(const float &PartialTicks);

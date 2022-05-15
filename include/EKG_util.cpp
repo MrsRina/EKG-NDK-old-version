@@ -1,7 +1,8 @@
 #include "EKG_util.h"
 #include "EKG.h"
 
-static float MaskQuadMaterialColor[6*4], MaskQuadMaterialTexture[6*2], MaskQuadVertex[6*3];
+// Reserve memory to masks used to draw stuff.
+static float MASK_QUAD_MATERIAL_COLOR[6 * 4], MASK_QUAD_MATERIAL[6 * 2], MASK_QUAD_VERTEX[6 * 3];
 
 void EKG_Scissor(int X, int Y, int W, int H) {
     W++;
@@ -94,116 +95,116 @@ void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Co
     float B = (float) Color.B / 255.0F;
     float A = (float) Color.A / 255.0F;
 
-    MaskQuadMaterialColor[0] = R;
-    MaskQuadMaterialColor[1] = G;
-    MaskQuadMaterialColor[2] = B;
-    MaskQuadMaterialColor[3] = A;
+    MASK_QUAD_MATERIAL_COLOR[0] = R;
+    MASK_QUAD_MATERIAL_COLOR[1] = G;
+    MASK_QUAD_MATERIAL_COLOR[2] = B;
+    MASK_QUAD_MATERIAL_COLOR[3] = A;
 
-    MaskQuadMaterialColor[4] = R;
-    MaskQuadMaterialColor[5] = G;
-    MaskQuadMaterialColor[6] = B;
-    MaskQuadMaterialColor[7] = A;
+    MASK_QUAD_MATERIAL_COLOR[4] = R;
+    MASK_QUAD_MATERIAL_COLOR[5] = G;
+    MASK_QUAD_MATERIAL_COLOR[6] = B;
+    MASK_QUAD_MATERIAL_COLOR[7] = A;
 
-    MaskQuadMaterialColor[8] = R;
-    MaskQuadMaterialColor[9] = G;
-    MaskQuadMaterialColor[10] = B;
-    MaskQuadMaterialColor[11] = A;
+    MASK_QUAD_MATERIAL_COLOR[8] = R;
+    MASK_QUAD_MATERIAL_COLOR[9] = G;
+    MASK_QUAD_MATERIAL_COLOR[10] = B;
+    MASK_QUAD_MATERIAL_COLOR[11] = A;
 
-    MaskQuadMaterialColor[12] = R;
-    MaskQuadMaterialColor[13] = G;
-    MaskQuadMaterialColor[14] = B;
-    MaskQuadMaterialColor[15] = A;
+    MASK_QUAD_MATERIAL_COLOR[12] = R;
+    MASK_QUAD_MATERIAL_COLOR[13] = G;
+    MASK_QUAD_MATERIAL_COLOR[14] = B;
+    MASK_QUAD_MATERIAL_COLOR[15] = A;
 
-    MaskQuadMaterialColor[16] = R;
-    MaskQuadMaterialColor[17] = G;
-    MaskQuadMaterialColor[18] = B;
-    MaskQuadMaterialColor[19] = A;
+    MASK_QUAD_MATERIAL_COLOR[16] = R;
+    MASK_QUAD_MATERIAL_COLOR[17] = G;
+    MASK_QUAD_MATERIAL_COLOR[18] = B;
+    MASK_QUAD_MATERIAL_COLOR[19] = A;
 
-    MaskQuadMaterialColor[20] = R;
-    MaskQuadMaterialColor[21] = G;
-    MaskQuadMaterialColor[22] = B;
-    MaskQuadMaterialColor[23] = A;
+    MASK_QUAD_MATERIAL_COLOR[20] = R;
+    MASK_QUAD_MATERIAL_COLOR[21] = G;
+    MASK_QUAD_MATERIAL_COLOR[22] = B;
+    MASK_QUAD_MATERIAL_COLOR[23] = A;
 
     u_int8_t I = 0;
 
-    MaskQuadVertex[0]= X;
-    MaskQuadVertex[1]= Y;
-    MaskQuadVertex[2]= 0;
-    MaskQuadVertex[3]= X;
-    MaskQuadVertex[4]= Y + H;
-    MaskQuadVertex[5]= 0;
-    MaskQuadVertex[6]= X + W;
-    MaskQuadVertex[7]= Y + H;
-    MaskQuadVertex[8]= 0;
-    MaskQuadVertex[9]= X + W;
-    MaskQuadVertex[10]= Y + H;
-    MaskQuadVertex[11]= 0;
-    MaskQuadVertex[12]= X;
-    MaskQuadVertex[13]= Y;
-    MaskQuadVertex[14]= 0;
-    MaskQuadVertex[15]= X + W;
-    MaskQuadVertex[16]= Y;
-    MaskQuadVertex[17]= 0;
+    MASK_QUAD_VERTEX[0]= X;
+    MASK_QUAD_VERTEX[1]= Y;
+    MASK_QUAD_VERTEX[2]= 0;
+    MASK_QUAD_VERTEX[3]= X;
+    MASK_QUAD_VERTEX[4]= Y + H;
+    MASK_QUAD_VERTEX[5]= 0;
+    MASK_QUAD_VERTEX[6]= X + W;
+    MASK_QUAD_VERTEX[7]= Y + H;
+    MASK_QUAD_VERTEX[8]= 0;
+    MASK_QUAD_VERTEX[9]= X + W;
+    MASK_QUAD_VERTEX[10]= Y + H;
+    MASK_QUAD_VERTEX[11]= 0;
+    MASK_QUAD_VERTEX[12]= X;
+    MASK_QUAD_VERTEX[13]= Y;
+    MASK_QUAD_VERTEX[14]= 0;
+    MASK_QUAD_VERTEX[15]= X + W;
+    MASK_QUAD_VERTEX[16]= Y;
+    MASK_QUAD_VERTEX[17]= 0;
 
-    EKG_TESSELLATOR->Draw(18, 24, MaskQuadVertex, MaskQuadMaterialColor);
+    EKG_TESSELLATOR->Draw(18, 24, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
 }
 
 void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_LINE_STRIP, 6);
     EKG_TESSELLATOR->SetTextureColor(Color);
 
-    MaskQuadVertex[0] = X;
-    MaskQuadVertex[1] = Y;
-    MaskQuadVertex[2] = 0;
-    MaskQuadVertex[3] = X;
-    MaskQuadVertex[4] = Y + H;
-    MaskQuadVertex[5] = 0;
-    MaskQuadVertex[6] = X + W;
-    MaskQuadVertex[7] = Y + H;
-    MaskQuadVertex[8] = 0;
-    MaskQuadVertex[9] = X + W;
-    MaskQuadVertex[10] = Y + H;
-    MaskQuadVertex[11] = 0;
-    MaskQuadVertex[12] = X + W;
-    MaskQuadVertex[13] = Y;
-    MaskQuadVertex[14] = 0;
-    MaskQuadVertex[15] = X;
-    MaskQuadVertex[16] = Y;
-    MaskQuadVertex[17] = 0;
+    MASK_QUAD_VERTEX[0] = X;
+    MASK_QUAD_VERTEX[1] = Y;
+    MASK_QUAD_VERTEX[2] = 0;
+    MASK_QUAD_VERTEX[3] = X;
+    MASK_QUAD_VERTEX[4] = Y + H;
+    MASK_QUAD_VERTEX[5] = 0;
+    MASK_QUAD_VERTEX[6] = X + W;
+    MASK_QUAD_VERTEX[7] = Y + H;
+    MASK_QUAD_VERTEX[8] = 0;
+    MASK_QUAD_VERTEX[9] = X + W;
+    MASK_QUAD_VERTEX[10] = Y + H;
+    MASK_QUAD_VERTEX[11] = 0;
+    MASK_QUAD_VERTEX[12] = X + W;
+    MASK_QUAD_VERTEX[13] = Y;
+    MASK_QUAD_VERTEX[14] = 0;
+    MASK_QUAD_VERTEX[15] = X;
+    MASK_QUAD_VERTEX[16] = Y;
+    MASK_QUAD_VERTEX[17] = 0;
 
     float R = (float) Color.R / 255.0F;
     float G = (float) Color.G / 255.0F;
     float B = (float) Color.B / 255.0F;
     float A = (float) Color.A / 255.0F;
 
-    MaskQuadMaterialColor[0] = R;
-    MaskQuadMaterialColor[1] = G;
-    MaskQuadMaterialColor[2] = B;
-    MaskQuadMaterialColor[3] = A;
-    MaskQuadMaterialColor[4] = R;
-    MaskQuadMaterialColor[5] = G;
-    MaskQuadMaterialColor[6] = B;
-    MaskQuadMaterialColor[7] = A;
-    MaskQuadMaterialColor[8] = R;
-    MaskQuadMaterialColor[9] = G;
-    MaskQuadMaterialColor[10] = B;
-    MaskQuadMaterialColor[11] = A;
-    MaskQuadMaterialColor[12] = R;
-    MaskQuadMaterialColor[13] = G;
-    MaskQuadMaterialColor[14] = B;
-    MaskQuadMaterialColor[15] = A;
-    MaskQuadMaterialColor[16] = R;
-    MaskQuadMaterialColor[17] = G;
-    MaskQuadMaterialColor[18] = B;
-    MaskQuadMaterialColor[19] = A;
-    MaskQuadMaterialColor[20] = R;
-    MaskQuadMaterialColor[21] = G;
-    MaskQuadMaterialColor[22] = B;
-    MaskQuadMaterialColor[23] = A;
+    MASK_QUAD_MATERIAL_COLOR[0] = R;
+    MASK_QUAD_MATERIAL_COLOR[1] = G;
+    MASK_QUAD_MATERIAL_COLOR[2] = B;
+    MASK_QUAD_MATERIAL_COLOR[3] = A;
+    MASK_QUAD_MATERIAL_COLOR[4] = R;
+    MASK_QUAD_MATERIAL_COLOR[5] = G;
+    MASK_QUAD_MATERIAL_COLOR[6] = B;
+    MASK_QUAD_MATERIAL_COLOR[7] = A;
+    MASK_QUAD_MATERIAL_COLOR[8] = R;
+    MASK_QUAD_MATERIAL_COLOR[9] = G;
+    MASK_QUAD_MATERIAL_COLOR[10] = B;
+    MASK_QUAD_MATERIAL_COLOR[11] = A;
+    MASK_QUAD_MATERIAL_COLOR[12] = R;
+    MASK_QUAD_MATERIAL_COLOR[13] = G;
+    MASK_QUAD_MATERIAL_COLOR[14] = B;
+    MASK_QUAD_MATERIAL_COLOR[15] = A;
+    MASK_QUAD_MATERIAL_COLOR[16] = R;
+    MASK_QUAD_MATERIAL_COLOR[17] = G;
+    MASK_QUAD_MATERIAL_COLOR[18] = B;
+    MASK_QUAD_MATERIAL_COLOR[19] = A;
+    MASK_QUAD_MATERIAL_COLOR[20] = R;
+    MASK_QUAD_MATERIAL_COLOR[21] = G;
+    MASK_QUAD_MATERIAL_COLOR[22] = B;
+    MASK_QUAD_MATERIAL_COLOR[23] = A;
 
     // Draw.
     glLineWidth(LineThickness);
-    EKG_TESSELLATOR->Draw(18, 24, MaskQuadVertex, MaskQuadMaterialColor);
+    EKG_TESSELLATOR->Draw(18, 24, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
 }
 
 void EKG_DrawFilledRect(const EKG_Rect &Rect, const EKG_Color &Color) {
@@ -229,43 +230,43 @@ void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, fl
 
     unsigned int I = 0;
 
-    MaskQuadVertex[I]   = X;
-    MaskQuadVertex[I++] = Y;
-    MaskQuadVertex[I++] = 0;
-    MaskQuadVertex[I++] = X;
-    MaskQuadVertex[I++] = Y;
-    MaskQuadVertex[I++] = H;
-    MaskQuadVertex[I++] = 0;
-    MaskQuadVertex[I++] = X + W;
-    MaskQuadVertex[I++] = Y + H;
-    MaskQuadVertex[I++] = 0;
-    MaskQuadVertex[I++] = X + W;
-    MaskQuadVertex[I++] = Y + H;
-    MaskQuadVertex[I++] = 0;
-    MaskQuadVertex[I++] = X;
-    MaskQuadVertex[I++] = Y;
-    MaskQuadVertex[I++] = 0;
-    MaskQuadVertex[I++] = X + W;
-    MaskQuadVertex[I++] = Y;
-    MaskQuadVertex[I++] = 0;
+    MASK_QUAD_VERTEX[I]   = X;
+    MASK_QUAD_VERTEX[I++] = Y;
+    MASK_QUAD_VERTEX[I++] = 0;
+    MASK_QUAD_VERTEX[I++] = X;
+    MASK_QUAD_VERTEX[I++] = Y;
+    MASK_QUAD_VERTEX[I++] = H;
+    MASK_QUAD_VERTEX[I++] = 0;
+    MASK_QUAD_VERTEX[I++] = X + W;
+    MASK_QUAD_VERTEX[I++] = Y + H;
+    MASK_QUAD_VERTEX[I++] = 0;
+    MASK_QUAD_VERTEX[I++] = X + W;
+    MASK_QUAD_VERTEX[I++] = Y + H;
+    MASK_QUAD_VERTEX[I++] = 0;
+    MASK_QUAD_VERTEX[I++] = X;
+    MASK_QUAD_VERTEX[I++] = Y;
+    MASK_QUAD_VERTEX[I++] = 0;
+    MASK_QUAD_VERTEX[I++] = X + W;
+    MASK_QUAD_VERTEX[I++] = Y;
+    MASK_QUAD_VERTEX[I++] = 0;
 
     float U = 1.0F + (TextureW != 1 ? ((TextureW - (float) EKG_TESSELLATOR->GetTextureWidth()) / (float) EKG_TESSELLATOR->GetTextureWidth()) : 0.0F);
     float V = 1.0F + (TextureH != 1 ? ((TextureH - (float) EKG_TESSELLATOR->GetTextureHeight()) / (float) EKG_TESSELLATOR->GetTextureHeight()) : 0.0F);
 
-    MaskQuadMaterialTexture[0] = 0;
-    MaskQuadMaterialTexture[1] = 0;
-    MaskQuadMaterialTexture[2] = 0;
-    MaskQuadMaterialTexture[3] = V;
-    MaskQuadMaterialTexture[4] = U;
-    MaskQuadMaterialTexture[5] = V;
-    MaskQuadMaterialTexture[6] = U;
-    MaskQuadMaterialTexture[7] = V;
-    MaskQuadMaterialTexture[8] = 0;
-    MaskQuadMaterialTexture[9] = 0;
-    MaskQuadMaterialTexture[10] = U;
-    MaskQuadMaterialTexture[11] = 0;
+    MASK_QUAD_MATERIAL[0] = 0;
+    MASK_QUAD_MATERIAL[1] = 0;
+    MASK_QUAD_MATERIAL[2] = 0;
+    MASK_QUAD_MATERIAL[3] = V;
+    MASK_QUAD_MATERIAL[4] = U;
+    MASK_QUAD_MATERIAL[5] = V;
+    MASK_QUAD_MATERIAL[6] = U;
+    MASK_QUAD_MATERIAL[7] = V;
+    MASK_QUAD_MATERIAL[8] = 0;
+    MASK_QUAD_MATERIAL[9] = 0;
+    MASK_QUAD_MATERIAL[10] = U;
+    MASK_QUAD_MATERIAL[11] = 0;
 
-    EKG_TESSELLATOR->Draw(18, 12, MaskQuadVertex, MaskQuadMaterialTexture);
+    EKG_TESSELLATOR->Draw(18, 12, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL);
 }
 
 std::string EKG_Print(const std::string &Tag, unsigned int Id) {
@@ -313,55 +314,55 @@ float EKG_Color::GetAlphaf() {
     return (float) this->A / 255.0F;
 }
 
-EKG_Color::EKG_Color(unsigned int Red, unsigned int Green, unsigned int Blue, unsigned int Alpha) {
+EKG_Color::EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
     this->A = Alpha;
 }
 
-EKG_Color::EKG_Color(unsigned int Red, unsigned int Green, unsigned int Blue) {
+EKG_Color::EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
     this->A = 255;
 }
 
-void EKG_Color::Set(unsigned int Red, unsigned int Green, unsigned int Blue, unsigned int Alpha) {
+void EKG_Color::Set(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
     this->A = Alpha;
 }
 
-void EKG_Color::Set(unsigned int Red, unsigned int Green, unsigned int Blue) {
+void EKG_Color::Set(uint8_t Red, uint8_t Green, uint8_t Blue) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
 }
 
-EKG_Color::EKG_Color(unsigned int Color[4]) {
+EKG_Color::EKG_Color(uint8_t Color[4]) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
     this->A = Color[3];
 }
 
-EKG_Color::EKG_Color(unsigned int Color[3], unsigned int Alpha) {
+EKG_Color::EKG_Color(uint8_t Color[3], uint8_t Alpha) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
     this->A = Alpha;
 }
 
-void EKG_Color::Set(unsigned int Color[4]) {
+void EKG_Color::Set(uint8_t Color[4]) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
     this->A = Color[3];
 }
 
-void EKG_Color::Set(unsigned int Color[3], unsigned int Alpha) {
+void EKG_Color::Set(uint8_t Color[3], uint8_t Alpha) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
@@ -379,7 +380,7 @@ bool EKG_Rect::CollideWithRect(float RectX, float RectY, float RectW, float Rect
            this->Y + this->H > RectY;
 }
 
-void EKG_ColorTheme::Frame(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue) {
+void EKG_ColorTheme::Frame(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {
     switch (Flag) {
         case BACKGROUND: {
             this->FrameBackground[0] = RedValue;
@@ -423,7 +424,7 @@ void EKG_ColorTheme::Frame(unsigned int Flag, unsigned int RedValue, unsigned in
     }
 }
 
-void EKG_ColorTheme::Container(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue) {
+void EKG_ColorTheme::Container(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {
     switch (Flag) {
         case BACKGROUND: {
             this->ContainerBackground[0] = RedValue;
@@ -467,7 +468,7 @@ void EKG_ColorTheme::Container(unsigned int Flag, unsigned int RedValue, unsigne
     }
 }
 
-void EKG_ColorTheme::Widget(unsigned int Flag, unsigned int RedValue, unsigned int GreenValue, unsigned int BlueValue, unsigned int AlphaValue)  {
+void EKG_ColorTheme::Widget(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue)  {
     switch (Flag) {
         case BACKGROUND: {
             this->WidgetBackground[0] = RedValue;

@@ -413,7 +413,7 @@ EKG_Frame *EKG::Frame(const std::string &Name) {
     Element->SetLimit(50, 50);
     Element->SetWidth(250);
     Element->SetHeight(250);
-    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
+    Element->Visibility(EKG::Visibility::VISIBLE);
     Element->SyncSize();
 
     EKG_CORE->AddElement(Element);
@@ -440,7 +440,7 @@ EKG_Button* EKG::Button(const std::string &Name) {
 
 EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, const std::vector<std::string> &List) {
     // Instead we create a new popup, we need to verify what element is at top (focused);
-    if (((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) && (EKG::CurrentFocusedType() != "popup" && InitialPosX != EKG::ABSOLUTE && InitialPosY != EKG::ABSOLUTE)) && (EKG_CORE->IsActionHappening() || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS))) {
+    if (((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) && (EKG::CurrentFocusedType() != "popup" && InitialPosX != EKG::ABSOLUTE && InitialPosY != EKG::ABSOLUTE)) && (EKG::TaskOn(EKG::Task::BLOCKED) || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS))) {
         return NULL;
     }
 
@@ -555,6 +555,14 @@ EKG_Timing* EKG::Timing() {
     return EKG_CORE->Timing;
 }
 
+void EKG::Task(unsigned int TaskId, unsigned int Id) {
+    EKG_CORE->Task(TaskId, Id);
+}
+
+bool EKG::TaskOn(unsigned int TaskId) {
+    return EKG_CORE->VerifyTask(TaskId);
+}
+
 Uint32 EKG::Event::REGISTER = SDL_RegisterEvents(2);
 Uint32 EKG::Event::ELEMENT  = REGISTER++;
 Uint32 EKG::Event::POPUP    = REGISTER++;
@@ -564,6 +572,8 @@ EKG_Event EKG::Event::Read(SDL_Event Event) {
         EKG_Event EKGEvent;
 
         auto* Callback = static_cast<std::string*>(Event.user.data1);
+
+        EKG_Log(*Callback);
 
         EKGEvent.Type = Event.user.code;
         EKGEvent.Popup.Info = *Callback;

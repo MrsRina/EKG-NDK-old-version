@@ -91,7 +91,7 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
                 }
 
                 MovingEvent = true;
-                EKG_CORE->ActionHappen();
+                EKG::Task(EKG::Task::BLOCKED);
             }
 
             if (this->Resizing != 0) {
@@ -164,7 +164,7 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
                 }
 
                 MovingEvent = true;
-                EKG_CORE->ActionHappen();
+                EKG::Task(EKG::Task::BLOCKED);
             }
 
             if (MovingEvent && this->IsMaster()) {
@@ -196,7 +196,7 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
 
                         // Say true for dragging to the element.
                         this->Dragging = true;
-                        EKG_CORE->ActionHappen();
+                        EKG::Task(EKG::Task::BLOCKED);
                     }
                 }
 
@@ -221,7 +221,7 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
 
                         // Say true for resizing to the element.
                         this->Resizing = CollidingDock;
-                        EKG_CORE->ActionHappen();
+                        EKG::Task(EKG::Task::BLOCKED);
                     }
 
                 }

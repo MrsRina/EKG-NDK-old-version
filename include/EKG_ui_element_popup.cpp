@@ -182,12 +182,12 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 this->Kill();
             }
 
-            if (!this->Focused.empty() && Component.Id == 0) {
+            if (!this->Focused.empty() && (Component.Name == this->Focused || EKG::CurrentFocusedType() == "popup") && Component.Id == 0) {
                 std::string Path = this->Focused;
                 this->GetPath(Path);
 
                 // We use smart pointers instead directly pointers.
-                std::shared_ptr<void> P = std::make_shared<std::string>(Path);
+                std::shared_ptr<void> P(new std::string (Path));
 
                 // Send popup event using EKG events processor.
                 EKG::Event::Dispatch(EKG::Event::POPUP, static_cast<void*>(P.get()), nullptr);
@@ -284,13 +284,15 @@ void EKG_Popup::OnRender(const float &PartialTicks) {
     // Render only if is open.
     if (this->Show) {
         this->Rect.H = EKG_AnimationSmooth(100, SDL_GetTicks() - this->LastTicks) * this->MaximumHeight;
+        this->SmoothPressed.NextFactory = !this->Focused.empty() ? EKG_CORE->ColorTheme.WidgetActivy[3] : 0;
+        this->SmoothPressed.Update(PartialTicks);
 
         // Background container.
         EKG_Color Color(EKG_CORE->ColorTheme.ContainerBackground);
         EKG_DrawFilledRect(this->Rect, Color);
 
         // Now reset color to activy in theme.
-        Color.Set(EKG_CORE->ColorTheme.WidgetActivy);
+        Color.Set(EKG_CORE->ColorTheme.WidgetActivy, SmoothPressed.Factory);
 
         // We need calc a runtime height to render property the positions.
         float FullHeight = this->GetY();
@@ -348,7 +350,7 @@ void EKG_Popup::SetScale(float Scale) {
     }
 }
 
-float EKG_Popup::GetScale() const {
+float EKG_Popup::GetScale() {
     return this->TextScale;
 }
 

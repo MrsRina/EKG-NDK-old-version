@@ -30,8 +30,10 @@ protected:
 
     /* Configuration. */
     unsigned int DockTab;
+    EKG_Smooth SmoothActivy;
 
     EKG_Data GetComponentHovered(float FX, float FY);
+    void SyncLayout();
 public:
     /* Start of configurable methods. */
     void Delete(const std::string &Pattern);
@@ -39,6 +41,8 @@ public:
     void Enable(const std::string &Pattern);
     void TabSide(unsigned int Dock);
     void Place(EKG_Frame* Frame);
+    void Open(const std::string &Name);
+    void Open(EKG_Data &Component);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */

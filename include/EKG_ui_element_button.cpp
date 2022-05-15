@@ -43,7 +43,7 @@ void EKG_Button::OnEvent(SDL_Event Event) {
     switch (Event.type) {
         case SDL_FINGERDOWN: {
             if (this->Hovered) {
-                EKG_CORE->ActionHappen();
+                EKG::Task(EKG::Task::BLOCKED);
                 this->Pressed = true;
             }
 
@@ -61,7 +61,7 @@ void EKG_Button::OnEvent(SDL_Event Event) {
                 this->Hovered = this->IsFingerOver(FX, FY);
 
                 if (this->HoveredBox || this->Hovered) {
-                    EKG_CORE->ActionHappen();
+                    EKG::Task(EKG::Task::BLOCKED);
 
                     this->Checked = this->IsCheckBox() ? !this->Checked : this->Checked;
                     this->Clicked = true;

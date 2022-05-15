@@ -97,14 +97,14 @@ void EKG_Slider::OnEvent(SDL_Event Event) {
                 EKG::ScaledFingerPos(FX, FY);
 
                 if (!this->Dragging && this->Hovered && Event.type == SDL_FINGERDOWN) {
-                    EKG_CORE->ActionHappen();
+                    EKG::Task(EKG::Task::BLOCKED);
 
                     this->Pressed = true;
                     this->Dragging = true;
                 }
 
                 if (this->Dragging && this->Pressed) {
-                    EKG_CORE->ActionHappen();
+                    EKG::Task(EKG::Task::BLOCKED);
 
                     float Diff = (this->BarOrientation == 0 ? this->Rect.W : this->Rect.H);
                     float FingerPosFactored = this->BarOrientation == 0 ? FX : FY;
