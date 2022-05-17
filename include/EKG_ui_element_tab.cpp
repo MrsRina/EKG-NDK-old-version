@@ -172,9 +172,11 @@ float EKG_Tab::GetButtonSize() {
 
 void EKG_Tab::Delete(const std::string &Pattern) {
     std::vector<EKG_Data> NewList;
+    bool Flag;
 
     for (const EKG_Data &Components : this->List) {
         if (EKG_StringContains(Pattern, Components.Name)) {
+            Flag = this->Focused == Components.Name;
             continue;
         }
 
@@ -183,6 +185,10 @@ void EKG_Tab::Delete(const std::string &Pattern) {
 
     bool ShouldSync = this->List.size() != NewList.size();
     this->List = NewList;
+
+    if (Flag) {
+        this->SortCloseComponent();
+    }
 
     if (ShouldSync) {
         this->SyncSize();
@@ -194,22 +200,20 @@ void EKG_Tab::Disable(const std::string &Pattern) {
         return;
     }
 
-    std::vector<EKG_Data> NewList;
+    bool Flag;
 
-    for (EKG_Data Components : this->List) {
+    for (EKG_Data &Components : this->List) {
         if (EKG_StringContains(Pattern, Components.Name)) {
             Components.Tag = "";
+            Flag = this->Focused == Components.Name;
         }
-
-        NewList.push_back(Components);
     }
 
-    bool ShouldSync = this->List.size() != NewList.size();
-    this->List = NewList;
-
-    if (ShouldSync) {
-        this->SyncSize();
+    if (Flag) {
+        this->SortCloseComponent();
     }
+
+    this->SyncSize();
 }
 
 void EKG_Tab::Enable(const std::string &Pattern) {
@@ -272,7 +276,7 @@ void EKG_Tab::Place(EKG_Frame *Frame) {
     Component.Tag = "0";
     Component.Id = Frame->GetId();
 
-    this->Children.Put(Component.Id);
+    this->Children.Put(Frame->GetId());
     this->List.push_back(Component);
 
     Frame->SetMasterId(this->GetId());
@@ -286,12 +290,12 @@ void EKG_Tab::Place(EKG_Frame *Frame) {
 
     if (this->Focused.empty()) {
         this->Focused = Frame->GetTag();
-        this->SyncLayout();
-
         EKG::Task(EKG::Task::REORDER, Frame->GetId());
     }
 
     this->Open(this->Focused);
+    this->SyncLayout();
+
     EKG::Task(EKG::Task::REFRESH);
 }
 
@@ -370,6 +374,7 @@ void EKG_Tab::OnChildKilled(unsigned int ChildElementId) {
     if (Element != nullptr) {
         this->Disable(Element->GetTag());
         this->SortCloseComponent();
+        this->Open(this->Focused);
     }
 }
 

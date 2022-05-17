@@ -2,10 +2,9 @@
 #include "EKG.h"
 
 void EKG_Core::RemoveElement(unsigned int ElementId) {
-    std::vector<EKG_AbstractElement*> NewBufferUpdate;
-
     this->BufferRender.fill(0);
     this->BufferSize = 0;
+    this->BufferCopy.clear();
 
     for (EKG_AbstractElement* &Element : this->BufferUpdate) {
         if (Element->GetId() == ElementId) {
@@ -15,14 +14,15 @@ void EKG_Core::RemoveElement(unsigned int ElementId) {
             continue;
         }
 
-        NewBufferUpdate.push_back(Element);
+        this->BufferCopy.push_back(Element);
 
         if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
     }
 
-    this->BufferUpdate = NewBufferUpdate;
+    this->BufferUpdate = this->BufferCopy;
+    this->BufferCopy.clear();
 }
 
 void EKG_Core::AddElement(EKG_AbstractElement* Element) {
@@ -118,25 +118,24 @@ void EKG_Core::OnEvent(SDL_Event Event) {
 }
 
 void EKG_Core::OnUpdate(const float &DeltaTicks) {
+    if (this->ShouldSwapBuffers) {
+        this->SwapBuffers();
+    }
+
+    if (this->TaskFree) {
+        this->FreeStack();
+        this->TaskFree = false;
+    }
+
     if (this->TaskRefresh) {
         this->RefreshStack();
         this->TaskRefresh = false;
-    }
-
-    if (this->ShouldSwapBuffers) {
-        this->SwapBuffers();
     }
 
     if (this->TaskReorder) {
         this->ReorderStack(this->IdFromTask);
         this->IdFromTask = 0;
         this->TaskReorder = false;
-    }
-
-    if (this->TaskFree) {
-        this->ReorderStack(this->IdFromTask);
-        this->IdFromTask = 0;
-        this->TaskFree = false;
     }
 }
 
@@ -206,10 +205,9 @@ void EKG_Core::ReorderStack(unsigned int ElementId) {
         }
     }
 
-    std::vector<EKG_AbstractElement*> NewBufferOfUpdate;
-
     this->BufferRender.fill(0);
     this->BufferSize = 0;
+    this->BufferCopy.clear();
 
     // Put current.
     for (unsigned int IDs : Current.StackedIds) {
@@ -219,7 +217,7 @@ void EKG_Core::ReorderStack(unsigned int ElementId) {
             continue;
         }
 
-        NewBufferOfUpdate.push_back(Element);
+        this->BufferCopy.push_back(Element);
 
         if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
@@ -234,14 +232,15 @@ void EKG_Core::ReorderStack(unsigned int ElementId) {
             continue;
         }
 
-        NewBufferOfUpdate.push_back(Element);
+        this->BufferCopy.push_back(Element);
 
         if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
     }
 
-    this->BufferUpdate = NewBufferOfUpdate;
+    this->BufferUpdate = this->BufferCopy;
+    this->BufferCopy.clear();
 }
 
 EKG_AbstractElement* EKG_Core::GetElementById(unsigned int Id) {
@@ -378,10 +377,11 @@ void EKG_Core::RefreshStack() {
 void EKG_Core::FreeStack() {
     this->BufferRender.fill(0);
     this->BufferSize = 0;
+    this->BufferCopy.clear();
 
-    std::vector<EKG_AbstractElement*> NewBuffer;
+    for (int I = 0; I < this->BufferUpdate.size(); I++) {
+        auto* Element = this->BufferUpdate.at(I);
 
-    for (EKG_AbstractElement* &Element : this->BufferUpdate) {
         if (Element == nullptr) {
             continue;
         }
@@ -391,29 +391,29 @@ void EKG_Core::FreeStack() {
             continue;
         }
 
-        NewBuffer.push_back(Element);
+        this->BufferCopy.push_back(Element);
 
         if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
     }
 
-    this->BufferUpdate = NewBuffer;
+    this->BufferUpdate = this->BufferCopy;
+    this->BufferCopy.clear();
 }
 
 
 void EKG_Core::SwapBuffers() {
     this->BufferRender.fill(0);
     this->BufferSize = 0;
-
-    std::vector<EKG_AbstractElement*> NewBuffer;
+    this->BufferCopy.clear();
 
     for (EKG_AbstractElement* &Element : this->BufferUpdate) {
         if (Element == nullptr) {
             continue;
         }
 
-        NewBuffer.push_back(Element);
+        this->BufferCopy.push_back(Element);
 
         if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
@@ -425,15 +425,16 @@ void EKG_Core::SwapBuffers() {
             continue;
         }
 
-        NewBuffer.push_back(Element);
+        this->BufferCopy.push_back(Element);
 
         if (Element->GetVisibility() == EKG::Visibility::VISIBLE) {
             this->BufferRender[this->BufferSize++] = Element;
         }
     }
 
-    this->BufferUpdate = NewBuffer;
+    this->BufferUpdate = this->BufferCopy;
     this->BufferNew.clear();
+    this->BufferCopy.clear();
     this->ShouldSwapBuffers = false;
 }
 

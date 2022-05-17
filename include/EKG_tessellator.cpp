@@ -254,31 +254,6 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
         MASK_QUAD_VERTEX[VertexBufferSize++] = RenderY;
         MASK_QUAD_VERTEX[VertexBufferSize++] = 0;
 
-        float VertexList[] = {
-                // First triangle.
-                RenderX, RenderY, 0,
-                RenderX, RenderY + RenderH, 0,
-                RenderX + RenderW, RenderY + RenderH, 0,
-
-                // Second triangle.
-                RenderX + RenderW, RenderY + RenderH, 0,
-                RenderX, RenderY, 0,
-                RenderX + RenderW, RenderY, 0
-        };
-
-        float TextCoordList[] = {
-                // First triangle.
-                TextureX, TextureY,
-                TextureX, TextureY + TextureH,
-                TextureX + TextureW, TextureY + TextureH,
-
-                // Second triangle.
-                TextureX + TextureW, TextureY + TextureH,
-                TextureX, TextureY,
-                TextureX + TextureW, TextureY
-        };
-
-
         MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureX;
         MASK_QUAD_MATERIAL_COLOR[FragmentBufferSize++] = TextureY;
 

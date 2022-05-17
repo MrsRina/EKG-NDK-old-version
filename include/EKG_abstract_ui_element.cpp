@@ -144,7 +144,11 @@ void EKG_AbstractElement::Kill() {
         }
     }
 
-    EKG::Task(EKG::Task::REFRESH);
+    if (this->InfoClass() == "frame-tab") {
+        EKG_Log("oi");
+    }
+
+    EKG::Task(EKG::Task::FREE);
 }
 
 void EKG_AbstractElement::OnChildKilled(unsigned int ChildElementId) {

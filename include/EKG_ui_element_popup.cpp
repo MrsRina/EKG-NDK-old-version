@@ -187,7 +187,7 @@ void EKG_Popup::OnEvent(SDL_Event Event) {
                 this->GetPath(Path);
 
                 // We use smart pointers instead directly pointers.
-                std::shared_ptr<void> P(new std::string (Path));
+                std::shared_ptr<void> P(new std::string(Path));
 
                 // Send popup event using EKG events processor.
                 EKG::Event::Dispatch(EKG::Event::POPUP, static_cast<void*>(P.get()), nullptr);
@@ -299,14 +299,14 @@ void EKG_Popup::OnRender(const float &PartialTicks) {
 
         EKG_Scissor((int) this->Rect.X, (int) this->Rect.Y, (int) this->Rect.W, (int) this->Rect.H);
 
-        // I do not like iterations in loops but need use here.
+        // Iterate all component data.
         for (const EKG_Data &Components : this->List) {
             // Background when is focused.
             if (Components.Name == this->Focused) {
                 EKG_DrawFilledShape(this->GetX(), FullHeight, this->Rect.W, Components.DataHeight, Color);
             }
 
-            // Draw the name of component.
+            // Draw name of component.
             EKG_CORE->FontRenderer.DrawString(Components.Name,this->GetX() + 2.0F + this->TextOffset, FullHeight + this->TextScale, Components.Tag != "1" ? EKG_CORE->ColorTheme.StringFadeColor : EKG_CORE->ColorTheme.StringColor);
 
             // Update the height to the next element be rendered property.

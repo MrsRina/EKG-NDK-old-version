@@ -180,7 +180,7 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
             this->Pressed = ShouldRenderPressed;
 
             if (this->Pressed && this->Hovered && EKG::CurrentFocusedType() == "combobox" && this->Children.StackedIds.empty()) {
-                EKG_Popup* Popup = EKG::Popup(this->GetTag() + "-combobox", EKG::NOPOS, EKG::NOPOS, this->PopupElementList);
+                auto Popup = EKG::Popup(this->GetTag() + "-combobox", EKG::NOPOS, EKG::NOPOS, this->PopupElementList);
 
                 Popup->SetWidth(this->GetWidth());
                 Popup->Place(this->GetX(), this->GetY() + this->GetHeight());
@@ -190,9 +190,7 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
                 Popup->SetMasterId(this->GetId());
 
                 this->Children.Put(Popup->GetId());
-
-                EKG::Task(EKG::Task::REFOCUS);
-                EKG::Task(EKG::Task::BLOCKED);
+                EKG::Task(EKG::Task::BLOCKED | EKG::Task::REFOCUS);
             }
 
             break;

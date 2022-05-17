@@ -14,7 +14,7 @@
 class EKG_Core {
 protected:
     /* Buffers element used in context gui. */
-    std::vector<EKG_AbstractElement*> BufferUpdate, BufferNew;
+    std::vector<EKG_AbstractElement*> BufferUpdate, BufferCopy, BufferNew;
     std::array<EKG_AbstractElement*, 256> BufferRender = {};
 
     uint8_t BufferSize;
