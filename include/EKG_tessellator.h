@@ -3,8 +3,8 @@
  * @since 21/03/2022 at 21:05PM
  */
 #pragma once
-#include "EKG_includes.h"
-#include "EKG_util.h"
+#include "ekg_includes.h"
+#include "ekg_util.h"
 
 /**
  * Char data used in font renderer.
@@ -15,7 +15,7 @@ struct EKG_CharData {
 };
 
 /**
- * Render fast shapes, lines, points using modern way (VBO, shaders...).
+ * render fast shapes, lines, points using modern way (VBO, shaders...).
  */
 class EKG_Tessellator {
 private:
@@ -60,9 +60,9 @@ public:
 };
 
 /**
- * Render font used in EKG.
+ * render font used in ekg.
  */
-class EKG_FontRenderer {
+class ekg_font_renderer {
     /* Start of FT main variables. */
     FT_Library Library;
     FT_Face Face;

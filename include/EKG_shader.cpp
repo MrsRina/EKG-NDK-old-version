@@ -1,8 +1,8 @@
-#include "EKG_shader.h"
-#include "EKG_util.h"
-#include "EKG.h"
+#include "ekg_shader.h"
+#include "ekg_util.h"
+#include "ekg.h"
 
-void EKG_ShaderManager::Init() {
+void ekg_shader_manager::Init() {
     std::string TessellatorVertexSource = "attribute vec4 VertexPosition;\n"
                                           "attribute vec4 VertexColor;\n"
                                           "\n"
@@ -46,7 +46,7 @@ void EKG_ShaderManager::Init() {
 
 }
 
-int EKG_ShaderManager::CompileStatus(unsigned int &ShaderId, const std::string &Source, const std::string &Which) {
+int ekg_shader_manager::CompileStatus(unsigned int &ShaderId, const std::string &Source, const std::string &Which) {
     if (Which == "vertex" || Which == "fragment") {
         ShaderId = glCreateShader(Which == "vertex" ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
 
@@ -62,11 +62,11 @@ int EKG_ShaderManager::CompileStatus(unsigned int &ShaderId, const std::string &
         return Result;
     }
 
-    EKG_Log("Not an acceptable parameter: " + Source);
+    ekg_log("Not an acceptable parameter: " + Source);
     return -2;
 }
 
-unsigned int EKG_ShaderManager::LoadShader(const std::string &Name, const std::string &SourceVertexShader, const std::string &SourceFragmentShader) {
+unsigned int ekg_shader_manager::LoadShader(const std::string &Name, const std::string &SourceVertexShader, const std::string &SourceFragmentShader) {
     unsigned int Shader = glCreateProgram();
     unsigned int ShaderVertex, ShaderFragment;
 
@@ -78,12 +78,12 @@ unsigned int EKG_ShaderManager::LoadShader(const std::string &Name, const std::s
 
         if (PhaseVertexCompileResult == 0) {
             glGetShaderInfoLog(ShaderVertex, 1024, NULL, Log);
-            EKG_Log("Occurred an error while compiled vertex shader: \n" + std::string(Log));
+            ekg_log("Occurred an error while compiled vertex shader: \n" + std::string(Log));
         }
 
         if (PhaseFragmentCompileResult == 0) {
             glGetShaderInfoLog(ShaderFragment, 1024, NULL, Log);
-            EKG_Log("Occurred an error while compiled fragment shader: \n" + std::string(Log));
+            ekg_log("Occurred an error while compiled fragment shader: \n" + std::string(Log));
         }
 
         delete[] Log;
@@ -111,19 +111,19 @@ unsigned int EKG_ShaderManager::LoadShader(const std::string &Name, const std::s
         this->ShaderList[Name] = Shader;
     }
 
-    EKG_Log(Name + " program compile status: " + (Result == 1 ? "compiled." : "not compiled."));
+    ekg_log(Name + " program compile status: " + (Result == 1 ? "compiled." : "not compiled."));
     return Shader;
 }
 
-unsigned int EKG_ShaderManager::GetTessellatorShader() {
+unsigned int ekg_shader_manager::GetTessellatorShader() {
     return this->TessellatorShaderId;
 }
 
-void EKG_ShaderManager::Quit() {
+void ekg_shader_manager::Quit() {
     // Nothing here.
 }
 
-unsigned int EKG_ShaderManager::FindShader(const std::string &Shader) {
+unsigned int ekg_shader_manager::FindShader(const std::string &Shader) {
     unsigned int Id = this->ShaderList[Shader];
     return Id;
 }

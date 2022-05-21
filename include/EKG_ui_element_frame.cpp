@@ -1,69 +1,69 @@
-#include "EKG_ui_element_frame.h"
-#include "EKG.h"
+#include "ekg_ui_element_frame.h"
+#include "ekg.h"
 
-void EKG_Frame::Draggable(unsigned int Area) {
-    this->DraggableDockFlags = Area == NULL ? 0 : Area;
+void ekg_ui_element_frame::draggable(unsigned int area) {
+    this->flags_dock_draggable = area == NULL ? 0 : area;
 
-    if (Area == EKG::Dock::FULL) {
-        this->SetOffsetDrag(0.0f);
+    if (area == ekg::dock::FULL) {
+        this->set_drag_offset(0.0f);
     }
 }
 
-void EKG_Frame::Resizable(unsigned int Area) {
-    this->ResizableDockFlags = Area == NULL ? 0 : Area;
+void ekg_ui_element_frame::resizable(unsigned int area) {
+    this->flags_dock_resizable = area == NULL ? 0 : area;
 
-    if (Area == EKG::Dock::FULL) {
-        this->SetOffsetResize(0.0f);
+    if (area == ekg::dock::FULL) {
+        this->set_resize_offset(0.0f);
     }
 }
 
-void EKG_Frame::SetDragging(bool State) {
-    this->Dragging = State;
+void ekg_ui_element_frame::set_drag_state(bool state) {
+    this->dragging = state;
 }
 
-bool EKG_Frame::IsDragging() {
-    return this->Dragging;
+bool ekg_ui_element_frame::is_dragging() {
+    return this->dragging;
 }
 
-void EKG_Frame::SetResizing(bool State) {
-    this->Resizing = State;
+void ekg_ui_element_frame::set_resize_state(bool state) {
+    this->resizing = state;
 }
 
-bool EKG_Frame::IsResizing() {
-    return this->Resizing;
+bool ekg_ui_element_frame::is_resizing() {
+    return this->resizing;
 }
 
-void EKG_Frame::SetPressed(bool State) {
-    this->Pressed = State;
+void ekg_ui_element_frame::set_press_state(bool state) {
+    this->pressed = state;
 }
 
-bool EKG_Frame::IsPressed() {
-    return this->Pressed;
+bool ekg_ui_element_frame::is_pressed() {
+    return this->pressed;
 }
 
-void EKG_Frame::OnPreEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnPreEvent(Event);
+void ekg_ui_element_frame::on_pre_event(SDL_Event Event) {
+    ekg_abstract_element::on_pre_event(Event);
 }
 
-void EKG_Frame::OnEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnEvent(Event);
+void ekg_ui_element_frame::on_event(SDL_Event Event) {
+    ekg_abstract_element::on_event(Event);
 
     switch (Event.type) {
         case SDL_FINGERMOTION: {
             float FX = Event.tfinger.x;
             float FY = Event.tfinger.y;
 
-            EKG::ScaledFingerPos(FX, FY);
+            ekg::scaled_finger_pos(FX, FY);
             bool MovingEvent;
 
-            if (this->Dragging) {
-                float X = FX - this->DragX;
-                float Y = FY - this->DragY;
-                float W = this->Rect.W;
-                float H = this->Rect.H;
+            if (this->dragging) {
+                float X = FX - this->drag_x;
+                float Y = FY - this->drag_y;
+                float W = this->rect.W;
+                float H = this->rect.H;
 
-                if (this->GetMasterId() != 0) {
-                    if (!this->FreeDragAndDrop) {
+                if (this->get_master_id() != 0) {
+                    if (!this->free_drag_and_drop) {
                         if (X < 0) {
                             X = 0;
                         }
@@ -72,50 +72,50 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
                             Y = 0;
                         }
 
-                        if (X + W > this->ScaledWidth) {
-                            X = this->ScaledWidth - W;
+                        if (X + W > this->scaled_width) {
+                            X = this->scaled_width - W;
                         }
 
-                        if (Y + H > this->ScaledHeight) {
-                            Y = this->ScaledHeight - H;
+                        if (Y + H > this->scale_height) {
+                            Y = this->scale_height - H;
                         }
                     }
 
-                    this->SyncX = X;
-                    this->SyncY = Y;
+                    this->sync_x = X;
+                    this->sync_y = Y;
 
-                    this->SyncPos();
+                    this->sync_pos();
                 } else {
-                    this->Rect.X = FX - this->DragX;
-                    this->Rect.Y = FY - this->DragY;
+                    this->rect.X = FX - this->drag_x;
+                    this->rect.Y = FY - this->drag_y;
                 }
 
                 MovingEvent = true;
-                EKG::Task(EKG::Task::BLOCKED);
+                ekg::task(ekg::task::BLOCKED);
             }
 
-            if (this->Resizing != 0) {
+            if (this->resizing != 0) {
                 float X;
                 float Y;
                 float W;
                 float H;
 
-                if (this->Resizing == EKG::Dock::LEFT || this->Resizing == EKG::Dock::TOP) {
-                    float DragUpdateX = FX - this->DragW;
-                    float DragUpdateY = FY - this->DragH;
+                if (this->resizing == ekg::dock::LEFT || this->resizing == ekg::dock::TOP) {
+                    float DragUpdateX = FX - this->drag_w;
+                    float DragUpdateY = FY - this->drag_h;
 
-                    float PredictionW = this->PreviousW + (this->PreviousX - DragUpdateX);
-                    float PredictionH = this->PreviousH + (this->PreviousY - DragUpdateY);
+                    float PredictionW = this->previous_w + (this->previous_x - DragUpdateX);
+                    float PredictionH = this->previous_h + (this->previous_y - DragUpdateY);
 
-                    X = PredictionW < (float) this->MinimumWidth ? this->PreviousX + this->PreviousW - (float) this->MinimumWidth : DragUpdateX;
-                    Y = PredictionH < (float) this->MinimumHeight ? this->PreviousY + this->PreviousH - (float) this->MinimumHeight : DragUpdateY;
+                    X = PredictionW < (float) this->min_width ? this->previous_x + this->previous_w - (float) this->min_width : DragUpdateX;
+                    Y = PredictionH < (float) this->min_height ? this->previous_y + this->previous_h - (float) this->min_height : DragUpdateY;
 
-                    if (this->GetMasterId() == 0) {
-                        this->Rect.X = X;
-                        this->Rect.Y = Y;
+                    if (this->get_master_id() == 0) {
+                        this->rect.X = X;
+                        this->rect.Y = Y;
                     } else {
-                        X -= this->ScaledX;
-                        Y -= this->ScaledY;
+                        X -= this->scaled_x;
+                        Y -= this->scaled_y;
 
                         if (X < 0) {
                             X = 0;
@@ -125,51 +125,50 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
                             Y = 0;
                         }
 
-                        this->SyncX = X;
-                        this->SyncY = Y;
+                        this->sync_x = X;
+                        this->sync_y = Y;
 
-                        this->SyncPos();
+                        this->sync_pos();
                     }
 
                     // Diff DataWidth & DataHeight. Not prediction anymore, recycled.
-                    PredictionW = this->PreviousW + (this->PreviousX - this->Rect.X);
-                    PredictionH = this->PreviousH + (this->PreviousY - this->Rect.Y);
+                    PredictionW = this->previous_w + (this->previous_x - this->rect.X);
+                    PredictionH = this->previous_h + (this->previous_y - this->rect.Y);
 
-                    W = PredictionW < (float) this->MinimumWidth ? (float) this->MinimumWidth : PredictionW;
-                    H = PredictionH < (float) this->MinimumHeight ? (float) this->MinimumHeight : PredictionH;
+                    W = PredictionW < (float) this->min_width ? (float) this->min_width : PredictionW;
+                    H = PredictionH < (float) this->min_height ? (float) this->min_height : PredictionH;
 
-                    this->Rect.W = W;
-                    this->Rect.H = H;
+                    this->rect.W = W;
+                    this->rect.H = H;
                 } else {
-                    X = this->Rect.X;
-                    Y = this->Rect.Y;
+                    X = this->rect.X;
+                    Y = this->rect.Y;
 
-                    W = FX - this->DragW;
-                    H = FY - this->DragH;
+                    W = FX - this->drag_w;
+                    H = FY - this->drag_h;
 
-                    if (this->GetMasterId() != 0) {
-                        if (X + W > this->ScaledX + this->ScaledWidth) {
-                            W = this->ScaledX + this->ScaledWidth - X;
+                    if (this->get_master_id() != 0) {
+                        if (X + W > this->scaled_x + this->scaled_width) {
+                            W = this->scaled_x + this->scaled_width - X;
                         }
 
-                        if (Y + H > this->ScaledY + this->ScaledHeight) {
-                            H = this->ScaledY + this->ScaledHeight - Y;
+                        if (Y + H > this->scaled_y + this->scale_height) {
+                            H = this->scaled_y + this->scale_height - Y;
                         }
 
-                        this->SyncPos();
+                        this->sync_pos();
                     }
 
-                    this->Rect.W = W < (float) this->MinimumWidth ? (float) this->MinimumWidth : W;
-                    this->Rect.H = H < (float) this->MinimumHeight ? (float) this->MinimumHeight : H;
+                    this->rect.W = W < (float) this->min_width ? (float) this->min_width : W;
+                    this->rect.H = H < (float) this->min_height ? (float) this->min_height : H;
                 }
 
                 MovingEvent = true;
-                EKG::Task(EKG::Task::BLOCKED);
+                ekg::task(ekg::task::BLOCKED);
             }
 
-            if (MovingEvent && this->IsMaster()) {
-                this->SyncSize();
-                EKG_CORE->Sync(this->Rect.X, this->Rect.Y, this->Rect.W, this->Rect.H, this->Children);
+            if (MovingEvent && this->is_master()) {
+                this->sync_parents_metric();
             }
 
             break;
@@ -179,51 +178,52 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
             float FX = Event.tfinger.x;
             float FY = Event.tfinger.y;
 
-            EKG::ScaledFingerPos(FX, FY);
+            ekg::scaled_finger_pos(FX, FY);
 
-            if (this->Hovered) {
-                if (this->DraggableDockFlags != 0 && !this->Dragging && this->Resizing == 0) {
-                    int CollidingDock = EKG::PointCollideDock(this->DraggableDockFlags, FX, FY, 0, this->DragOffset, this->Rect);
+            if (this->hovered) {
+                if (this->flags_dock_draggable != 0 && !this->dragging && this->resizing == 0) {
+                    int CollidingDock = ekg::point_collide_dock(this->flags_dock_draggable, FX, FY, 0,
+                                                                this->drag_offset_normal, this->rect);
 
                     if (CollidingDock != -1) {
-                        if (this->GetMasterId() == 0) {
-                            this->DragX = FX - this->Rect.X;
-                            this->DragY = FY - this->Rect.Y;
+                        if (this->get_master_id() == 0) {
+                            this->drag_x = FX - this->rect.X;
+                            this->drag_y = FY - this->rect.Y;
                         } else {
-                            this->DragX = FX - (this->Rect.X - this->ScaledX);
-                            this->DragY = FY - (this->Rect.Y - this->ScaledY);
+                            this->drag_x = FX - (this->rect.X - this->scaled_x);
+                            this->drag_y = FY - (this->rect.Y - this->scaled_y);
                         }
 
                         // Say true for dragging to the element.
-                        this->Dragging = true;
-                        EKG::Task(EKG::Task::BLOCKED);
+                        this->dragging = true;
+                        ekg::task(ekg::task::BLOCKED);
                     }
                 }
 
-                if (this->ResizableDockFlags != -1 && this->Resizing == 0 && !this->Dragging) {
-                    int CollidingDock = EKG::PointCollideDock(this->ResizableDockFlags, FX, FY, 0, this->ResizeOffset, this->Rect);
+                if (this->flags_dock_resizable != -1 && this->resizing == 0 && !this->dragging) {
+                    int CollidingDock = ekg::point_collide_dock(this->flags_dock_resizable, FX, FY, 0,
+                                                                this->resize_offset_normal, this->rect);
 
                     if (CollidingDock != -1) {
-                        if (CollidingDock == EKG::Dock::LEFT || CollidingDock == EKG::Dock::TOP) {
+                        if (CollidingDock == ekg::dock::LEFT || CollidingDock == ekg::dock::TOP) {
                             // Its works like a drag.
-                            this->DragW = FX - (this->Rect.X);
-                            this->DragH = FY - (this->Rect.Y);
+                            this->drag_w = FX - (this->rect.X);
+                            this->drag_h = FY - (this->rect.Y);
 
                             // Save to use after.
-                            this->PreviousX = this->Rect.X;
-                            this->PreviousY = this->Rect.Y;
-                            this->PreviousW = this->Rect.W;
-                            this->PreviousH = this->Rect.H;
+                            this->previous_x = this->rect.X;
+                            this->previous_y = this->rect.Y;
+                            this->previous_w = this->rect.W;
+                            this->previous_h = this->rect.H;
                         } else {
-                            this->DragW = FX - this->Rect.W;
-                            this->DragH = FY - this->Rect.H;
+                            this->drag_w = FX - this->rect.W;
+                            this->drag_h = FY - this->rect.H;
                         }
 
                         // Say true for resizing to the element.
-                        this->Resizing = CollidingDock;
-                        EKG::Task(EKG::Task::BLOCKED);
+                        this->resizing = CollidingDock;
+                        ekg::task(ekg::task::BLOCKED);
                     }
-
                 }
             }
 
@@ -231,154 +231,162 @@ void EKG_Frame::OnEvent(SDL_Event Event) {
         }
 
         case SDL_FINGERUP: {
-            this->Hovered = false;
-            this->Dragging = false;
-            this->Resizing = 0;
+            this->hovered = false;
+            this->dragging = false;
+            this->resizing = 0;
 
             break;
         }
     }
 }
 
-void EKG_Frame::OnPostEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnPostEvent(Event);
+void ekg_ui_element_frame::on_post_event(SDL_Event Event) {
+    ekg_abstract_element::on_post_event(Event);
 }
 
-void EKG_Frame::OnUpdate(const float &DeltaTicks) {
-    EKG_AbstractElement::OnUpdate(DeltaTicks);
+void ekg_ui_element_frame::on_update(const float &DeltaTicks) {
+    ekg_abstract_element::on_update(DeltaTicks);
 }
 
-void EKG_Frame::OnRender(const float &PartialTicks) {
-    EKG_AbstractElement::OnRender(PartialTicks);
+void ekg_ui_element_frame::on_render(const float &PartialTicks) {
+    ekg_abstract_element::on_render(PartialTicks);
 
     // Enable scissor test and cut off the fragments.
-    EKG_Scissor(this->GetScissorX(), this->GetScissorY(), this->GetScissorW(), this->GetScissorH());
+    ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(),
+                this->get_scissor_h());
 
     // Background.
-    EKG_Color Color(EKG_CORE->ColorTheme.FrameBackground);
+    EKG_Color Color(EKG_CORE->color_theme.FrameBackground);
 
-    if (this->CustomAlpha) {
-        Color.A = this->ValueAlpha;
+    if (this->alternative_alpha) {
+        Color.A = this->alpha;
     }
 
-    EKG_DrawFilledRect(this->Rect, Color);
+    ekg_draw_filled_rect(this->rect, Color);
 
-    // Border.
-    if (EKG_CORE->ColorTheme.IsOutlineFrameEnabled()) {
-        EKG_DrawOutlineRect(this->Rect, 2.0f, this->Border);
+    // border.
+    if (EKG_CORE->color_theme.IsOutlineFrameEnabled()) {
+        ekg_draw_outline_rect(this->rect, 2.0f, this->border);
     }
 
-    // Pressed state.
-    if (this->Dragging || this->Resizing != 0) {
-        Color.Set(EKG_CORE->ColorTheme.FramePressed);
-        EKG_DrawFilledRect(this->Rect, Color);
+    // pressed state.
+    if (this->dragging || this->resizing != 0) {
+        Color.Set(EKG_CORE->color_theme.FramePressed);
+        ekg_draw_filled_rect(this->rect, Color);
     }
 
     // End scissor.
-    EKG_EndScissor();
+    ekg_end_scissor();
 }
 
-void EKG_Frame::Alpha(unsigned int Alpha) {
-    this->CustomAlpha = true;
-    this->ValueAlpha = Alpha;
+void ekg_ui_element_frame::custom_alpha(unsigned int alpha255) {
+    this->alternative_alpha = true;
+    this->alpha = alpha255;
 }
 
-EKG_Color EKG_Frame::GetBorderColor() {
-    return this->Border;
+EKG_Color &ekg_ui_element_frame::get_border_color() {
+    return this->border;
 }
 
-void EKG_Frame::SetBorderColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A) {
-    this->Border.Set(R, G, B, A);
+void ekg_ui_element_frame::set_border_color(unsigned int r, unsigned int g, unsigned int b, unsigned int a) {
+    this->border.Set(r, g, b, a);
 }
 
-void EKG_Frame::Place(EKG_AbstractElement* Element, float X, float Y) {
-    if (Element->GetId() == this->GetId()) {
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Place waring: Place loop (master) id" + EKG_Print(Element->GetTag(), Element->GetId()));
+void ekg_ui_element_frame::place(ekg_abstract_element* element, float x, float y) {
+    if (element->get_id() == this->get_id()) {
+        ekg_log(ekg_print(this->tag, this->id) + "place waring: place loop (master) id" + ekg_print(
+                element->get_tag(), element->get_id()));
         return;
     }
 
-    if (this->Children.Contains(Element->GetId())) {
+    if (this->children_stack.Contains(element->get_id())) {
         return;
     }
 
-    this->Children.Put(Element->GetId());
+    this->children_stack.Put(element->get_id());
 
-    Element->SetMasterId(this->Id);
-    Element->Place(X, Y);
+    element->set_master_id(this->id);
+    element->place(x, y);
 
-    EKG_CORE->Sync(this->Rect.X, this->Rect.Y, this->Rect.W, this->Rect.H, this->Children);
+    this->sync_parents_metric();
 }
 
-void EKG_Frame::SetOffsetResize(float Offset) {
-    this->ResizeOffset = Offset;
+void ekg_ui_element_frame::set_resize_offset(float offset) {
+    this->resize_offset_normal = offset;
 }
 
-float EKG_Frame::GetOffsetResize() {
-    return this->ResizeOffset;
+float ekg_ui_element_frame::get_resize_offset() {
+    return this->resize_offset_normal;
 }
 
-void EKG_Frame::SetOffsetDrag(float Offset) {
-    this->DragOffset = Offset;
+void ekg_ui_element_frame::set_drag_offset(float offset) {
+    this->drag_offset_normal = offset;
 }
 
-float EKG_Frame::GetOffsetDrag() {
-    return this->DragOffset;
+float ekg_ui_element_frame::get_drag_offset() {
+    return this->drag_offset_normal;
 }
 
-void EKG_Frame::SetWidth(float Width) {
-    this->Rect.W = Width < this->MinimumWidth ? this->MinimumWidth : Width;
+void ekg_ui_element_frame::set_width(float width) {
+    this->rect.W = width < this->min_width ? this->min_width : width;
 }
 
-void EKG_Frame::SetHeight(float Height) {
-    this->Rect.H = Height < this->MinimumHeight ? this->MinimumHeight : Height;
+void ekg_ui_element_frame::set_height(float height) {
+    this->rect.H = height < this->min_height ? this->min_height : height;
 }
 
-void EKG_Frame::Place(float X, float Y) {
-    EKG_AbstractElement::Place(X, Y);
+void ekg_ui_element_frame::place(float X, float Y) {
+    ekg_abstract_element::place(X, Y);
 }
 
-void EKG_Frame::SyncSize() {
-    EKG_AbstractElement::SyncSize();
+void ekg_ui_element_frame::sync_size() {
+    ekg_abstract_element::sync_size();
 
-    this->Rect.W = this->Rect.W < this->MinimumWidth ? this->MinimumWidth : this->Rect.W;
-    this->Rect.H = this->Rect.H < this->MinimumHeight ? this->MinimumHeight : this->Rect.H;
+    this->rect.W = this->rect.W < this->min_width ? this->min_width : this->rect.W;
+    this->rect.H = this->rect.H < this->min_height ? this->min_height : this->rect.H;
 }
 
-void EKG_Frame::SetLimit(float MinWidth, float MinHeight) {
-    float Diff = MinWidth < 10 ? 10 : MinWidth;
+void ekg_ui_element_frame::SetLimit(float minimum_width, float minimum_height) {
+    float Diff = minimum_width < 10 ? 10 : minimum_width;
 
-    bool ShouldSyncPhase1 = this->MinimumWidth != Diff;
+    bool ShouldSyncPhase1 = this->min_width != Diff;
     bool ShouldSyncPhase2;
 
-    this->MinimumWidth = Diff;
+    this->min_width = Diff;
 
-    Diff = MinHeight < 10 ? 10 : MinHeight;
-    ShouldSyncPhase2 = this->MinimumHeight != Diff;
+    Diff = minimum_height < 10 ? 10 : minimum_height;
+    ShouldSyncPhase2 = this->min_height != Diff;
 
-    this->MinimumHeight = Diff;
+    this->min_height = Diff;
 
     if (ShouldSyncPhase1 || ShouldSyncPhase2) {
-        this->SyncSize();
+        this->sync_size();
     }
 }
 
-std::string EKG_Frame::InfoClass() {
-    EKG_AbstractElement::InfoClass();
+std::string ekg_ui_element_frame::info_class() {
+    ekg_abstract_element::info_class();
     return "frame";
 }
 
-float EKG_Frame::GetMinimumWidth() {
-    return this->MinimumWidth;
+float ekg_ui_element_frame::get_min_width() {
+    return this->min_width;
 }
 
-float EKG_Frame::GetMinimumHeight() {
-    return this->MinimumHeight;
+float ekg_ui_element_frame::get_min_height() {
+    return this->min_height;
 }
 
-void EKG_Frame::SetSize(float Width, float Height) {
-    if (this->Rect.W != Width || this->Rect.H != Height) {
-        this->Rect.W = Width;
-        this->Rect.H = Height;
-        this->SyncSize();
+void ekg_ui_element_frame::set_size(float width, float height) {
+    if (this->rect.W != width || this->rect.H != height) {
+        this->rect.W = width;
+        this->rect.H = height;
+        this->sync_size();
     }
+}
+
+void ekg_ui_element_frame::sync_parents_metric() {
+    this->sync_size();
+    EKG_CORE->sync_stack_scaled_metrics(this->rect.X, this->rect.Y, this->rect.W, this->rect.H,
+                                        this->children_stack);
 }

@@ -1,73 +1,73 @@
-#include "EKG_ui_element_button.h"
-#include "EKG.h"
+#include "ekg_ui_element_button.h"
+#include "ekg.h"
 
-void EKG_Button::BoxTexture(const EKG_Data &Texture) {
-    this->TextureBox = Texture;
+void ekg_ui_element_button::set_box_texture(const EKG_Data &texture) {
+    this->texture_box = texture;
 }
 
-void EKG_Button::SetPressed(bool State) {
-    this->Pressed = State;
+void ekg_ui_element_button::set_press_state(bool state) {
+    this->pressed = state;
 }
 
-bool EKG_Button::IsPressed() {
-    return this->Pressed;
+bool ekg_ui_element_button::is_pressed() {
+    return this->pressed;
 }
 
-void EKG_Button::SetChecked(bool State) {
-    this->Checked = State;
+void ekg_ui_element_button::set_check_state(bool state) {
+    this->checked = state;
 }
 
-bool EKG_Button::IsChecked() {
-    return this->Checked;
+bool ekg_ui_element_button::is_checked() {
+    return this->checked;
 }
 
-bool EKG_Button::IsCheckBox() {
-    return this->Box;
+bool ekg_ui_element_button::is_check_box() {
+    return this->box;
 }
 
-void EKG_Button::OnPreEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnPreEvent(Event);
+void ekg_ui_element_button::on_pre_event(SDL_Event event) {
+    ekg_abstract_element::on_pre_event(event);
 
-    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION) {
-        float FX = Event.tfinger.x;
-        float FY = Event.tfinger.y;
+    if (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION) {
+        float FX = event.tfinger.x;
+        float FY = event.tfinger.y;
 
-        EKG::ScaledFingerPos(FX, FY);
-        this->HoveredBox = this->DetectPointCollideBox(FX, FY);
+        ekg::scaled_finger_pos(FX, FY);
+        this->hovered_box = this->detect_point_collide_box(FX, FY);
     }
 }
 
-void EKG_Button::OnEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnEvent(Event);
+void ekg_ui_element_button::on_event(SDL_Event event) {
+    ekg_abstract_element::on_event(event);
 
-    switch (Event.type) {
+    switch (event.type) {
         case SDL_FINGERDOWN: {
-            if (this->Hovered) {
-                EKG::Task(EKG::Task::BLOCKED);
-                this->Pressed = true;
+            if (this->hovered) {
+                ekg::task(ekg::task::BLOCKED);
+                this->pressed = true;
             }
 
             break;
         }
 
         case SDL_FINGERUP: {
-            if (this->Pressed) {
-                float FX = Event.tfinger.x;
-                float FY = Event.tfinger.y;
+            if (this->pressed) {
+                float FX = event.tfinger.x;
+                float FY = event.tfinger.y;
 
-                EKG::ScaledFingerPos(FX, FY);
+                ekg::scaled_finger_pos(FX, FY);
 
-                this->HoveredBox = this->DetectPointCollideBox(FX, FY);
-                this->Hovered = this->IsFingerOver(FX, FY);
+                this->hovered_box = this->detect_point_collide_box(FX, FY);
+                this->hovered = this->collide_with_pos(FX, FY);
 
-                if (this->HoveredBox || this->Hovered) {
-                    EKG::Task(EKG::Task::BLOCKED);
+                if (this->hovered_box || this->hovered) {
+                    ekg::task(ekg::task::BLOCKED);
 
-                    this->Checked = this->IsCheckBox() ? !this->Checked : this->Checked;
-                    this->Clicked = true;
+                    this->checked = this->is_check_box() ? !this->checked : this->checked;
+                    this->clicked = true;
                 }
 
-                this->Pressed = false;
+                this->pressed = false;
             }
 
             break;
@@ -75,276 +75,287 @@ void EKG_Button::OnEvent(SDL_Event Event) {
     }
 }
 
-void EKG_Button::OnPostEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnPostEvent(Event);
-    this->HoveredBox = false;}
+void ekg_ui_element_button::on_post_event(SDL_Event event) {
+    ekg_abstract_element::on_post_event(event);
+    this->hovered_box = false;}
 
-void EKG_Button::OnUpdate(const float &DeltaTicks) {
-    EKG_AbstractElement::OnUpdate(DeltaTicks);
+void ekg_ui_element_button::on_update(const float &delta_ticks) {
+    ekg_abstract_element::on_update(delta_ticks);
 }
 
-void EKG_Button::OnRender(const float &PartialTicks) {
-    EKG_AbstractElement::OnRender(PartialTicks);
+void ekg_ui_element_button::on_render(const float &render_ticks) {
+    ekg_abstract_element::on_render(render_ticks);
 
     // Reset stuff.
-    this->Clicked = false;
+    this->clicked = false;
 
-    // Update it.
-    this->SmoothPressed.NextFactory = this->Pressed && !this->HoveredBox? (float) EKG_CORE->ColorTheme.WidgetPressed[3] : 0;
-    this->SmoothBoxPressed.NextFactory = this->HoveredBox && this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[3] : 0;
-    this->SmoothBoxActivy.NextFactory = this->Checked ? (float) EKG_CORE->ColorTheme.WidgetActivy[3] : 0;
+    // update it.
+    this->smooth_pressed.NextFactory = this->pressed && !this->hovered_box ? (float) EKG_CORE->color_theme.WidgetPressed[3] : 0;
+    this->smooth_box_pressed.NextFactory = this->hovered_box && this->pressed ? (float) EKG_CORE->color_theme.WidgetPressed[3] : 0;
+    this->smooth_box_activy.NextFactory = this->checked ? (float) EKG_CORE->color_theme.WidgetActivy[3] : 0;
 
-    // Update animations.
-    this->SmoothPressed.Update(PartialTicks);
-    this->SmoothBoxPressed.Update(PartialTicks);
-    this->SmoothBoxActivy.Update(PartialTicks);
+    // update animations.
+    this->smooth_pressed.Update(render_ticks);
+    this->smooth_box_pressed.Update(render_ticks);
+    this->smooth_box_activy.Update(render_ticks);
 
     // Enable scissor test and cut off the fragments.
-    EKG_Scissor(this->GetScissorX(), this->GetScissorY(), this->GetScissorW(), this->GetScissorH());
+    ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(), this->get_scissor_h());
 
     // Background
-    EKG_Color Color(EKG_CORE->ColorTheme.WidgetBackground);
-    EKG_DrawFilledRect(this->Rect, Color);
+    EKG_Color color(EKG_CORE->color_theme.WidgetBackground);
+    ekg_draw_filled_rect(this->rect, color);
 
-    // Border
-    if (EKG_CORE->ColorTheme.IsOutlineButtonEnabled()) {
-        EKG_DrawOutlineRect(this->Rect, 1.5f, EKG_CORE->ColorTheme.StringColor);
+    // border
+    if (EKG_CORE->color_theme.IsOutlineButtonEnabled()) {
+        ekg_draw_outline_rect(this->rect, 1.5f, EKG_CORE->color_theme.StringColor);
     }
 
-    // Pressed.
-    if (this->SmoothPressed.Factory > 10) {
-        Color.Set(EKG_CORE->ColorTheme.WidgetPressed, (unsigned int) this->SmoothPressed.Factory);
-        EKG_DrawFilledRect(this->Rect, Color);
+    // pressed.
+    if (this->smooth_pressed.Factory > 10) {
+        color.Set(EKG_CORE->color_theme.WidgetPressed, (unsigned int) this->smooth_pressed.Factory);
+        ekg_draw_filled_rect(this->rect, color);
     }
 
-    if (this->Box) {
-        if (this->SmoothBoxActivy.Factory > 10) {
-            Color.Set(EKG_CORE->ColorTheme.WidgetActivy, (unsigned int) this->SmoothBoxActivy.Factory);
-            EKG_DrawFilledShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], Color);
+    if (this->box) {
+        if (this->smooth_box_activy.Factory > 10) {
+            color.Set(EKG_CORE->color_theme.WidgetActivy, (unsigned int) this->smooth_box_activy.Factory);
+            ekg_draw_filled_shape(this->get_x() + this->box_rect[0], this->get_y() + this->box_rect[1], this->box_rect[2], this->box_rect[3], color);
         }
 
-        // Border of box.
-        EKG_DrawOutlineShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], 2.0F, EKG_CORE->ColorTheme.StringColor);
+        // border of box.
+        ekg_draw_outline_shape(this->get_x() + this->box_rect[0], this->get_y() + this->box_rect[1], this->box_rect[2], this->box_rect[3], 2.0F, EKG_CORE->color_theme.StringColor);
 
-        // Box
-        if (this->SmoothBoxPressed.Factory > 10) {
-            Color.Set(EKG_CORE->ColorTheme.WidgetPressed, (unsigned int) this->SmoothBoxPressed.Factory);
-            EKG_DrawFilledShape(this->GetX() + this->BoxRect[0], this->GetY() + this->BoxRect[1], this->BoxRect[2], this->BoxRect[3], Color);
+        // box
+        if (this->smooth_box_pressed.Factory > 10) {
+            color.Set(EKG_CORE->color_theme.WidgetPressed, (unsigned int) this->smooth_box_pressed.Factory);
+            ekg_draw_filled_shape(this->get_x() + this->box_rect[0], this->get_y() + this->box_rect[1], this->box_rect[2], this->box_rect[3], color);
         }
     }
 
     // String.
-    EKG_CORE->FontRenderer.DrawString(this->Tag, this->Rect.X + this->AlignOffsetText + this->OffsetText, this->Rect.Y + this->Scale, EKG_CORE->ColorTheme.StringColor);
+    EKG_CORE->font_renderer.DrawString(this->tag, this->rect.X + this->align_offset_text + this->offset_text, this->rect.Y + this->size, EKG_CORE->color_theme.StringColor);
 
     // End scissor.
-    EKG_EndScissor();
+    ekg_end_scissor();
 }
 
-EKG_Data EKG_Button::GetBoxTexture() {
-    return this->TextureBox;
+EKG_Data &ekg_ui_element_button::get_check_box_texture() {
+    return this->texture_box;
 }
 
-void EKG_Button::SetOffsetText(float Offset) {
-    this->OffsetText = Offset;
+void ekg_ui_element_button::set_offset_text(float offset) {
+    this->offset_text = offset;
 }
 
-float EKG_Button::GetOffsetText() {
-    return this->OffsetText;
+float ekg_ui_element_button::get_offset_text() {
+    return this->offset_text;
 }
 
-void EKG_Button::SetOffsetBox(float Offset) {
-    this->OffsetBox = Offset;
+void ekg_ui_element_button::set_offset_box(float offset) {
+    this->offset_box = offset;
 }
 
-float EKG_Button::GetOffsetBox() {
-    return this->OffsetBox;
+float ekg_ui_element_button::get_offset_box() {
+    return this->offset_box;
 }
 
-float* EKG_Button::GetBoxRect() {
-    return this->BoxRect;
+float* ekg_ui_element_button::get_box_rect() {
+    return this->box_rect;
 }
 
-bool EKG_Button::IsHoveredBox() {
-    return this->HoveredBox;
+bool ekg_ui_element_button::is_hovered_box() {
+    return this->hovered_box;
 }
 
-void EKG_Button::SetHoveredBox(bool Over) {
-    this->HoveredBox = Over;
+void ekg_ui_element_button::set_hovered_box_state(bool state) {
+    this->hovered_box = state;
 }
 
-void EKG_Button::SetBoxRect(float X, float Y, float W, float H) {
-    this->BoxRect[0] = X;
-    this->BoxRect[1] = Y;
-    this->BoxRect[2] = W;
-    this->BoxRect[3] = H;
+void ekg_ui_element_button::set_box_rect(float x, float y, float w, float h) {
+    this->box_rect[0] = x;
+    this->box_rect[1] = y;
+    this->box_rect[2] = w;
+    this->box_rect[3] = h;
 }
 
-bool EKG_Button::DetectPointCollideBox(float X, float Y) {
-    float BX = this->GetX() + this->BoxRect[0];
-    float BY = this->GetY() + this->BoxRect[1];
-    float BW = this->BoxRect[2];
-    float BH = this->BoxRect[3];
+bool ekg_ui_element_button::detect_point_collide_box(float x, float y) {
+    float bx = this->get_x() + this->box_rect[0];
+    float by = this->get_y() + this->box_rect[1];
+    float bw = this->box_rect[2];
+    float bh = this->box_rect[3];
 
-    return X > BX && Y > BY && X < BX + BW && Y < BY + BH;
+    return x > bx && y > by && x < bx + bw && y < by + bh;
 }
 
-void EKG_Button::SetScale(float ButtonScale) {
-    if (this->Scale != ButtonScale) {
-        this->Scale = ButtonScale;
-        this->SyncSize();
+void ekg_ui_element_button::set_size(float button_size) {
+    if (this->size != button_size) {
+        this->size = button_size;
+        this->sync_size();
     }
 }
 
-float EKG_Button::GetScale() const {
-    return this->Scale;
+float ekg_ui_element_button::get_size() {
+    return this->size;
 }
 
-void EKG_Button::SyncSize() {
-    EKG_AbstractElement::SyncSize();
+void ekg_ui_element_button::sync_size() {
+    ekg_abstract_element::sync_size();
 
-    this->TextWidth = EKG_CORE->FontRenderer.GetStringWidth(this->Tag);
-    this->TextHeight = EKG_CORE->FontRenderer.GetStringHeight(this->Tag);
+    this->text_width = EKG_CORE->font_renderer.GetStringWidth(this->tag);
+    this->text_height = EKG_CORE->font_renderer.GetStringHeight(this->tag);
 
-    this->Rect.H = this->Scale + this->TextHeight + this->Scale;
+    this->rect.H = this->size + this->text_height + this->size;
 
-    /* After sync minimal sizes of rect. */
-    /* We need to sync align text and box (if mode is on). */
+    /* After sync_stack_scaled_metrics minimal sizes of rect. */
+    /* We need to sync_stack_scaled_metrics align text and box (if the mode is on). */
 
-    if (this->Box) {
+    if (this->box) {
         // The square of box.
-        float Square = !this->BoxScaled ? this->TextHeight : (this->Rect.H / 2) + ((this->Rect.H / 4));
+        float factor = !this->box_scaled ? this->text_height : (this->rect.H / 2) + ((this->rect.H / 4));
 
-        this->BoxRect[2] = Square;
-        this->BoxRect[3] = Square;
+        this->box_rect[2] = factor;
+        this->box_rect[3] = factor;
 
-        switch (this->AlignBoxDocking) {
-            case EKG::Dock::LEFT: {
-                this->AlignOffsetBox = Square / 4;
+        switch (this->align_box_docking) {
+            case ekg::dock::LEFT: {
+                this->align_offset_box = factor / 4;
                 break;
             }
 
-            case EKG::Dock::RIGHT: {
-                this->AlignOffsetBox = this->Rect.W - Square - (Square / 4);
+            case ekg::dock::RIGHT: {
+                this->align_offset_box = this->rect.W - factor - (factor / 4);
                 break;
             }
 
-            case EKG::Dock::CENTER: {
-                this->AlignOffsetBox = (this->Rect.W / 2) - (Square / 2);
+            case ekg::dock::CENTER: {
+                this->align_offset_box = (this->rect.W / 2) - (factor / 2);
                 break;
             }
         }
     }
 
-    switch (this->AlignTextDocking) {
-        case EKG::Dock::LEFT: {
-            this->AlignOffsetText = 4.0f;
+    switch (this->align_text_docking) {
+        case ekg::dock::LEFT: {
+            this->align_offset_text = 4.0f;
             break;
         }
 
-        case EKG::Dock::RIGHT: {
-            this->AlignOffsetText = this->Rect.W - this->TextWidth - 4.0f;
+        case ekg::dock::RIGHT: {
+            this->align_offset_text = this->rect.W - this->text_width - 4.0f;
             break;
         }
 
-        case EKG::Dock::CENTER: {
-            this->AlignOffsetText = (this->Rect.W / 2) - (this->TextWidth / 2);
+        case ekg::dock::CENTER: {
+            this->align_offset_text = (this->rect.W / 2) - (this->text_width / 2);
             break;
         }
     }
 
     // Now update the check box ret offset pos.
-    if (this->Box) {
-        this->BoxRect[0] = this->AlignOffsetBox + this->OffsetBox;
-        this->BoxRect[1] = this->BoxScaled ? ((this->Rect.H - this->BoxRect[2]) / 2) : this->Scale;
+    if (this->box) {
+        this->box_rect[0] = this->align_offset_box + this->offset_box;
+        this->box_rect[1] = this->box_scaled ? ((this->rect.H - this->box_rect[2]) / 2) : this->size;
 
-        float Square = this->BoxRect[2];
-        float X = this->BoxRect[0];
+        float factor = this->box_rect[2];
+        float x = this->box_rect[0];
 
-        if (this->AlignBoxDocking == EKG::Dock::LEFT && X + Square >= this->AlignOffsetText) {
-            this->OffsetText = ((X + Square) - this->AlignOffsetText) + 2.0F;
+        if (this->align_box_docking == ekg::dock::LEFT && x + factor >= this->align_offset_text) {
+            this->offset_text = ((x + factor) - this->align_offset_text) + 2.0F;
         }
 
-        if (this->AlignBoxDocking == EKG::Dock::RIGHT && this->OffsetText + this->AlignOffsetText + this->TextWidth >= this->AlignOffsetBox) {
-            this->OffsetText = X - this->TextWidth - this->AlignOffsetText - 2.0F;
+        if (this->align_box_docking == ekg::dock::RIGHT && this->offset_text + this->align_offset_text + this->text_width >= this->align_offset_box) {
+            this->offset_text = x - this->text_width - this->align_offset_text - 2.0F;
         }
     }
 }
 
-float EKG_Button::GetTextWidth() {
-    return this->TextWidth;
+float ekg_ui_element_button::get_text_width() {
+    return this->text_width;
 }
 
-float EKG_Button::GetTextHeight() {
-    return this->TextHeight;
+float ekg_ui_element_button::get_text_height() {
+    return this->text_height;
 }
 
-void EKG_Button::SetWidth(float Width) {
-    if (this->Rect.W != Width) {
-        this->Rect.W = Width;
-        this->SyncSize();
+void ekg_ui_element_button::SetWidth(float Width) {
+    if (this->rect.W != Width) {
+        this->rect.W = Width;
+        this->sync_size();
     }
 }
 
-bool EKG_Button::IsClicked() {
-    return this->Clicked;
+bool ekg_ui_element_button::is_clicked() {
+    return this->clicked;
 }
 
-void EKG_Button::SetClicked(bool IsClicked) {
-    this->Clicked = IsClicked;
+void ekg_ui_element_button::set_click_state(bool state) {
+    this->clicked = state;
 }
 
-void EKG_Button::Mode(const std::string& Mode) {
-    bool ShouldSync = this->Box != true;
+void ekg_ui_element_button::set_mode(const std::string& mode) {
+    bool should_sync = this->box != true;
 
-    if (Mode == "CheckBoxScaled") {
-        this->Box = true;
-        this->BoxScaled = true;
-    } else if (Mode == "CheckBox") {
-        ShouldSync = ShouldSync == false ? true : ShouldSync;
+    if (mode == "check-box-scaled") {
+        this->box = true;
+        this->box_scaled = true;
+        this->button_mode = mode;
+    } else if (mode == "check-box") {
+        should_sync = should_sync == false ? true : should_sync;
 
-        this->Box = true;
-        this->BoxScaled = false;
-    } else if (Mode == "Normal") {
-        if (this->Box != false) {
-            ShouldSync = true;
+        this->box = true;
+        this->box_scaled = false;
+        this->button_mode = mode;
+    } else if (mode == "normal") {
+        if (this->box != false) {
+            should_sync = true;
         }
 
-        this->Box = false;
+        this->box = false;
+        this->button_mode = mode;
     } else {
-        ShouldSync = false;
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Mode does not exist: (CheckBoxScaled - CheckBox - Normal) ???\"" + Mode + "\"???");
+        should_sync = false;
+        ekg_log(ekg_print(this->tag, this->id) +
+                "set_mode does not exist: (check-box-scaled - check-box - normal) ???\"" + mode +
+                "\"???");
     }
 
-    if (ShouldSync) {
-        this->SyncSize();
+    if (should_sync) {
+        this->sync_size();
     }
 }
 
-void EKG_Button::AlignBox(unsigned int Dock) {
-    bool Flag = (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT);
+void ekg_ui_element_button::align_box(unsigned int dock) {
+    bool flag = (dock == ekg::dock::LEFT || dock == ekg::dock::CENTER || dock == ekg::dock::RIGHT);
 
-    if (this->AlignBoxDocking != Dock) {
-        this->AlignBoxDocking = Dock;
-        this->OffsetBox = 0.0F;
-        this->SyncSize();
+    if (this->align_box_docking != dock && flag) {
+        this->align_box_docking = dock;
+        this->offset_box = 0.0F;
+        this->sync_size();
     } else {
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect box align: only accept (LEFT - CENTER - RIGHT)");
+        ekg_log(ekg_print(this->tag, this->id) +
+                "Incorrect box align: only accept (LEFT - CENTER - RIGHT)");
     }
 }
 
-void EKG_Button::AlignText(unsigned int Dock) {
-    bool Flag = (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT);
+void ekg_ui_element_button::align_text(unsigned int dock) {
+    bool flag = (dock == ekg::dock::LEFT || dock == ekg::dock::CENTER || dock == ekg::dock::RIGHT);
 
-    if (this->AlignTextDocking != Dock && Flag) {
-        this->AlignTextDocking = Dock;
-        this->OffsetText = 0.0F;
-        this->SyncSize();
+    if (this->align_text_docking != dock && flag) {
+        this->align_text_docking = dock;
+        this->offset_text = 0.0F;
+        this->sync_size();
     } else {
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect text align: only accept (LEFT - CENTER - RIGHT)");
+        ekg_log(ekg_print(this->tag, this->id) +
+                "Incorrect text align: only accept (LEFT - CENTER - RIGHT)");
     }
 }
 
-std::string EKG_Button::InfoClass() {
-    EKG_AbstractElement::InfoClass();
+std::string ekg_ui_element_button::info_class() {
+    ekg_abstract_element::info_class();
     return "button";
+}
+
+std::string ekg_ui_element_button::get_mode() {
+    return this->button_mode;
 }

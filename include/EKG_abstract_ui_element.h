@@ -3,8 +3,8 @@
  * @since 21/03/2022 at 21:05PM
  */
 #pragma once
-#include "EKG_includes.h"
-#include "EKG_util.h"
+#include "ekg_includes.h"
+#include "ekg_util.h"
 
 #ifndef EKG_ABSTRACT_UI_ELEMENT_H
 #define EKG_ABSTRACT_UI_ELEMENT_H
@@ -12,106 +12,103 @@
 /**
  * Abstract element.
  */
-class EKG_AbstractElement {
+class ekg_abstract_element {
 protected:
     /* The tag of element. */
-    std::string Tag;
+    std::string tag;
 
     /* The element ID. */
-    unsigned int Id;
+    unsigned int id;
 
     /* Master, children & collided stacks. */
-    unsigned int MasterId;
-    EKG_Stack Children, Collided;
+    unsigned int master_id;
+    ekg_stack children_stack;
 
-    /* Rect of this element and scaled metrics. */
-    EKG_Rect Rect;
-    float ScaledX, ScaledY, ScaledWidth, ScaledHeight, SyncX, SyncY;
+    /* rect of this element and scaled metrics. */
+    ekg_rect rect;
+    float scaled_x, scaled_y, scaled_width, scale_height, sync_x, sync_y;
 
-    /* Scissor metrics (very important to scissor works). */
-    int ScissorX, ScissorY, ScissorW, ScissorH;
+    /* scissor_sync metrics (very important to scissor works). */
+    int scissor_x, scissor_y, scissor_w, scissor_h;
 
     /* Main flags. */
-    bool Hovered, Disabled, Dead, NoRender;
-    unsigned int Visible;
+    bool hovered, disabled, dead;
+    unsigned int visible;
 public:
-    EKG_AbstractElement();
-    ~EKG_AbstractElement();
+    ekg_abstract_element();
+    ~ekg_abstract_element();
 
     /* Start of setters and getters. */
-    bool IsMaster();
-    bool IsFingerOver(float X, float Y);
+    bool is_master();
+    bool collide_with_pos(float x, float y);
 
-    void SetTag(const std::string &NewTag);
-    std::string GetTag();
+    void set_tag(const std::string &new_tag);
+    std::string get_tag();
 
-    void SetId(unsigned int ElementId);
-    unsigned int GetId();
+    void set_id(unsigned int element_id);
+    unsigned int get_id();
 
-    virtual void SetMasterId(unsigned int ElementMasterId);
-    unsigned int GetMasterId();
+    virtual void set_master_id(unsigned int element_id);
+    unsigned int get_master_id();
 
-    void SetChildren(const EKG_Stack &Stack);
-    EKG_Stack GetChildren();
+    void set_children_stack(const ekg_stack &the_stack);
+    ekg_stack GetChildren();
 
-    void SetCollided(const EKG_Stack &Stack);
-    EKG_Stack GetCollided();
+    void set_rect(const ekg_rect &rectangle);
+    ekg_rect get_rect();
 
-    void SetRect(const EKG_Rect &Rectangle);
-    EKG_Rect GetRect();
+    float get_x();
+    float get_y();
+    float get_width();
+    float get_height();
 
-    float GetX();
-    float GetY();
-    float GetWidth();
-    float GetHeight();
+    void set_scaled(float x, float y, float width, float height);
+    void set_scissor(int x, int y, int w, int h);
 
-    void SetScaled(float X, float Y, float Width, float Height);
-    void SetScissor(int X, int Y, int W, int H);
+    void set_hover_state(bool state);
+    bool is_hovered();
 
-    void SetHovered(bool State);
-    bool IsHovered();
+    virtual void set_visibility_flag(unsigned int flag);
+    unsigned int get_visibility_flag();
 
-    unsigned int GetVisibility();
+    void set_disable_state(bool state);
+    bool is_disabled();
 
-    void SetDisabled(bool State);
-    bool IsDisabled();
+    void set_dead_state(bool state);
+    bool is_dead();
 
-    void SetDead(bool State);
-    bool IsDead();
-
-    int GetScissorX();
-    int GetScissorY();
-    int GetScissorW();
-    int GetScissorH();
+    int get_scissor_x();
+    int get_scissor_y();
+    int get_scissor_w();
+    int get_scissor_h();
     /* End of setters and getters. */
 
     /* Start of action methods. */
-    virtual void Place(float X, float Y);
-    virtual void Remove(unsigned int ElementId);
-    virtual void Kill();
-    virtual void Visibility(unsigned int VisibilityFlag);
+    virtual void place(float x, float y);
+    virtual void remove(unsigned int element_id);
+    virtual void kill();
 
-    virtual void SyncPos();
-    virtual void SyncSize();
+    virtual void sync_pos();
+    virtual void sync_size();
     /* End of action methods. */
 
     /* Start of invokable update methods (important to make works). */
-    void Scissor();
-    void Stack(EKG_Stack &Stack);
+    void scissor_sync();
+    void push_children_ids_to_stack(ekg_stack &stack);
     /* End of invokable update methods. */
 
     /* Start of overrides methods. */
-    virtual std::string InfoClass();
+    virtual std::string info_class();
 
-    virtual void OnChildKilled(unsigned int ChildElementId);
-    virtual void OnMasterKilled(unsigned int MasterElementId);
+    virtual void on_parent_killed(unsigned int element_id);
+    virtual void on_master_killed(unsigned int element_id);
 
-    virtual void OnPreEvent(SDL_Event Event);
-    virtual void OnEvent(SDL_Event Event);
-    virtual void OnPostEvent(SDL_Event Event);
+    virtual void on_pre_event(SDL_Event Event);
+    virtual void on_event(SDL_Event Event);
+    virtual void on_post_event(SDL_Event Event);
 
-    virtual void OnUpdate(const float &DeltaTicks);
-    virtual void OnRender(const float &PartialTicks);
+    virtual void on_update(const float &DeltaTicks);
+    virtual void on_render(const float &PartialTicks);
     /* End of overrides methods. */
 };
 

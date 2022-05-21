@@ -1,10 +1,10 @@
-#include "EKG_util.h"
-#include "EKG.h"
+#include "ekg_util.h"
+#include "ekg.h"
 
 // Reserve memory to masks used to draw stuff.
 static float MASK_QUAD_MATERIAL_COLOR[6 * 4], MASK_QUAD_MATERIAL[6 * 2], MASK_QUAD_VERTEX[6 * 3];
 
-void EKG_Scissor(int X, int Y, int W, int H) {
+void ekg_scissor(int X, int Y, int W, int H) {
     W++;
     H++;
 
@@ -12,14 +12,14 @@ void EKG_Scissor(int X, int Y, int W, int H) {
     int FactorH = Y + H;
 
     glEnable(GL_SCISSOR_TEST);
-    glScissor(X, (int) EKG::DeviceScreenHeight - FactorH, FactorW - X, FactorH - Y);
+    glScissor(X, (int) ekg::screen_height - FactorH, FactorW - X, FactorH - Y);
 }
 
-void EKG_EndScissor() {
+void ekg_end_scissor() {
     glDisable(GL_SCISSOR_TEST);
 }
 
-bool EKG_Stack::Contains(unsigned int Id) {
+bool ekg_stack::Contains(unsigned int Id) {
     for (unsigned int Ids : this->StackedIds) {
         if (Ids == Id) {
             return true;
@@ -29,30 +29,32 @@ bool EKG_Stack::Contains(unsigned int Id) {
     return false;
 }
 
-bool EKG_Stack::Rem(unsigned int Id) {
-    std::vector<unsigned int> NewStackedIds;
-    bool Flag;
+bool ekg_stack::Rem(unsigned int Id) {
+    int Index = -1;
 
-    for (unsigned int Ids : this->StackedIds) {
-        if (Ids == Id) {
-            Flag = true;
-        } else {
-            NewStackedIds.push_back(Ids);
+    for (unsigned int I = 0; I < this->StackedIds.size(); I++) {
+        if (this->StackedIds.at(I) == Id) {
+            Index = I;
+            break;
         }
     }
 
-    this->StackedIds = NewStackedIds;
-    return Flag;
+    if (Index != -1) {
+        this->StackedIds.erase(this->StackedIds.begin() + Index);
+        return true;
+    }
+
+    return false;
 }
 
-bool EKG_Stack::Put(unsigned int Id) {
+bool ekg_stack::Put(unsigned int Id) {
     this->StackedIds.push_back(Id);
     return true;
 }
 
-void EKG_Log(const std::string &Log) {
+void ekg_log(const std::string &Log) {
     // Send log using SDL function.
-    SDL_Log("%s", ("[EKG] " + Log).c_str());
+    SDL_Log("%s", ("[ekg] " + Log).c_str());
 }
 
 void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top) {
@@ -87,7 +89,7 @@ void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top) {
     *Mat++ = (1.0f);
 }
 
-void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Color) {
+void ekg_draw_filled_shape(float X, float Y, float W, float H, const EKG_Color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6);
 
     float R = (float) Color.R / 255.0F;
@@ -149,7 +151,7 @@ void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Co
     EKG_TESSELLATOR->Draw(18, 24, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
 }
 
-void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color) {
+void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_LINE_STRIP, 6);
     EKG_TESSELLATOR->SetTextureColor(Color);
 
@@ -207,19 +209,19 @@ void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThicknes
     EKG_TESSELLATOR->Draw(18, 24, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
 }
 
-void EKG_DrawFilledRect(const EKG_Rect &Rect, const EKG_Color &Color) {
-    EKG_DrawFilledShape(Rect.X, Rect.Y, Rect.W, Rect.H, Color);
+void ekg_draw_filled_rect(const ekg_rect &Rect, const EKG_Color &Color) {
+    ekg_draw_filled_shape(Rect.X, Rect.Y, Rect.W, Rect.H, Color);
 }
 
-void EKG_DrawOutlineRect(const EKG_Rect &Rect, float LineThickness, const EKG_Color &Color) {
-    EKG_DrawOutlineShape(Rect.X, Rect.Y, Rect.W, Rect.H, LineThickness, Color);
+void ekg_draw_outline_rect(const ekg_rect &Rect, float LineThickness, const EKG_Color &Color) {
+    ekg_draw_outline_shape(Rect.X, Rect.Y, Rect.W, Rect.H, LineThickness, Color);
 }
 
 void EKG_StoreShape(float X, float Y, float W, float H) {
 
 }
 
-void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color) {
+void EKG_DrawTextureRect(const ekg_rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color) {
     EKG_DrawTextureShape(Rect.X, Rect.Y, Rect.W, Rect.H, TextureX, TextureY, TextureW, TextureH, Texture, Color);
 }
 
@@ -269,7 +271,7 @@ void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, fl
     EKG_TESSELLATOR->Draw(18, 12, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL);
 }
 
-std::string EKG_Print(const std::string &Tag, unsigned int Id) {
+std::string ekg_print(const std::string &Tag, unsigned int Id) {
     return " [" + Tag + "-" + std::to_string(Id) + "] ";;
 }
 
@@ -289,7 +291,7 @@ float EKG_Clampf(float V, float Min, float Max) {
     return V < Min ? Min : (V > Max ? Max : V);
 }
 
-bool EKG_StringContains(const std::string &StringOne, const std::string &StringTwo) {
+bool ekg_string_in(const std::string &StringOne, const std::string &StringTwo) {
     return StringOne.find(StringTwo) != std::string::npos;
 }
 
@@ -369,18 +371,18 @@ void EKG_Color::Set(uint8_t Color[3], uint8_t Alpha) {
     this->A = Alpha;
 }
 
-bool EKG_Rect::CollideWithPoint(float PointX, float PointY) {
+bool ekg_rect::CollideWithPoint(float PointX, float PointY) {
     return PointX > this->X && PointY > this->Y && PointX < this->X + this->W && PointY < this->Y + this->H;
 }
 
-bool EKG_Rect::CollideWithRect(float RectX, float RectY, float RectW, float RectH) {
+bool ekg_rect::CollideWithRect(float RectX, float RectY, float RectW, float RectH) {
     return this->X < RectX + RectW &&
            this->X + this->W > RectX &&
            this->Y < RectY + RectH &&
            this->Y + this->H > RectY;
 }
 
-void EKG_ColorTheme::Frame(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {
+void ekg_color_theme::Frame(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {
     switch (Flag) {
         case BACKGROUND: {
             this->FrameBackground[0] = RedValue;
@@ -424,7 +426,7 @@ void EKG_ColorTheme::Frame(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, u
     }
 }
 
-void EKG_ColorTheme::Container(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {
+void ekg_color_theme::Container(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {
     switch (Flag) {
         case BACKGROUND: {
             this->ContainerBackground[0] = RedValue;
@@ -468,7 +470,7 @@ void EKG_ColorTheme::Container(uint8_t Flag, uint8_t RedValue, uint8_t GreenValu
     }
 }
 
-void EKG_ColorTheme::Widget(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue)  {
+void ekg_color_theme::Widget(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue)  {
     switch (Flag) {
         case BACKGROUND: {
             this->WidgetBackground[0] = RedValue;
@@ -512,7 +514,7 @@ void EKG_ColorTheme::Widget(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, 
     }
 }
 
-void EKG_ColorTheme::Init() {
+void ekg_color_theme::Init() {
     Frame(BACKGROUND, 61, 61, 60, 255);
     Frame(HIGHLIGHT, 0, 0, 0, 0);
     Frame(PRESSED, 255, 255, 255, 50);
@@ -538,23 +540,23 @@ void EKG_ColorTheme::Init() {
     this->StringColor.Set(255, 255, 255);
 }
 
-bool EKG_ColorTheme::IsOutlineFrameEnabled() {
+bool ekg_color_theme::IsOutlineFrameEnabled() {
     return this->OutlineFrame;
 }
 
-bool EKG_ColorTheme::IsOutlineButtonEnabled() {
+bool ekg_color_theme::IsOutlineButtonEnabled() {
     return this->OutlineFrame;
 }
 
-void EKG_ColorTheme::Quit() {
+void ekg_color_theme::Quit() {
     // Nothing.
 }
 
-bool EKG_ColorTheme::IsOutlineSliderEnabled() {
+bool ekg_color_theme::IsOutlineSliderEnabled() {
     return this->OutlineSlider;
 }
 
-bool EKG_ColorTheme::isOutlineComboboxEnabled() {
+bool ekg_color_theme::isOutlineComboboxEnabled() {
     return this->OutlineCombobox;
 }
 
@@ -562,12 +564,12 @@ void EKG_Smooth::Update(float PartialTicks) {
     this->Factory = EKG_LinearInterpolation(this->Factory, this->NextFactory, PartialTicks);
 }
 
-void EKG_Timing::Start() {
+void ekg_timing::Start() {
     this->PreviousTick = SDL_GetTicks();
     this->IsUsing = true;
 }
 
-bool EKG_Timing::EndIf(float MS) {
+bool ekg_timing::EndIf(float MS) {
     const bool Flag = (float) SDL_GetTicks() - this->PreviousTick > MS;
 
     this->PreviousTick = (float) SDL_GetTicks();
@@ -576,6 +578,6 @@ bool EKG_Timing::EndIf(float MS) {
     return Flag;
 }
 
-void EKG_Timing::Stop() {
+void ekg_timing::Stop() {
     this->IsUsing = false;
 }

@@ -1,159 +1,160 @@
-#include "EKG.h"
+#include "ekg.h"
 
-EKG_Core* const EKG_CORE = new EKG_Core();
+ekg_core* const EKG_CORE = new ekg_core();
 EKG_Tessellator* const EKG_TESSELLATOR = new EKG_Tessellator();
 
-void EKG_StartUseShader(GLuint ShaderId) {
-    glUseProgram(ShaderId);
+void ekg_start_use_shader(GLuint shader_id) {
+    glUseProgram(shader_id);
 }
 
-void EKG_EndUseShader() {
+void ekg_end_use_shader() {
     glUseProgram(0);
 }
 
-void EKG_ShaderProjMatrix(unsigned int ShaderId, float *ProjMatrix) {
-    glUseProgram(ShaderId);
-    glUniformMatrix4fv(glGetUniformLocation(ShaderId, "ProjMatrix"), 1, GL_FALSE, ProjMatrix);
+void ekg_shader_proj_matrix(unsigned int shader_id, float *proj_matrix) {
+    glUseProgram(shader_id);
+    glUniformMatrix4fv(glGetUniformLocation(shader_id, "proj_matrix"), 1, GL_FALSE, proj_matrix);
     glUseProgram(0);
 }
 
-GLuint EKG_GetShaderAttribute(const std::string &ShaderName, unsigned int ShaderId, const std::string &AttributeName) {
-    GLint Attribute = glGetAttribLocation(ShaderId, AttributeName.c_str());
+GLuint ekg_get_shader_attrib(const std::string &shader_name, unsigned int shader_id, const std::string &attrib_name) {
+    GLint Attribute = glGetAttribLocation(shader_id, attrib_name.c_str());
 
     if (Attribute == -1) {
-        EKG_Log("Unknown attribute in shader: " + ShaderName + " '" + AttributeName + "' (attribute)!");
+        ekg_log("Unknown attribute in shader: " + shader_name + " '" + attrib_name +
+                "' (attribute)!");
         return 0;
     }
 
     return (GLuint) Attribute;
 }
 
-void EKG_SetShaderUniformBool(unsigned int ShaderId, const std::string &Name, bool Value) {
-    GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
+void ekg_set_shader_uniform_bool(unsigned int shader_id, const std::string &name, bool value) {
+    GLint Flag = glGetUniformLocation(shader_id, name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + name + "'.");
         return;
     }
 
-    glUniform1i(Flag, (int) Value);
+    glUniform1i(Flag, (int) value);
 }
 
-void EKG_SetShaderUniformInt(unsigned int ShaderId, const std::string &Name, int Value) {
-    GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
+void ekg_set_shader_uniform_int(unsigned int shader_id, const std::string &name, int value) {
+    GLint Flag = glGetUniformLocation(shader_id, name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + name + "'.");
         return;
     }
 
-    glUniform1i(Flag, Value);
+    glUniform1i(Flag, value);
 }
 
-void EKG_SetShaderUniformFloat(unsigned int ShaderId, const std::string &Name, float Value) {
-    GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
+void ekg_set_shader_uniform_float(unsigned int shader_id, const std::string &name, float value) {
+    GLint Flag = glGetUniformLocation(shader_id, name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + name + "'.");
         return;
     }
 
-    glUniform1f(Flag, Value);
+    glUniform1f(Flag, value);
 }
 
-void EKG_SetShaderUniformVec2(unsigned int ShaderId, const std::string &Name, const glm::vec2 &Value) {
-    GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
+void ekg_set_shader_uniform_vec2(unsigned int shader_id, const std::string &name, const glm::vec2 &value) {
+    GLint Flag = glGetUniformLocation(shader_id, name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + name + "'.");
         return;
     }
 
-    glUniform2f(Flag, 1, Value[0]);
+    glUniform2f(Flag, 1, value[0]);
 }
 
-void EKG_SetShaderUniformVec2(unsigned int ShaderId, const std::string &Name, float X, float Y) {
-    GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
+void ekg_set_shader_uniform_vec2(unsigned int shader_id, const std::string &name, float x, float y) {
+    GLint Flag = glGetUniformLocation(shader_id, name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + name + "'.");
         return;
     }
 
-    glUniform2f(Flag, X, Y);
+    glUniform2f(Flag, x, y);
 }
 
-void EKG_SetShaderUniformVec3(unsigned int ShaderId, const std::string &Name, const glm::vec3 &Value) {
+void ekg_set_shader_uniform_vec3(unsigned int ShaderId, const std::string &Name, const glm::vec3 &Value) {
     GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + Name + "'.");
         return;
     }
 
     glUniform3fv(Flag, 1, &Value[0]);
 }
 
-void EKG_SetShaderUniformVec3(unsigned int ShaderId, const std::string &Name, float X, float Y, float Z) {
+void ekg_set_shader_uniform_vec3(unsigned int ShaderId, const std::string &Name, float X, float Y, float Z) {
     GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + Name + "'.");
         return;
     }
 
     glUniform3f(Flag, X, Y, Z);
 }
 
-void EKG_SetShaderUniformVec4(unsigned int ShaderId, const std::string &Name, const glm::vec4 &Value) {
+void ekg_set_shader_uniform_vec4(unsigned int ShaderId, const std::string &Name, const glm::vec4 &Value) {
     GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + Name + "'.");
         return;
     }
 
     glUniform4fv(Flag, 1, &Value[0]);
 }
 
-void EKG_SetShaderUniformVec4(unsigned int ShaderId, const std::string &Name, float X, float Y, float Z, float W) {
+void ekg_set_shader_uniform_vec4(unsigned int ShaderId, const std::string &Name, float X, float Y, float Z, float W) {
     GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + Name + "'.");
         return;
     }
 
     glUniform4f(Flag, X, Y, Z, W);
 }
 
-void EKG_SetShaderUniformMat2(unsigned int ShaderId, const std::string &Name, const glm::mat2 &Mat) {
+void ekg_set_shader_uniform_mat2(unsigned int ShaderId, const std::string &Name, const glm::mat2 &Mat) {
     GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + Name + "'.");
         return;
     }
 
     glUniformMatrix2fv(Flag, 1, GL_FALSE, &Mat[0][0]);
 }
 
-void EKG_SetShaderUniformMat3(unsigned int ShaderId, const std::string &Name, const glm::mat3 &Mat) {
+void ekg_set_shader_uniform_mat3(unsigned int ShaderId, const std::string &Name, const glm::mat3 &Mat) {
     GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + Name + "'.");
         return;
     }
 
     glUniformMatrix3fv(Flag, 1, GL_FALSE, &Mat[0][0]);
 }
 
-void EKG_SetShaderUniformMat4(unsigned int ShaderId, const std::string &Name, const glm::mat4 &Mat) {
+void ekg_set_shader_uniform_mat4(unsigned int ShaderId, const std::string &Name, const glm::mat4 &Mat) {
     GLint Flag = glGetUniformLocation(ShaderId, Name.c_str());
 
     if (Flag == -1) {
-        EKG_Log("Shader waring: Uniform location does not exist '" + Name + "'.");
+        ekg_log("Shader waring: Uniform location does not exist '" + Name + "'.");
         return;
     }
 
@@ -172,439 +173,591 @@ void EKG_FlagAdd(unsigned int &Flags, unsigned int Flag) {
     Flags |= Flag;
 }
 
-bool EKG::ContextOkay = false;
+float ekg::screen_width = 0.0F;
+float ekg::screen_height = 0.0F;
 
-float EKG::DeviceScreenWidth = 0.0F;
-float EKG::DeviceScreenHeight = 0.0F;
-
-void EKG::Init() {
-    EKG_CORE->Init();
+void ekg::init() {
+    EKG_CORE->init();
     EKG_TESSELLATOR->Init();
 
     // Get device screen size.
     SDL_DisplayMode DisplayMode;
     SDL_GetDisplayMode(0, 0, &DisplayMode);
 
-    EKG::DeviceScreenWidth = (float) DisplayMode.w;
-    EKG::DeviceScreenHeight = (float) DisplayMode.h;
+    ekg::screen_width = (float) DisplayMode.w;
+    ekg::screen_height = (float) DisplayMode.h;
 
     // Call it was initialized property (or just initialized).
-    EKG_Log("Core initialized.");
+    ekg_log("Core initialized.");
 }
 
-void EKG::Quit() {
-    EKG_CORE->Quit();
+void ekg::quit() {
+    EKG_CORE->quit();
     EKG_TESSELLATOR->Quit();
 
     // Say it was quited successfully or just quit.
-    EKG_Log("Core quited successfully.");
+    ekg_log("Core quited successfully.");
 }
 
-void EKG::PollEvent(SDL_Event Event) {
-    EKG_CORE->OnEvent(Event);
+void ekg::poll_event(SDL_Event Event) {
+    EKG_CORE->on_event(Event);
 }
 
-void EKG::Update(const float &DeltaTicks) {
-    EKG_CORE->OnUpdate(DeltaTicks);
+void ekg::update(const float &DeltaTicks) {
+    EKG_CORE->on_update(DeltaTicks);
 }
 
-void EKG::Render(const float &PartialTicks) {
+void ekg::render(const float &PartialTicks) {
     EKG_CORE->OnRender(PartialTicks);
 }
 
-void EKG::InitFont(const std::string &Path, unsigned int InitialSize) {
-    EKG_CORE->FontRenderer.SetFontPath(Path);
-    EKG_CORE->FontRenderer.SetFontSize(InitialSize);
+void ekg::init_font(const std::string &path, unsigned int initial_size) {
+    EKG_CORE->font_renderer.SetFontPath(path);
+    EKG_CORE->font_renderer.SetFontSize(initial_size);
 }
 
-void EKG::Context() {
-    float Viewport[4];
-    glGetFloatv(GL_VIEWPORT, Viewport);
+void ekg::context() {
+    float viewport[4];
+    glGetFloatv(GL_VIEWPORT, viewport);
 
-    float ProjectionMatrix4x4[16];
-    EKG_Ortho2D(ProjectionMatrix4x4, 0.0F, Viewport[2], Viewport[3], 0.0F);
+    float proj_ortho2d_matrix_4x4[16];
+    EKG_Ortho2D(proj_ortho2d_matrix_4x4, 0.0F, viewport[2], viewport[3], 0.0F);
 
     // We set projection ortho.
-    EKG_ShaderProjMatrix(EKG_CORE->ShaderManager.GetTessellatorShader(), ProjectionMatrix4x4);
+    ekg_shader_proj_matrix(EKG_CORE->shader_manager.GetTessellatorShader(), proj_ortho2d_matrix_4x4);
 }
 
-EKG_FontRenderer EKG::GetFontRenderer() {
-    return EKG_CORE->FontRenderer;
+ekg_font_renderer ekg::font_renderer() {
+    return EKG_CORE->font_renderer;
 }
 
-EKG_ShaderManager EKG::GetShaderManager() {
-    return EKG_CORE->ShaderManager;
+ekg_shader_manager ekg::shader_manager() {
+    return EKG_CORE->shader_manager;
 }
 
-unsigned int EKG::PointCollideDock(unsigned int Flags, float PointX, float PointY, float MinOffset, float MaxOffset, const EKG_Rect &Rect) {
-    EKG_Rect DockRect {};
+unsigned int ekg::point_collide_dock(unsigned int flags, float point_x, float point_y, float min_offset, float max_offset, const ekg_rect &rect) {
+    ekg_rect DockRect {};
 
     int DockColliding = -1;
-    unsigned int DockType = Dock::FULL;
+    unsigned int DockType = dock::FULL;
 
-    if (EKG_FlagContains(Flags, DockType)) {
-        DockRect = GetRectDock(DockType, MinOffset, MaxOffset, Rect);
-        return DockRect.CollideWithPoint(PointX, PointY) ? DockType : DockColliding;
+    if (EKG_FlagContains(flags, DockType)) {
+        DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
+        return DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
     }
 
-    DockType = Dock::TOP;
+    DockType = dock::TOP;
 
-    if (EKG_FlagContains(Flags, DockType)) {
-        DockRect = GetRectDock(DockType, MinOffset, MaxOffset, Rect);
-        DockColliding = DockRect.CollideWithPoint(PointX, PointY) ? DockType : DockColliding;
+    if (EKG_FlagContains(flags, DockType)) {
+        DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
+        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
     }
 
-    DockType = Dock::BOTTOM;
+    DockType = dock::BOTTOM;
 
-    if (EKG_FlagContains(Flags, DockType)) {
-        DockRect = GetRectDock(DockType, MinOffset, MaxOffset, Rect);
-        DockColliding = DockRect.CollideWithPoint(PointX, PointY) ? DockType : DockColliding;
+    if (EKG_FlagContains(flags, DockType)) {
+        DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
+        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
     }
 
-    DockType = Dock::LEFT;
+    DockType = dock::LEFT;
 
-    if (EKG_FlagContains(Flags, DockType)) {
-        DockRect = GetRectDock(DockType, MinOffset, MaxOffset, Rect);
-        DockColliding = DockRect.CollideWithPoint(PointX, PointY) ? DockType : DockColliding;
+    if (EKG_FlagContains(flags, DockType)) {
+        DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
+        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
     }
 
-    DockType = Dock::RIGHT;
+    DockType = dock::RIGHT;
 
-    if (EKG_FlagContains(Flags, DockType)) {
-        DockRect = GetRectDock(DockType, MinOffset, MaxOffset, Rect);
-        DockColliding = DockRect.CollideWithPoint(PointX, PointY) ? DockType : DockColliding;
+    if (EKG_FlagContains(flags, DockType)) {
+        DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
+        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
     }
 
-    DockType = Dock::CENTER;
+    DockType = dock::CENTER;
 
-    if (EKG_FlagContains(Flags, DockType)) {
-        DockRect = GetRectDock(DockType, MinOffset, MaxOffset, Rect);
-        DockColliding = DockRect.CollideWithPoint(PointX, PointY) ? DockType : DockColliding;
+    if (EKG_FlagContains(flags, DockType)) {
+        DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
+        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
     }
 
     return DockColliding;
 }
 
-EKG_Rect EKG::GetRectDock(unsigned int p_Dock, float InitialOffset, float SizeOffset, const EKG_Rect &Origin) {
-    EKG_Rect Rect;
+ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_offset, const ekg_rect &origin) {
+    ekg_rect Rect;
 
     // Pos rect.
-    float X = 0.0F;
-    float Y = 0.0F;
+    float x = 0.0F;
+    float y = 0.0F;
 
-    // Size rect.
-    float W = 0.0F;
-    float H = 0.0F;
+    // size rect.
+    float w = 0.0F;
+    float h = 0.0F;
 
     // Offset positions are normalized.
-    float InitialOffsetFixed;
-    float SizeOffsetFixed;
+    float initial_offset_normal;
+    float size_offset_normal;
 
-    // Division stuff.
-    float Division;
+    // division stuff.
+    float division;
 
-    switch (p_Dock) {
-        case Dock::FULL: {
-            InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Origin.W;
-            SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Origin.H;
+    switch (dock) {
+        case dock::FULL: {
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * origin.W;
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * origin.H;
 
-            X = Origin.X + InitialOffsetFixed;
-            Y = Origin.Y + SizeOffsetFixed;
-            W = Origin.W - (InitialOffsetFixed * 2);
-            H = Origin.H - (SizeOffsetFixed * 2);
+            x = origin.X + initial_offset_normal;
+            y = origin.Y + size_offset_normal;
+            w = origin.W - (initial_offset_normal * 2);
+            h = origin.H - (size_offset_normal * 2);
             break;
         }
 
-        case Dock::LEFT: {
-            Division = Origin.W == 0 ? 0 : (Origin.W / 2.0F);
+        case dock::LEFT: {
+            division = origin.W == 0 ? 0 : (origin.W / 2.0F);
 
-            InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * (Division);
-            SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * (Division);
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * (division);
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * (division);
 
-            X = Origin.X + InitialOffsetFixed;
-            Y = Origin.Y;
-            W = Division - SizeOffsetFixed;
-            H = Origin.H;
+            x = origin.X + initial_offset_normal;
+            y = origin.Y;
+            w = division - size_offset_normal;
+            h = origin.H;
             break;
         }
 
-        case Dock::RIGHT: {
-            Division = Origin.W == 0 ? 0 : (Origin.W / 2.0F);
+        case dock::RIGHT: {
+            division = origin.W == 0 ? 0 : (origin.W / 2.0F);
 
-            InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
-            SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Division;
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            Y = Origin.Y;
-            H = Origin.H;
+            y = origin.Y;
+            h = origin.H;
 
-            W = Division - SizeOffsetFixed;
-            X = Origin.X + InitialOffsetFixed + Origin.W - W;
+            w = division - size_offset_normal;
+            x = origin.X + initial_offset_normal + origin.W - w;
             break;
         }
 
-        case Dock::TOP: {
-            Division = Origin.H == 0 ? 0 : (Origin.H / 2.0F);
+        case dock::TOP: {
+            division = origin.H == 0 ? 0 : (origin.H / 2.0F);
 
-            InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
-            SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Division;
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            X = Origin.X;
-            Y = Origin.Y + InitialOffsetFixed;
-            W = Origin.W;
-            H = Division - SizeOffsetFixed;
+            x = origin.X;
+            y = origin.Y + initial_offset_normal;
+            w = origin.W;
+            h = division - size_offset_normal;
             break;
         }
 
-        case Dock::BOTTOM: {
-            Division = Origin.H == 0 ? 0 : (Origin.H / 2.0F);
+        case dock::BOTTOM: {
+            division = origin.H == 0 ? 0 : (origin.H / 2.0F);
 
-            InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
-            SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Division;
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            X = Origin.X;
-            W = Origin.W;
+            x = origin.X;
+            w = origin.W;
 
-            H = Division - SizeOffsetFixed;
-            Y = Origin.Y + InitialOffsetFixed + Origin.H - H;
+            h = division - size_offset_normal;
+            y = origin.Y + initial_offset_normal + origin.H - h;
             break;
         }
 
-        case Dock::CENTER: {
-            Division = Origin.W == 0 ? 0 : (Origin.W / 2.0F);
-            InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
-            SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Division;
+        case dock::CENTER: {
+            division = origin.W == 0 ? 0 : (origin.W / 2.0F);
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            X = Origin.X + (Division / 2.0F) - InitialOffsetFixed;
-            W = Division - SizeOffsetFixed;
+            x = origin.X + (division / 2.0F) - initial_offset_normal;
+            w = division - size_offset_normal;
 
             // Center height segment code.
-            Division = Origin.H == 0 ? 0 : (Origin.H / 2.0F);
-            InitialOffsetFixed = InitialOffset == 0 ? InitialOffset : InitialOffset * Division;
-            SizeOffsetFixed = SizeOffset == 0 ? SizeOffset : SizeOffset * Division;
+            division = origin.H == 0 ? 0 : (origin.H / 2.0F);
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            Y = Origin.Y + (Division / 2.0F) - InitialOffsetFixed;
-            W = Division - SizeOffsetFixed;
+            y = origin.Y + (division / 2.0F) - initial_offset_normal;
+            w = division - size_offset_normal;
         }
     }
 
-    Rect.X = X;
-    Rect.Y = Y;
-    Rect.W = W;
-    Rect.H = H;
+    Rect.X = x;
+    Rect.Y = y;
+    Rect.W = w;
+    Rect.H = h;
 
     return Rect;
 }
 
-void EKG::ScaledFingerPos(float &X, float &Y) {
-    X *= EKG::DeviceScreenWidth;
-    Y *= EKG::DeviceScreenHeight;
+void ekg::scaled_finger_pos(float &x, float &y) {
+    x *= ekg::screen_width;
+    y *= ekg::screen_height;
 }
 
-EKG_ColorTheme EKG::GetTheme() {
-    return EKG_CORE->ColorTheme;
+ekg_color_theme ekg::get_theme() {
+    return EKG_CORE->color_theme;
 }
 
-EKG_Frame *EKG::Frame(const std::string &Name) {
-    auto* Element = new EKG_Frame();
+ekg::frame ekg::create_frame(const std::string &name) {
+    auto* element = new ekg_ui_element_frame();
 
-    Element->SetTag(Name);
-    Element->SetId(EKG_CORE->NewId());
-    Element->Place(10, 10);
-    Element->SetLimit(50, 50);
-    Element->SetWidth(250);
-    Element->SetHeight(250);
-    Element->Visibility(EKG::Visibility::VISIBLE);
-    Element->SyncSize();
+    element->set_tag(name);
+    element->set_id(EKG_CORE->next_id());
+    element->place(10, 10);
+    element->SetLimit(50, 50);
+    element->set_width(250);
+    element->set_height(250);
+    element->set_visibility_flag(ekg::visibility::VISIBLE);
+    element->sync_size();
 
-    EKG_CORE->AddElement(Element);
-    return Element;
+    EKG_CORE->add_element_to_queue(element);
+    ekg::frame interface(element);
+
+    return interface;
 }
 
-EKG_Button* EKG::Button(const std::string &Name) {
-    auto* Element = new EKG_Button();
+ekg::button ekg::create_button(const std::string &name) {
+    auto* element = new ekg_ui_element_button();
 
-    Element->SetScale(6);
-    Element->SetTag(Name);
-    Element->SetId(EKG_CORE->NewId());
-    Element->Place(10, 10);
-    Element->AlignText(EKG::Dock::CENTER);
-    Element->AlignBox(EKG::Dock::LEFT);
-    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
-    Element->Mode("Normal");
-    Element->SetWidth(Element->GetTextWidth());
-    Element->SyncSize();
+    element->set_size(6);
+    element->set_tag(name);
+    element->set_id(EKG_CORE->next_id());
+    element->place(10, 10);
+    element->align_text(ekg::dock::CENTER);
+    element->align_box(ekg::dock::LEFT);
+    element->set_visibility_flag(ekg::visibility::VISIBLE_ONCE);
+    element->set_mode("normal");
+    element->SetWidth(element->get_text_width());
+    element->sync_size();
 
-    EKG_CORE->AddElement(Element);
-    return Element;
+    EKG_CORE->add_element_to_queue(element);
+    ekg::button interface(element);
+
+    return interface;
 }
 
-EKG_Popup* EKG::Popup(const std::string &Name, float InitialPosX, float InitialPosY, const std::vector<std::string> &List) {
+ekg_ui_element_popup* ekg::Popup(const std::string &Name, float InitialPosX, float InitialPosY, const std::vector<std::string> &List) {
     // Instead we create a new popup, we need to verify what element is at top (focused);
-    if (((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) && (EKG::CurrentFocusedType() != "popup" && InitialPosX != EKG::ABSOLUTE && InitialPosY != EKG::ABSOLUTE)) && (EKG::TaskOn(EKG::Task::BLOCKED) || (CurrentFocusedType() != "Frame" && CurrentFocusedType() != "NULL" && InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS))) {
+    if (((InitialPosX != ekg::NOPOS && InitialPosY != ekg::NOPOS) && (ekg::current_focused_type() != "popup" && InitialPosX != ekg::ABSOLUTE && InitialPosY != ekg::ABSOLUTE)) && (ekg::task_on(
+            ekg::task::BLOCKED) || (current_focused_type() != "frame" &&
+            current_focused_type() != "NULL" && InitialPosX != ekg::NOPOS && InitialPosY != ekg::NOPOS))) {
         return NULL;
     }
 
-    auto* Element = new EKG_Popup();
+    auto* Element = new ekg_ui_element_popup();
 
-    Element->SetTag(Name);
-    Element->SetId(EKG_CORE->NewId());
+    Element->set_tag(Name);
+    Element->set_id(EKG_CORE->next_id());
     Element->SetScale(2);
-    Element->Visibility((InitialPosX != EKG::NOPOS && InitialPosY != EKG::NOPOS) ||
-                        (InitialPosX == EKG::ABSOLUTE && InitialPosY == EKG::ABSOLUTE)
-                        ? EKG::Visibility::VISIBLE : EKG::Visibility::INVISIBLE);
+    Element->set_visibility_flag((InitialPosX != ekg::NOPOS && InitialPosY != ekg::NOPOS) ||
+                                 (InitialPosX == ekg::ABSOLUTE && InitialPosY == ekg::ABSOLUTE)
+                                 ? ekg::visibility::VISIBLE : ekg::visibility::INVISIBLE);
     Element->SetWidth(125);
-    Element->Place(InitialPosX, InitialPosY);
+    Element->place(InitialPosX, InitialPosY);
     Element->Insert(List);
-    Element->SyncSize();
+    Element->sync_size();
 
-    EKG_CORE->AddElement(Element);
+    EKG_CORE->add_element_to_queue(Element);
     return Element;
 }
 
-EKG_Slider* EKG::Slider(const std::string &Name, float Value, float Min, float Max) {
-    auto* Element = new EKG_Slider();
+ekg_ui_element_slider* ekg::Slider(const std::string &Name, float Value, float Min, float Max) {
+    auto* Element = new ekg_ui_element_slider();
 
-    Element->SetTag(Name);
+    Element->set_tag(Name);
     Element->Orientation("Horizontal");
-    Element->SetId(EKG_CORE->NewId());
+    Element->set_id(EKG_CORE->next_id());
     Element->SetSize(125);
     Element->SetScale(6);
-    Element->LabelAlign(EKG::Dock::CENTER);
-    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
-    Element->Place(10, 10);
+    Element->LabelAlign(ekg::dock::CENTER);
+    Element->set_visibility_flag(ekg::visibility::VISIBLE_ONCE);
+    Element->place(10, 10);
     Element->SetMin(Min);
     Element->SetMax(Max);
     Element->SetValue(Value);
-    Element->SyncSize();
+    Element->sync_size();
 
-    EKG_CORE->AddElement(Element);
+    EKG_CORE->add_element_to_queue(Element);
     return Element;
 }
 
-EKG_Combobox* EKG::Combobox(const std::string &Name, const std::vector<std::string> &List) {
-    auto* Element = new EKG_Combobox();
+ekg_ui_element_combobox* ekg::Combobox(const std::string &Name, const std::vector<std::string> &List) {
+    auto* Element = new ekg_ui_element_combobox();
 
-    Element->SetTag(Name);
-    Element->SetId(EKG_CORE->NewId());
-    Element->SetList(List);
-    Element->SetCurrent(" ");
-    Element->AlignText(EKG::Dock::LEFT);
-    Element->Visibility(EKG::Visibility::VISIBLE_ONCE);
-    Element->SetScale(6);
-    Element->Place(10, 10);
-    Element->SetWidth(125);
-    Element->SyncSize();
+    Element->set_tag(Name);
+    Element->set_id(EKG_CORE->next_id());
+    Element->set_list(List);
+    Element->set_current(" ");
+    Element->align_text(ekg::dock::LEFT);
+    Element->set_visibility_flag(ekg::visibility::VISIBLE_ONCE);
+    Element->set_scale(6);
+    Element->place(10, 10);
+    Element->set_width(125);
+    Element->sync_size();
 
-    EKG_CORE->AddElement(Element);
+    EKG_CORE->add_element_to_queue(Element);
     return Element;
 }
 
-EKG_Tab *EKG::Tab(const std::string &Name) {
-    auto* Element = new EKG_Tab();
+ekg_ui_element_tab *ekg::Tab(const std::string &Name) {
+    auto* Element = new ekg_ui_element_tab();
 
-    Element->SetTag(Name);
-    Element->SetId(EKG_CORE->NewId());
-    Element->Place(10, 10);
+    Element->set_tag(Name);
+    Element->set_id(EKG_CORE->next_id());
+    Element->place(10, 10);
     Element->SetLimit(50, 50);
-    Element->SetWidth(250);
+    Element->set_width(250);
     Element->SetButtonSize(3);
     Element->SetScale(3);
     Element->SetBorderOffset(10);
-    Element->SetHeight(250);
-    Element->TabSide(EKG::Dock::TOP);
-    Element->Visibility(EKG::Visibility::VISIBLE);
-    Element->SyncSize();
+    Element->set_height(250);
+    Element->TabSide(ekg::dock::TOP);
+    Element->set_visibility_flag(ekg::visibility::VISIBLE);
+    Element->sync_size();
 
-    EKG_CORE->AddElement(Element);
+    EKG_CORE->add_element_to_queue(Element);
     return Element;
 }
 
-EKG_AbstractElement *EKG::Find(unsigned int Id) {
-    return EKG_CORE->GetElementById(Id);
+ekg_abstract_element *ekg::find(unsigned int Id) {
+    return EKG_CORE->get_element_by_id(Id);
 }
 
-std::vector<unsigned int> &EKG::Children(EKG_AbstractElement* Element) {
+std::vector<unsigned int> &ekg::children(ekg_abstract_element* element) {
     std::vector<unsigned int> Stack;
 
-    if (Element == NULL) {
+    if (element == NULL) {
         return Stack;
     }
 
-    Stack = Element->GetChildren().StackedIds;
+    Stack = element->GetChildren().StackedIds;
     return Stack;
 }
 
-void EKG::Kill(EKG_AbstractElement* &Element) {
-    EKG_CORE->RemoveElement(Element->GetId());
-    Element = NULL;
+void ekg::kill(ekg_abstract_element* &element) {
+    EKG_CORE->remove_element_by_id(element->get_id());
+    element = NULL;
 }
 
-std::string EKG::CurrentFocusedTag() {
-    return EKG_CORE->GetFocusedTag();
+std::string ekg::current_focused_tag() {
+    return EKG_CORE->get_focused_element_tag();
 }
 
-std::string EKG::CurrentFocusedType() {
-    return EKG_CORE->GetFocusedType();
+std::string ekg::current_focused_type() {
+    return EKG_CORE->get_focused_element_info_class();
 }
 
-unsigned int EKG::CurrentFocusedId() {
-    return EKG_CORE->GetFocusedElementId();
+unsigned int ekg::current_focused_id() {
+    return EKG_CORE->get_focused_element_id();
 }
 
-EKG_Timing* EKG::Timing() {
-    return EKG_CORE->Timing;
+ekg_timing* ekg::timing() {
+    return EKG_CORE->timing;
 }
 
-void EKG::Task(unsigned int TaskId, unsigned int Id) {
-    EKG_CORE->Task(TaskId, Id);
+void ekg::task(unsigned int task_id, unsigned int id) {
+    EKG_CORE->add_task_to_queue(task_id, id);
 }
 
-bool EKG::TaskOn(unsigned int TaskId) {
-    return EKG_CORE->VerifyTask(TaskId);
+bool ekg::task_on(unsigned int task_id) {
+    return EKG_CORE->verify_task(task_id);
 }
 
-Uint32 EKG::Event::REGISTER = SDL_RegisterEvents(2);
-Uint32 EKG::Event::ELEMENT  = REGISTER++;
-Uint32 EKG::Event::POPUP    = REGISTER++;
+Uint32 ekg::event::REGISTER = SDL_RegisterEvents(2);
+Uint32 ekg::event::ELEMENT  = REGISTER++;
+Uint32 ekg::event::POPUP    = REGISTER++;
 
-EKG_Event EKG::Event::Read(SDL_Event Event) {
-    if (Event.type == POPUP) {
-        EKG_Event EKGEvent;
+ekg_event ekg::event::read(SDL_Event event) {
+    if (event.type == POPUP) {
+        ekg_event next_event;
+        auto* callback = static_cast<std::string*>(event.user.data1);
 
-        auto* Callback = static_cast<std::string*>(Event.user.data1);
+        next_event.Type = event.user.code;
+        next_event.popup.callback = *callback;
 
-        EKGEvent.Type = Event.user.code;
-        EKGEvent.Popup.Info = *Callback;
-
-        return EKGEvent;
-    } else if (Event.type == ELEMENT) {
-        EKG_Event EKGEvent;
-
-        unsigned int* CallbackElementId = (static_cast<unsigned int*>(Event.user.data1));
-        unsigned int* CallbackAction = (static_cast<unsigned int*>(Event.user.data2));
-
-        EKGEvent.Type = Event.user.code;
-        EKGEvent.ElementActionEvent.ElementId = *CallbackElementId;
-        EKGEvent.ElementActionEvent.Action = *CallbackAction;
-
-        return EKGEvent;
+        return next_event;
     }
 
-    return EKG_Event();
+    return ekg_event();
 }
 
-void EKG::Event::Dispatch(Uint32 Type, void *Data1, void *Data2) {
-    SDL_Event Event;
+void ekg::event::dispatch(Uint32 type, void *data1, void *data2) {
+    SDL_Event event;
 
-    Event.type = Type;
-    Event.user.code = Type;
+    event.type = type;
+    event.user.code = type;
 
-    Event.user.data1 = Data1;
-    Event.user.data2 = Data2;
+    event.user.data1 = data1;
+    event.user.data2 = data2;
 
-    SDL_PushEvent(&Event);
+    SDL_PushEvent(&event);
 }
 
-void EKG::Event::Poll(SDL_Event Event) {
+std::string ekg::button::info_class() {
+    return this->element->info_class();
+}
 
+float ekg::button::get_text_height() {
+    return this->element->get_text_height();
+}
+
+float ekg::button::get_text_width() {
+    return this->element->get_text_width();
+}
+
+void ekg::button::mode(const std::string &mode) {
+    this->element->set_mode(mode);
+}
+
+void ekg::button::align_box(unsigned int dock, float offset) {
+    this->element->align_box(dock);
+
+    if (offset != NULL) {
+        this->element->set_offset_box(offset);
+    }
+}
+
+void ekg::button::align_text(unsigned int dock, float offset) {
+    this->element->align_text(dock);
+
+    if (offset != NULL) {
+        this->element->set_offset_text(offset);
+    }
+}
+
+bool ekg::button::box_checked() {
+    return this->element->is_checked();
+}
+
+void ekg::button::set_box_check_state(bool state) {
+    this->element->set_check_state(state);
+}
+
+bool ekg::button::clicked() {
+    return this->element->is_clicked();
+}
+
+void ekg::button::set_click_state(bool state) {
+    this->element->set_click_state(state);
+}
+
+float ekg::button::get_width() {
+    return this->element->get_width();
+}
+
+void ekg::button::set_width(float Width) {
+    return this->element->SetWidth(Width);
+}
+
+float ekg::button::get_size() {
+    return this->element->get_size();
+}
+
+void ekg::button::set_size(float Size) {
+    this->element->set_size(Size);
+}
+
+float ekg::button::get_height() {
+    return this->element->get_height();
+}
+
+float ekg::button::get_x() {
+    return this->element->get_x();
+}
+
+float ekg::button::get_y() {
+    return this->element->get_y();
+}
+
+void ekg::button::place(float X, float Y) {
+    this->element->place(X, Y);
+}
+
+ekg_stack ekg::button::get_children() {
+    return this->element->GetChildren();
+}
+
+unsigned int ekg::button::get_id() {
+    return this->element_id;
+}
+
+std::string ekg::button::get_mode() {
+    return this->element->get_mode();
+}
+
+unsigned int ekg::frame::get_id() {
+    return this->element_id;
+}
+
+std::string ekg::frame::info_class() {
+    return this->element->info_class();
+}
+
+ekg_stack ekg::frame::get_children() {
+    return this->element->GetChildren();
+}
+
+float ekg::frame::get_min_height() {
+    return this->element->get_min_height();
+}
+
+float ekg::frame::get_min_width() {
+    return this->element->get_min_width();
+}
+
+void ekg::frame::set_min_size(float min_width, float min_height) {
+    this->element->SetLimit(min_width, min_height);
+}
+
+void ekg::frame::place(unsigned int element_in_id, float x, float y) {
+    this->element->place(EKG_CORE->get_element_by_id(element_in_id), x, y);
+}
+
+void ekg::frame::resizable(unsigned int area, float offset) {
+    this->element->resizable(area);
+
+    if (offset != NULL) {
+        this->element->set_resize_offset(offset);
+    }
+}
+
+void ekg::frame::draggable(unsigned int area, float offset) {
+    this->element->draggable(area);
+
+    if (offset != NULL) {
+        this->element->set_drag_offset(offset);
+    }
+}
+
+float ekg::frame::get_height() {
+    return this->element->get_height();
+}
+
+void ekg::frame::set_height(float Height) {
+    this->element->set_height(Height);
+}
+
+float ekg::frame::get_width() {
+    return this->element->get_width();
+}
+
+void ekg::frame::set_width(float width) {
+    this->element->set_width(width);
+}
+
+void ekg::frame::place(float x, float y) {
+    this->element->place(x, y);
+}
+
+float ekg::frame::get_y() {
+    return this->element->get_y();
+}
+
+float ekg::frame::get_X() {
+    return this->element->get_x();
 }

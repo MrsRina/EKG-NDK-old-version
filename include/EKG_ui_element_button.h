@@ -4,86 +4,91 @@
  **/
 #pragma once
 
-#include "EKG_includes.h"
-#include "EKG_abstract_ui_element.h"
+#include "ekg_includes.h"
+#include "ekg_abstract_ui_element.h"
 
 #ifndef EKG_UI_ELEMENT_BUTTON_H
 #define EKG_UI_ELEMENT_BUTTON_H
 
 /**
- * Name: Button
+ * Name: button
  * Type: Widget
  * Description: A normal button state & check.
  * Features: Check box or normal click.
  **/
-class EKG_Button : public EKG_AbstractElement {
+class ekg_ui_element_button : public ekg_abstract_element {
 protected:
     /* States. */
-    bool Pressed, Clicked, Checked, Box, BoxScaled, HoveredBox;
+    bool pressed, clicked, box_scaled, checked, box, hovered_box;
+    std::string button_mode;
 
-    /* Checkbox texture, metrics & scale. */
-    EKG_Data TextureBox;
-    float BoxRect[4], AlignOffsetText, AlignOffsetBox, OffsetText, OffsetBox, TextWidth, TextHeight, Scale;
-    unsigned int AlignTextDocking, AlignBoxDocking;
+    /* Checkbox texture, metrics. */
+    EKG_Data texture_box;
+    float box_rect[4], align_offset_text, align_offset_box, offset_text, offset_box, text_width, text_height, size;
+    unsigned int align_text_docking, align_box_docking;
 
     /* Animations. */
-    EKG_Smooth SmoothBoxPressed;
-    EKG_Smooth SmoothPressed;
-    EKG_Smooth SmoothBoxActivy;
+    EKG_Smooth smooth_box_pressed;
+    EKG_Smooth smooth_pressed;
+    EKG_Smooth smooth_box_activy;
 
-    /* Start of helper methods to box (checkbox mode on). */
-    void SetBoxRect(float X, float Y, float W, float H);
-    bool DetectPointCollideBox(float X, float Y);
+    /* Start of helper methods to box (checkbox set_mode on). */
+    void set_box_rect(float x, float y, float w, float h);
+    bool detect_point_collide_box(float x, float y);
     /* End of helper methods. */
 public:
     /* Start of configurable methods. */
-    void BoxTexture(const EKG_Data &Texture);
-    void AlignBox(unsigned int Dock);
-    void AlignText(unsigned int Dock);
-    void Mode(const std::string& Mode);
+    void align_box(unsigned int dock);
+    void align_text(unsigned int dock);
     /* end of configurable methods. */
 
     /* Start of setters & getters. */
-    void SetPressed(bool State);
-    bool IsPressed();
+    void set_box_texture(const EKG_Data &texture);
+    EKG_Data &get_check_box_texture();
 
-    void SetClicked(bool IsClicked);
-    bool IsClicked();
+    void set_mode(const std::string& mode);
+    std::string get_mode();
 
-    void SetChecked(bool State);
-    bool IsChecked();
+    void set_press_state(bool state);
+    bool is_pressed();
 
-    bool IsCheckBox();
-    EKG_Data GetBoxTexture();
+    void set_click_state(bool state);
+    bool is_clicked();
 
-    void SetOffsetText(float Offset);
-    float GetOffsetText();
+    void set_check_state(bool state);
+    bool is_checked();
 
-    void SetOffsetBox(float Offset);
-    float GetOffsetBox();
+    bool is_check_box();
 
-    float* GetBoxRect();
+    void set_offset_text(float offset);
+    float get_offset_text();
 
-    void SetHoveredBox(bool Over);
-    bool IsHoveredBox();
+    void set_offset_box(float offset);
+    float get_offset_box();
 
-    void SetScale(float ButtonScale);
-    float GetScale() const;
+    float* get_box_rect();
 
-    float GetTextWidth();
-    float GetTextHeight();
+    void set_hovered_box_state(bool state);
+    bool is_hovered_box();
+
+    void set_size(float button_size);
+    float get_size();
+
+    float get_text_width();
+    float get_text_height();
 
     void SetWidth(float Width);
     /* End of setters & getters. */
 
     /* Start of override methods. */
-    std::string InfoClass();
-    void SyncSize();
-    void OnPreEvent(SDL_Event Event);
-    void OnEvent(SDL_Event Event);
-    void OnPostEvent(SDL_Event Event);
-    void OnUpdate(const float &DeltaTicks);
-    void OnRender(const float &PartialTicks);
+    std::string info_class();
+
+    void sync_size();
+    void on_pre_event(SDL_Event event);
+    void on_event(SDL_Event event);
+    void on_post_event(SDL_Event event);
+    void on_update(const float &delta_ticks);
+    void on_render(const float &render_ticks);
     /* End of override methods. */
 };
 

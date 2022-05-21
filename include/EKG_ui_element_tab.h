@@ -4,8 +4,8 @@
  **/
 #pragma once
 
-#include "EKG_includes.h"
-#include "EKG_ui_element_frame.h"
+#include "ekg_includes.h"
+#include "ekg_ui_element_frame.h"
 
 #ifndef EKG_UI_ELEMENT_TAB_H
 #define EKG_UI_ELEMENT_TAB_H
@@ -16,7 +16,7 @@
  * Description: A container with frames.
  * Features: Lists elements and set current.
  **/
-class EKG_Tab : public EKG_Frame {
+class ekg_ui_element_tab : public ekg_ui_element_frame {
 protected:
     /* Settings. */
     std::vector<EKG_Data> List;
@@ -41,7 +41,7 @@ public:
     void Disable(const std::string &Pattern);
     void Enable(const std::string &Pattern);
     void TabSide(unsigned int Dock);
-    void Place(EKG_Frame* Frame);
+    void Place(ekg_ui_element_frame* Frame);
     void Open(const std::string &Name);
     void Open(EKG_Data &Component);
     /* End of configurable methods. */
@@ -65,15 +65,15 @@ public:
     /* End of setters & getters. */
 
     /* Start of override methods. */
-    std::string InfoClass();
-    void Place(float X, float Y);
-    void SyncSize();
-    void OnChildKilled(unsigned int ChildElementId);
-    void OnPreEvent(SDL_Event Event);
-    void OnEvent(SDL_Event Event);
-    void OnPostEvent(SDL_Event Event);
-    void OnUpdate(const float &DeltaTicks);
-    void OnRender(const float &PartialTicks);
+    std::string info_class();
+    void place(float X, float Y);
+    void sync_size();
+    void on_parent_killed(unsigned int ChildElementId);
+    void on_pre_event(SDL_Event Event);
+    void on_event(SDL_Event Event);
+    void on_post_event(SDL_Event Event);
+    void on_update(const float &DeltaTicks);
+    void on_render(const float &PartialTicks);
     /* End of override methods. */
 };
 

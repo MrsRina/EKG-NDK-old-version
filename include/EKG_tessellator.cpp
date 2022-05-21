@@ -1,24 +1,25 @@
-#include "EKG_tessellator.h"
-#include "EKG_util.h"
-#include "EKG.h"
+#include "ekg_tessellator.h"
+#include "ekg_util.h"
+#include "ekg.h"
 
 void EKG_Tessellator::Init() {
-    unsigned int TessellatorShaderId = EKG_CORE->ShaderManager.FindShader("Tessellator");
-    EKG_StartUseShader(TessellatorShaderId);
+    unsigned int TessellatorShaderId = EKG_CORE->shader_manager.FindShader("Tessellator");
+    ekg_start_use_shader(TessellatorShaderId);
 
     // Fetch attribute from shader with object buffer.
-    this->ColorAttribute = EKG_GetShaderAttribute("Tessellator", TessellatorShaderId, "VertexColor");
-    this->VertexAttribute = EKG_GetShaderAttribute("Tessellator", TessellatorShaderId, "VertexPosition");
+    this->ColorAttribute = ekg_get_shader_attrib("Tessellator", TessellatorShaderId, "VertexColor");
+    this->VertexAttribute = ekg_get_shader_attrib("Tessellator", TessellatorShaderId,
+                                                  "VertexPosition");
 
-    EKG_EndUseShader();
+    ekg_end_use_shader();
 }
 
 void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float VertexDataArray[VertexLength], float MaterialDataArray[MaterialLength]) {
-    unsigned int TessellatorShaderId = EKG_CORE->ShaderManager.GetTessellatorShader();
+    unsigned int TessellatorShaderId = EKG_CORE->shader_manager.GetTessellatorShader();
 
     // Use object shader.
-    EKG_StartUseShader(TessellatorShaderId);
-    EKG_SetShaderUniformBool(TessellatorShaderId, "ContainsTexture", this->ContainsTexture);
+    ekg_start_use_shader(TessellatorShaderId);
+    ekg_set_shader_uniform_bool(TessellatorShaderId, "ContainsTexture", this->ContainsTexture);
 
     // Call alpha channel.
     glEnable(GL_BLEND);
@@ -28,8 +29,10 @@ void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float VertexDat
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->TextureId);
 
-        EKG_SetShaderUniformInt(TessellatorShaderId, "TextureSampler", 0);
-        EKG_SetShaderUniformVec4(TessellatorShaderId, "DirectVertexColor", this->TextureColor.GetRedf(), this->TextureColor.GetGreenf(), this->TextureColor.GetBluef(), this->TextureColor.GetAlphaf());
+        ekg_set_shader_uniform_int(TessellatorShaderId, "TextureSampler", 0);
+        ekg_set_shader_uniform_vec4(TessellatorShaderId, "DirectVertexColor",
+                                    this->TextureColor.GetRedf(), this->TextureColor.GetGreenf(),
+                                    this->TextureColor.GetBluef(), this->TextureColor.GetAlphaf());
     }
 
     // Enable vertex attribute for position color attribution.
@@ -55,7 +58,7 @@ void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float VertexDat
     }
 
     // Un-use shader.
-    EKG_EndUseShader();
+    ekg_end_use_shader();
 }
 
 void EKG_Tessellator::NewDraw(int DrawType, int DrawSize) {
@@ -106,34 +109,34 @@ void EKG_Tessellator::SetTextureColor(EKG_Color Color) {
     this->SetTextureColor(Color.R, Color.G, Color.B, Color.A);
 }
 
-void EKG_FontRenderer::Init() {
+void ekg_font_renderer::Init() {
     if (FT_Init_FreeType(&this->Library)) {
-        EKG_Log("FT font not initialized.");
+        ekg_log("FT font not initialized.");
         return;
     }
 
     this->Reload();
 }
 
-void EKG_FontRenderer::SetFontPath(const std::string &Path) {
+void ekg_font_renderer::SetFontPath(const std::string &Path) {
     this->FontPath = Path;
 }
 
-std::string EKG_FontRenderer::GetFontPath() {
+std::string ekg_font_renderer::GetFontPath() {
     return this->FontPath;
 }
 
-void EKG_FontRenderer::SetFontSize(unsigned int FontSize) {
+void ekg_font_renderer::SetFontSize(unsigned int FontSize) {
     this->Size = FontSize;
 }
 
-unsigned int EKG_FontRenderer::GetFontSize() {
+unsigned int ekg_font_renderer::GetFontSize() {
     return this->Size;
 }
 
-void EKG_FontRenderer::Reload() {
+void ekg_font_renderer::Reload() {
     if (FT_New_Face(this->Library, this->FontPath.c_str(), 0, &this->Face)) {
-        EKG_Log("Could not load font.");
+        ekg_log("Could not load font.");
         return;
     }
 
@@ -197,10 +200,10 @@ void EKG_FontRenderer::Reload() {
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // Log that font renderer is successfully initialized.
-    EKG_Log("Font renderer generated bitmap ok.");
+    ekg_log("Font renderer generated bitmap ok.");
 }
 
-void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, float PositionY, const EKG_Color &Color) {
+void ekg_font_renderer::DrawString(const std::string &String, float PositionX, float PositionY, const EKG_Color &Color) {
     const char* CharString = String.c_str();
     const int ConcurrentSize = (int) strlen(CharString);
 
@@ -285,7 +288,7 @@ void EKG_FontRenderer::DrawString(const std::string &String, float PositionX, fl
     delete[] MASK_QUAD_MATERIAL_COLOR;
 }
 
-void EKG_FontRenderer::DrawStringClamped(const std::string &String, float PositionX, float PositionY, float W, const EKG_Color &Color) {
+void ekg_font_renderer::DrawStringClamped(const std::string &String, float PositionX, float PositionY, float W, const EKG_Color &Color) {
     std::vector<GLfloat> VertexVector, TextureVector;
     FT_Vector PreviousCharVector;
 
@@ -356,7 +359,7 @@ void EKG_FontRenderer::DrawStringClamped(const std::string &String, float Positi
     //EKG_TESSELLATOR->Draw(&VertexVector[0], &TextureVector[0]);
 }
 
-float EKG_FontRenderer::GetStringWidth(const std::string &String) {
+float ekg_font_renderer::GetStringWidth(const std::string &String) {
     this->Previous = 0;
     FT_Vector Delta;
 
@@ -382,7 +385,7 @@ float EKG_FontRenderer::GetStringWidth(const std::string &String) {
     return StringWidth;
 }
 
-float EKG_FontRenderer::GetStringHeight(const std::string &String) {
+float ekg_font_renderer::GetStringHeight(const std::string &String) {
     this->Previous = 0;
 
     float RenderY;
@@ -406,7 +409,7 @@ float EKG_FontRenderer::GetStringHeight(const std::string &String) {
     return StringHeight;
 }
 
-void EKG_FontRenderer::Quit() {
+void ekg_font_renderer::Quit() {
     FT_Done_Face(this->Face);
     FT_Done_FreeType(this->Library);
 }

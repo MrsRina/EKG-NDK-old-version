@@ -4,82 +4,83 @@
  **/
 #pragma once
 
-#include "EKG_includes.h"
-#include "EKG_abstract_ui_element.h"
+#include "ekg_includes.h"
+#include "ekg_abstract_ui_element.h"
 
 #ifndef EKG_UI_ELEMENT_FRAME_H
 #define EKG_UI_ELEMENT_FRAME_H
 
 /**
- * Name: Frame
- * Type: Frame
+ * Name: frame
+ * Type: frame
  * Description: A master element to place others elements.
  * Features: Set draggable, resizable & add child (elements).
  **/
-class EKG_Frame : public EKG_AbstractElement {
+class ekg_ui_element_frame : public ekg_abstract_element {
 protected:
     /* Flags used to save build config in frame. */
-    unsigned int DraggableDockFlags, ResizableDockFlags;
+    unsigned int flags_dock_draggable, flags_dock_resizable;
 
     /* States. */
-    bool Dragging, Pressed, FreeDragAndDrop, CustomAlpha;
-    int Resizing;
+    bool dragging, pressed, free_drag_and_drop, alternative_alpha;
+    int resizing;
 
     /* Drag and resizable references. */
-    float DragX, DragY, DragW, DragH, PreviousX, PreviousY, PreviousW, PreviousH;
+    float drag_x, drag_y, drag_w, drag_h, previous_x, previous_y, previous_w, previous_h;
 
     /* Limits of metric and offsets. */
-    float MinimumWidth = 50, MinimumHeight = 50, DragOffset = 0.70f, ResizeOffset = 0.70f;
+    float min_width = 50, min_height = 50, drag_offset_normal = 0.70f, resize_offset_normal = 0.70f;
 
     /* Design additional. */
-    unsigned int ValueAlpha;
-    EKG_Color Border = EKG_Color(255, 255, 255, 255);
+    unsigned int alpha;
+    EKG_Color border = EKG_Color(255, 255, 255, 255);
 public:
     /* Start of configurable methods. */
-    void Draggable(unsigned int Area);
-    void Resizable(unsigned int Area);
-    void Alpha(unsigned int A);
-    void Place(EKG_AbstractElement* Element, float X, float Y);
+    void draggable(unsigned int area);
+    void resizable(unsigned int area);
+    void custom_alpha(unsigned int alpha255);
+    void place(ekg_abstract_element* element, float x, float y);
+    void sync_parents_metric();
     /* End of configurable methods. */
 
     /* Start of setters and getters. */
-    void SetDragging(bool State);
-    bool IsDragging();
+    void set_drag_state(bool state);
+    bool is_dragging();
 
-    void SetResizing(bool State);
-    bool IsResizing();
+    void set_resize_state(bool state);
+    bool is_resizing();
 
-    void SetPressed(bool State);
-    bool IsPressed();
+    void set_press_state(bool state);
+    bool is_pressed();
 
-    void SetOffsetResize(float Offset);
-    float GetOffsetResize();
+    void set_resize_offset(float offset);
+    float get_resize_offset();
 
-    void SetOffsetDrag(float Offset);
-    float GetOffsetDrag();
+    void set_drag_offset(float offset);
+    float get_drag_offset();
 
-    void SetWidth(float Width);
-    void SetHeight(float Height);
+    void set_width(float width);
+    void set_height(float height);
 
-    void SetSize(float Width, float Height);
-    void SetLimit(float MinWidth, float MinHeight);
+    void set_size(float width, float height);
+    void SetLimit(float minimum_width, float minimum_height);
 
-    void SetBorderColor(unsigned int R, unsigned int G, unsigned B, unsigned int A);
-    EKG_Color GetBorderColor();
+    void set_border_color(unsigned int r, unsigned int g, unsigned b, unsigned int a);
+    EKG_Color &get_border_color();
 
-    float GetMinimumWidth();
-    float GetMinimumHeight();
+    float get_min_width();
+    float get_min_height();
     /* End of setters and getters. */
 
     /* Start of override methods. */
-    std::string InfoClass();
-    void Place(float X, float Y);
-    void SyncSize();
-    void OnPreEvent(SDL_Event Event);
-    void OnEvent(SDL_Event Event);
-    void OnPostEvent(SDL_Event Event);
-    void OnUpdate(const float &DeltaTicks);
-    void OnRender(const float &PartialTicks);
+    std::string info_class();
+    void place(float X, float Y);
+    void sync_size();
+    void on_pre_event(SDL_Event Event);
+    void on_event(SDL_Event Event);
+    void on_post_event(SDL_Event Event);
+    void on_update(const float &DeltaTicks);
+    void on_render(const float &PartialTicks);
     /* End of override methods. */
 };
 

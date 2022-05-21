@@ -3,194 +3,194 @@
  * @since 28/04/2022 at 16:27
  **/
 
-#include "EKG_ui_element_combobox.h"
-#include "EKG.h"
+#include "ekg_ui_element_combobox.h"
+#include "ekg.h"
 
-void EKG_Combobox::Add(std::string &String) {
-    this->PopupElementList.push_back(String);
+void ekg_ui_element_combobox::add(std::string &string) {
+    this->popup_element_list.push_back(string);
 }
 
-void EKG_Combobox::Remove(std::string &Pattern) {
-    std::vector<std::string> NewList;
+void ekg_ui_element_combobox::remove(std::string &string) {
+    std::vector<std::string> new_list;
 
-    for (const std::string &String : this->PopupElementList) {
-        if (EKG_StringContains(Pattern, String)) {
+    for (const std::string &strings : this->popup_element_list) {
+        if (ekg_string_in(string, strings)) {
             continue;
         }
 
-        NewList.push_back(String);
+        new_list.push_back(strings);
     }
 
-    this->PopupElementList = NewList;
+    this->popup_element_list = new_list;
 }
 
-void EKG_Combobox::AlignText(unsigned int Dock) {
-    bool Flag = (Dock == EKG::Dock::LEFT || Dock == EKG::Dock::CENTER || Dock == EKG::Dock::RIGHT);
+void ekg_ui_element_combobox::align_text(unsigned int dock) {
+    bool flag = (dock == ekg::dock::LEFT || dock == ekg::dock::CENTER || dock == ekg::dock::RIGHT);
 
-    if (this->AlignTextDocking != Dock && Flag) {
-        this->AlignTextDocking = Dock;
-        this->OffsetText = 0.0F;
-        this->SyncSize();
+    if (this->align_text_docking != dock && flag) {
+        this->align_text_docking = dock;
+        this->offset_text = 0.0F;
+        this->sync_size();
     } else {
-        EKG_Log(EKG_Print(this->Tag, this->Id) + "Incorrect text align: only accept (LEFT - CENTER - RIGHT)");
+        ekg_log(ekg_print(this->tag, this->id) +
+                "Incorrect text align: only accept (LEFT - CENTER - RIGHT)");
     }
 }
 
-void EKG_Combobox::SetWidth(float Width) {
-    if (this->Rect.W != Width) {
-        this->Rect.W = Width;
-        this->SyncSize();
+void ekg_ui_element_combobox::set_width(float width) {
+    if (this->rect.W != width) {
+        this->rect.W = width;
+        this->sync_size();
     }
 }
 
-void EKG_Combobox::SetList(const std::vector<std::string> &List) {
-    this->PopupElementList = List;
+void ekg_ui_element_combobox::set_list(const std::vector<std::string> &list) {
+    this->popup_element_list = list;
 }
 
-void EKG_Combobox::SetOffsetText(float Offset) {
-    this->OffsetText = Offset;
+void ekg_ui_element_combobox::set_offset_text(float offset) {
+    this->offset_text = offset;
 }
 
-float EKG_Combobox::GetOffsetText() const {
-    return this->OffsetText;
+float ekg_ui_element_combobox::get_offset_text() {
+    return this->offset_text;
 }
 
-void EKG_Combobox::SetScale(float Scale) {
-    this->TextScale = Scale;
+void ekg_ui_element_combobox::set_scale(float scale) {
+    this->text_scale = scale;
 }
 
-float EKG_Combobox::GetScale() const {
-    return this->TextScale;
+float ekg_ui_element_combobox::get_scale() {
+    return this->text_scale;
 }
 
-void EKG_Combobox::SetPressed(bool State) {
-    this->Pressed = State;
+void ekg_ui_element_combobox::set_press_state(bool state) {
+    this->pressed = state;
 }
 
-bool EKG_Combobox::IsPressed() const {
-    return this->Pressed;
+bool ekg_ui_element_combobox::is_pressed() {
+    return this->pressed;
 }
 
-void EKG_Combobox::SetCurrent(const std::string &String) {
-    bool ShouldSync = this->PopupElementList.empty();
+void ekg_ui_element_combobox::set_current(const std::string &string) {
+    bool should_sync = this->popup_element_list.empty();
 
-    if (ShouldSync && this->Current != " ") {
-        this->Current = " ";
-        this->SyncSize();
+    if (should_sync && this->current != " ") {
+        this->current = " ";
+        this->sync_size();
     }
 
-    if (!ShouldSync) {
-        ShouldSync = false;
+    if (!should_sync) {
+        should_sync = false;
 
-        for (const std::string &Strings : this->PopupElementList) {
-            if (Strings == String) {
-                ShouldSync = true;
+        for (const std::string &strings : this->popup_element_list) {
+            if (strings == string) {
+                should_sync = true;
                 break;
             }
         }
 
-        if (!ShouldSync && this->Current != this->PopupElementList.at(0)) {
-            this->Current = this->PopupElementList.at(0);
-            this->SyncSize();
+        if (!should_sync && this->current != this->popup_element_list.at(0)) {
+            this->current = this->popup_element_list.at(0);
+            this->sync_size();
         }
     }
 
-    if (ShouldSync && this->Current != String) {
-        this->Current = String;
-        this->SyncSize();
+    if (should_sync && this->current != string) {
+        this->current = string;
+        this->sync_size();
     }
 }
 
-std::string &EKG_Combobox::GetCurrent() {
-    return this->Current;
+std::string ekg_ui_element_combobox::get_current() {
+    return this->current;
 }
 
-std::string EKG_Combobox::InfoClass() {
+std::string ekg_ui_element_combobox::info_class() {
     return "combobox";
 }
 
-void EKG_Combobox::SyncSize() {
-    EKG_AbstractElement::SyncSize();
+void ekg_ui_element_combobox::sync_size() {
+    ekg_abstract_element::sync_size();
 
-    this->TextWidth = EKG_CORE->FontRenderer.GetStringWidth(this->Current);
-    this->TextHeight = EKG_CORE->FontRenderer.GetStringHeight(this->Current);
+    this->text_width = EKG_CORE->font_renderer.GetStringWidth(this->current);
+    this->text_height = EKG_CORE->font_renderer.GetStringHeight(this->current);
 
-    this->Rect.H = this->TextHeight + (this->TextScale * 2);
+    this->rect.H = this->text_height + (this->text_scale * 2);
 
-    switch (this->AlignTextDocking) {
-        case EKG::Dock::LEFT: {
-            this->AlignOffsetText = 4.0f;
+    switch (this->align_text_docking) {
+        case ekg::dock::LEFT: {
+            this->align_offset_text = 4.0f;
             break;
         }
 
-        case EKG::Dock::RIGHT: {
-            this->AlignOffsetText = this->Rect.W - this->TextWidth - 4.0f;
+        case ekg::dock::RIGHT: {
+            this->align_offset_text = this->rect.W - this->text_width - 4.0f;
             break;
         }
 
-        case EKG::Dock::CENTER: {
-            this->AlignOffsetText = (this->Rect.W / 2) - (this->TextWidth / 2);
+        case ekg::dock::CENTER: {
+            this->align_offset_text = (this->rect.W / 2) - (this->text_width / 2);
             break;
         }
     }
 }
 
-void EKG_Combobox::OnPreEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnPreEvent(Event);
+void ekg_ui_element_combobox::on_pre_event(SDL_Event event) {
+    ekg_abstract_element::on_pre_event(event);
 }
 
-void EKG_Combobox::OnEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnEvent(Event);
+void ekg_ui_element_combobox::on_event(SDL_Event event) {
+    ekg_abstract_element::on_event(event);
 
-    switch (Event.type) {
+    switch (event.type) {
         default: {
-            if (!this->Activy) {
+            if (!this->activy) {
                 return;
             }
 
-            EKG_Event CustomEvent = EKG::Event::Read(Event);
+            ekg_event custom_event = ekg::event::read(event);
 
-            if (CustomEvent.Type == EKG::Event::POPUP && EKG_StringContains(CustomEvent.Popup.Info, this->GetTag() + "-combobox")) {
-                for (const std::string &Strings : this->PopupElementList) {
-                    if (EKG_StringContains(CustomEvent.Popup.Info, Strings)) {
-                        this->SetCurrent(Strings);
+            if (custom_event.Type == ekg::event::POPUP && ekg_string_in(custom_event.popup.callback, this->get_tag() + "-combobox")) {
+                for (const std::string &strings : this->popup_element_list) {
+                    if (ekg_string_in(custom_event.popup.callback, strings)) {
+                        this->set_current(strings);
                         break;
                     }
                 }
 
-                this->Activy = false;
+                this->activy = false;
             }
 
             break;
         }
 
         case SDL_FINGERDOWN: {
-            bool ShouldRenderPressed = this->Hovered;
+            bool should_set_pressed = this->hovered;
 
-            if (this->Hovered && !this->Children.StackedIds.empty()) {
-                auto* Element = (EKG_Popup*) EKG_CORE->GetElementById(this->Children.StackedIds.at(0));
+            if (this->hovered && !this->children_stack.StackedIds.empty()) {
+                auto* Element = (ekg_ui_element_popup*) EKG_CORE->get_element_by_id(this->children_stack.StackedIds.at(0));
 
-                if (Element != NULL) {
-                    Element->Visibility(Element->GetVisibility() == EKG::Visibility::VISIBLE
-                                        ? EKG::Visibility::INVISIBLE : EKG::Visibility::VISIBLE);
-                    ShouldRenderPressed = Element->GetVisibility() == EKG::Visibility::VISIBLE;
+                if (Element != nullptr) {
+                    Element->set_visibility_flag(Element->get_visibility_flag() == ekg::visibility::VISIBLE ? ekg::visibility::INVISIBLE : ekg::visibility::VISIBLE);
+                    should_set_pressed = Element->get_visibility_flag() == ekg::visibility::VISIBLE;
                 }
             }
 
-            this->Pressed = ShouldRenderPressed;
+            this->pressed = should_set_pressed;
 
-            if (this->Pressed && this->Hovered && EKG::CurrentFocusedType() == "combobox" && this->Children.StackedIds.empty()) {
-                auto Popup = EKG::Popup(this->GetTag() + "-combobox", EKG::NOPOS, EKG::NOPOS, this->PopupElementList);
+            if (this->pressed && this->hovered && ekg::current_focused_type() == "combobox" && this->children_stack.StackedIds.empty()) {
+                auto popup = ekg::Popup(this->get_tag() + "-combobox", ekg::NOPOS, ekg::NOPOS, this->popup_element_list);
 
-                Popup->SetWidth(this->GetWidth());
-                Popup->Place(this->GetX(), this->GetY() + this->GetHeight());
-                Popup->Visibility(EKG::Visibility::VISIBLE);
-                Popup->SetScale(this->TextScale);
-                Popup->SetHovered(true);
-                Popup->SetMasterId(this->GetId());
+                popup->SetWidth(this->get_width());
+                popup->place(this->get_x(), this->get_y() + this->get_height());
+                popup->set_visibility_flag(ekg::visibility::VISIBLE);
+                popup->SetScale(this->text_scale);
+                popup->set_hover_state(true);
+                popup->set_master_id(this->get_id());
 
-                this->Children.Put(Popup->GetId());
-                EKG::Task(EKG::Task::BLOCKED | EKG::Task::REFOCUS);
+                this->children_stack.Put(popup->get_id());
+                ekg::task(ekg::task::BLOCKED | ekg::task::REFOCUS);
             }
 
             break;
@@ -198,46 +198,47 @@ void EKG_Combobox::OnEvent(SDL_Event Event) {
     }
 }
 
-void EKG_Combobox::OnPostEvent(SDL_Event Event) {
-    EKG_AbstractElement::OnPostEvent(Event);
+void ekg_ui_element_combobox::on_post_event(SDL_Event event) {
+    ekg_abstract_element::on_post_event(event);
 }
 
-void EKG_Combobox::OnUpdate(const float &DeltaTicks) {
-    EKG_AbstractElement::OnUpdate(DeltaTicks);
+void ekg_ui_element_combobox::on_update(const float &delta_ticks) {
+    ekg_abstract_element::on_update(delta_ticks);
 }
 
-void EKG_Combobox::OnRender(const float &PartialTicks) {
-    EKG_AbstractElement::OnRender(PartialTicks);
+void ekg_ui_element_combobox::on_render(const float &render_ticks) {
+    ekg_abstract_element::on_render(render_ticks);
 
-    // Update animations.
-    this->SmoothPressed.Update(PartialTicks);
-    this->SmoothPressed.NextFactory = this->Pressed ? (float) EKG_CORE->ColorTheme.WidgetPressed[3] : 0;
+    // update animations.
+    this->smooth_pressed.Update(render_ticks);
+    this->smooth_pressed.NextFactory = this->pressed ? (float) EKG_CORE->color_theme.WidgetPressed[3] : 0;
 
     // Enable scissor test and cut off the fragments.
-    EKG_Scissor(this->GetScissorX(), this->GetScissorY(), this->GetScissorW(), this->GetScissorH());
+    ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(),
+                this->get_scissor_h());
 
     // Background
-    EKG_Color Color(EKG_CORE->ColorTheme.WidgetBackground);
-    EKG_DrawFilledRect(this->Rect, Color);
+    EKG_Color color(EKG_CORE->color_theme.WidgetBackground);
+    ekg_draw_filled_rect(this->rect, color);
 
-    // Border
-    if (EKG_CORE->ColorTheme.IsOutlineButtonEnabled()) {
-        EKG_DrawOutlineRect(this->Rect, 1.5f, EKG_CORE->ColorTheme.StringColor);
+    // border
+    if (EKG_CORE->color_theme.IsOutlineButtonEnabled()) {
+        ekg_draw_outline_rect(this->rect, 1.5f, EKG_CORE->color_theme.StringColor);
     }
 
-    // Pressed.
-    if (this->SmoothPressed.Factory > 10) {
-        Color.Set(EKG_CORE->ColorTheme.WidgetPressed, (unsigned int) this->SmoothPressed.Factory);
-        EKG_DrawFilledRect(this->Rect, Color);
+    // pressed.
+    if (this->smooth_pressed.Factory > 10) {
+        color.Set(EKG_CORE->color_theme.WidgetPressed, (unsigned int) this->smooth_pressed.Factory);
+        ekg_draw_filled_rect(this->rect, color);
     }
 
     // String.
-    EKG_CORE->FontRenderer.DrawString(this->Current, this->Rect.X + this->AlignOffsetText + this->OffsetText, this->Rect.Y + this->TextScale, EKG_CORE->ColorTheme.StringColor);
+    EKG_CORE->font_renderer.DrawString(this->current, this->rect.X + this->align_offset_text + this->offset_text, this->rect.Y + this->text_scale, EKG_CORE->color_theme.StringColor);
 
     // End scissor.
-    EKG_EndScissor();
+    ekg_end_scissor();
 }
 
-void EKG_Combobox::OnChildKilled(unsigned int ChildElementId) {
-    this->Activy = true;
+void ekg_ui_element_combobox::on_parent_killed(unsigned int element_id) {
+    this->activy = true;
 }

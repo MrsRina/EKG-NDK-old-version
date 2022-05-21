@@ -4,19 +4,19 @@
  **/
 #pragma once
 
-#include "EKG_includes.h"
-#include "EKG_abstract_ui_element.h"
+#include "ekg_includes.h"
+#include "ekg_abstract_ui_element.h"
 
 #ifndef EKG_UI_ELEMENT_POPUP_H
 #define EKG_UI_ELEMENT_POPUP_H
 
 /**
- * Name: Popup
+ * Name: popup
  * Type: Container
  * Description: List elements and make selectable
  * Features: Enable or disable elements
  **/
-class EKG_Popup : public EKG_AbstractElement {
+class ekg_ui_element_popup : public ekg_abstract_element {
 protected:
     /* Settings. */
     std::vector<EKG_Data> List;
@@ -35,7 +35,7 @@ protected:
     /* Help to return hovered components. */
     EKG_Data GetHoveredComponent(float FX, float FY);
 
-    /* Sync menus hovering. */
+    /* sync_stack_scaled_metrics menus hovering. */
     bool IsUpdate(float FX, float FY);
 public:
     /* Start of configurable methods. */
@@ -56,7 +56,7 @@ public:
     bool IsClicked();
 
     void SetWidth(float Width);
-    void SetMasterId(unsigned int Id);
+    void set_master_id(unsigned int Id);
 
     void SetScale(float TextScale);
     float GetScale();
@@ -73,22 +73,22 @@ public:
     /* End of setters & getters. */
 
     /* Start of action methods. */
-    void Place(EKG_Popup* Element);
+    void Place(ekg_ui_element_popup* Element);
     void Place(float X, float Y, float BoundingX);
     /* End of action methods. */
 
     /* Start of override methods. */
-    std::string InfoClass();
-    void Visibility(unsigned int VisibilityFlag);
+    std::string info_class();
+    void set_visibility_flag(unsigned int VisibilityFlag);
 
-    void Kill();
-    void Place(float X, float Y);
-    void SyncSize();
-    void OnPreEvent(SDL_Event Event);
-    void OnEvent(SDL_Event Event);
-    void OnPostEvent(SDL_Event Event);
-    void OnUpdate(const float &DeltaTicks);
-    void OnRender(const float &PartialTicks);
+    void kill();
+    void place(float X, float Y);
+    void sync_size();
+    void on_pre_event(SDL_Event Event);
+    void on_event(SDL_Event Event);
+    void on_post_event(SDL_Event Event);
+    void on_update(const float &DeltaTicks);
+    void on_render(const float &PartialTicks);
     /* End of override methods. */
 };
 

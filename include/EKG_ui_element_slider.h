@@ -4,8 +4,8 @@
  **/
 #pragma once
 
-#include "EKG_includes.h"
-#include "EKG_abstract_ui_element.h"
+#include "ekg_includes.h"
+#include "ekg_abstract_ui_element.h"
 
 #ifndef EKG_UI_ELEMENT_SLIDER_H
 #define EKG_UI_ELEMENT_SLIDER_H
@@ -17,7 +17,7 @@
  * Features: Set draggable or make a progress bar,
  * two align (Horizontal - Vertical)
  **/
-class EKG_Slider : public EKG_AbstractElement {
+class ekg_ui_element_slider : public ekg_abstract_element {
 protected:
     /* For render value. */
     std::string Format;
@@ -36,7 +36,7 @@ protected:
     float LabelAlignX, LabelAlignY, LabelWidth, LabelHeight, OffsetLabel, AlignLabel;
     unsigned int LabelAlignDocking;
 
-    /* Update slider progress with a pos factory. */
+    /* update slider progress with a pos factory. */
     void SyncBar(float PositionFactory);
 public:
     /* Start of configurable methods. */
@@ -67,13 +67,13 @@ public:
     /* End of setters & getters. */
 
     /* Start of override methods. */
-    std::string InfoClass();
-    void SyncSize();
-    void OnPreEvent(SDL_Event Event);
-    void OnEvent(SDL_Event Event);
-    void OnPostEvent(SDL_Event Event);
-    void OnUpdate(const float &DeltaTicks);
-    void OnRender(const float &PartialTicks);
+    std::string info_class();
+    void sync_size();
+    void on_pre_event(SDL_Event Event);
+    void on_event(SDL_Event Event);
+    void on_post_event(SDL_Event Event);
+    void on_update(const float &DeltaTicks);
+    void on_render(const float &PartialTicks);
     /* End of override methods. */
 };
 

@@ -1,246 +1,238 @@
-#include "EKG_abstract_ui_element.h"
-#include "EKG.h"
+#include "ekg_abstract_ui_element.h"
+#include "ekg.h"
 
-void EKG_AbstractElement::SetTag(const std::string &NewTag) {
-    if (this->Tag != NewTag) {
-        this->Tag = NewTag;
-        this->SyncSize();
+void ekg_abstract_element::set_tag(const std::string &new_tag) {
+    if (this->tag != new_tag) {
+        this->tag = new_tag;
+        this->sync_size();
     }
 }
 
-std::string EKG_AbstractElement::GetTag() {
-    return this->Tag;
+std::string ekg_abstract_element::get_tag() {
+    return this->tag;
 }
 
-void EKG_AbstractElement::SetId(unsigned int ElementId) {
-    this->Id = ElementId;
+void ekg_abstract_element::set_id(unsigned int element_id) {
+    this->id = element_id;
 }
 
-unsigned int EKG_AbstractElement::GetId() {
-    return this->Id;
+unsigned int ekg_abstract_element::get_id() {
+    return this->id;
 }
 
-void EKG_AbstractElement::SetMasterId(unsigned int ElementMasterId) {
-    this->MasterId = ElementMasterId;
+void ekg_abstract_element::set_master_id(unsigned int element_id) {
+    this->master_id = element_id;
 }
 
-unsigned int EKG_AbstractElement::GetMasterId() {
-    return this->MasterId;
+unsigned int ekg_abstract_element::get_master_id() {
+    return this->master_id;
 }
 
-void EKG_AbstractElement::SetChildren(const EKG_Stack &Stack) {
-    this->Children = Stack;
+void ekg_abstract_element::set_children_stack(const ekg_stack &the_stack) {
+    this->children_stack = the_stack;
 }
 
-EKG_Stack EKG_AbstractElement::GetChildren() {
-    return this->Children;
+ekg_stack ekg_abstract_element::GetChildren() {
+    return this->children_stack;
 }
 
-void EKG_AbstractElement::SetCollided(const EKG_Stack &Stack) {
-    this->Collided = Stack;
+void ekg_abstract_element::set_rect(const ekg_rect &rectangle) {
+    this->rect = rectangle;
 }
 
-EKG_Stack EKG_AbstractElement::GetCollided() {
-    return this->Collided;
+ekg_rect ekg_abstract_element::get_rect() {
+    return this->rect;
 }
 
-void EKG_AbstractElement::SetRect(const EKG_Rect &Rectangle) {
-    this->Rect = Rectangle;
+float ekg_abstract_element::get_x() {
+    return this->rect.X;
 }
 
-EKG_Rect EKG_AbstractElement::GetRect() {
-    return this->Rect;
+float ekg_abstract_element::get_y() {
+    return this->rect.Y;
 }
 
-float EKG_AbstractElement::GetX() {
-    return this->Rect.X;
+float ekg_abstract_element::get_width() {
+    return this->rect.W;
 }
 
-float EKG_AbstractElement::GetY() {
-    return this->Rect.Y;
+float ekg_abstract_element::get_height() {
+    return this->rect.H;
 }
 
-float EKG_AbstractElement::GetWidth() {
-    return this->Rect.W;
+void ekg_abstract_element::set_scaled(float x, float y, float width, float height) {
+    this->scaled_x = x;
+    this->scaled_y = y;
+    this->scaled_width = width;
+    this->scale_height = height;
 }
 
-float EKG_AbstractElement::GetHeight() {
-    return this->Rect.H;
+void ekg_abstract_element::set_hover_state(bool state) {
+    this->hovered = state;
 }
 
-void EKG_AbstractElement::SetScaled(float X, float Y, float Width, float Height) {
-    this->ScaledX = X;
-    this->ScaledY = Y;
-    this->ScaledWidth = Width;
-    this->ScaledHeight = Height;
+bool ekg_abstract_element::is_hovered() {
+    return this->hovered;
 }
 
-void EKG_AbstractElement::SetHovered(bool State) {
-    this->Hovered = State;
-}
+void ekg_abstract_element::set_visibility_flag(unsigned int flag) {
+    if (this->visible != flag) {
+        this->visible = flag;
 
-bool EKG_AbstractElement::IsHovered() {
-    return this->Hovered;
-}
-
-void EKG_AbstractElement::Visibility(unsigned int VisibilityFlag) {
-    if (this->Visible != VisibilityFlag) {
-        this->Visible = VisibilityFlag;
-
-        if (this->Visible != EKG::Visibility::VISIBLE_ONCE && this->Visible != EKG::Visibility::INVISIBLE_ONCE && !this->Children.StackedIds.empty()) {
-            for (unsigned int Ids : this->Children.StackedIds) {
-                auto* Element = EKG_CORE->GetElementById(Ids);
+        if (this->visible != ekg::visibility::VISIBLE_ONCE && this->visible != ekg::visibility::INVISIBLE_ONCE && !this->children_stack.StackedIds.empty()) {
+            for (unsigned int Ids : this->children_stack.StackedIds) {
+                auto* Element = EKG_CORE->get_element_by_id(Ids);
 
                 if (Element != NULL) {
-                    Element->Visibility(VisibilityFlag);
+                    Element->set_visibility_flag(flag);
                 }
             }
         }
 
-        this->Visible = this->Visible == EKG::Visibility::VISIBLE_ONCE ? EKG::Visibility::VISIBLE : (this->Visible == EKG::Visibility::INVISIBLE_ONCE ? EKG::Visibility::INVISIBLE : this->Visible);
+        this->visible = this->visible == ekg::visibility::VISIBLE_ONCE ? ekg::visibility::VISIBLE : (this->visible == ekg::visibility::INVISIBLE_ONCE ? ekg::visibility::INVISIBLE : this->visible);
     }
 }
 
-unsigned int EKG_AbstractElement::GetVisibility() {
-    return this->Visible;
+unsigned int ekg_abstract_element::get_visibility_flag() {
+    return this->visible;
 }
 
-void EKG_AbstractElement::SetDisabled(bool State) {
-    this->Disabled = State;
+void ekg_abstract_element::set_disable_state(bool state) {
+    this->disabled = state;
 }
 
-bool EKG_AbstractElement::IsDisabled() {
-    return this->Disabled;
+bool ekg_abstract_element::is_disabled() {
+    return this->disabled;
 }
 
-void EKG_AbstractElement::SetDead(bool State) {
-    this->Dead = State;
+void ekg_abstract_element::set_dead_state(bool state) {
+    this->dead = state;
 }
 
-bool EKG_AbstractElement::IsDead() {
-    return this->Dead;
+bool ekg_abstract_element::is_dead() {
+    return this->dead;
 }
 
-void EKG_AbstractElement::Kill() {
-    this->Dead = true;
-    this->Visible = EKG::Visibility::EXISTED;
+void ekg_abstract_element::kill() {
+    this->dead = true;
+    this->visible = ekg::visibility::EXISTED;
 
-    if (this->MasterId != 0) {
-        auto* Element = EKG_CORE->GetElementById(this->MasterId);
+    if (this->master_id != 0) {
+        auto* Element = EKG_CORE->get_element_by_id(this->master_id);
 
         if (Element != nullptr) {
-            Element->Remove(this->GetId());
+            Element->remove(this->get_id());
         }
     }
 
     // Set all children master ID to 0.
-    for (unsigned int IDs : this->Children.StackedIds) {
-        auto* Element = EKG_CORE->GetElementById(IDs);
+    for (unsigned int IDs : this->children_stack.StackedIds) {
+        auto* Element = EKG_CORE->get_element_by_id(IDs);
 
         if (Element != nullptr) {
-            Element->SetMasterId(0);
-            Element->OnMasterKilled(this->GetId());
-            Element->Kill();
+            Element->set_master_id(0);
+            Element->on_master_killed(this->get_id());
+            Element->kill();
         }
     }
 
-    if (this->InfoClass() == "frame-tab") {
-        EKG_Log("oi");
+    if (this->info_class() == "frame-tab") {
+        ekg_log("oi");
     }
 
-    EKG::Task(EKG::Task::FREE);
+    ekg::task(ekg::task::FREE);
 }
 
-void EKG_AbstractElement::OnChildKilled(unsigned int ChildElementId) {
-
-}
-
-void EKG_AbstractElement::OnMasterKilled(unsigned int MasterElementId) {
+void ekg_abstract_element::on_parent_killed(unsigned int element_id) {
 
 }
 
-void EKG_AbstractElement::OnPreEvent(SDL_Event Event) {
+void ekg_abstract_element::on_master_killed(unsigned int element_id) {
+
+}
+
+void ekg_abstract_element::on_pre_event(SDL_Event Event) {
     if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION || Event.type == SDL_FINGERUP) {
         float FX = Event.tfinger.x;
         float FY = Event.tfinger.y;
 
-        EKG::ScaledFingerPos(FX, FY);
-        this->Hovered = this->IsFingerOver(FX, FY);
+        ekg::scaled_finger_pos(FX, FY);
+        this->hovered = this->collide_with_pos(FX, FY);
     }
 }
 
-void EKG_AbstractElement::OnEvent(SDL_Event Event) {
+void ekg_abstract_element::on_event(SDL_Event Event) {
 
 }
 
-void EKG_AbstractElement::OnPostEvent(SDL_Event Event) {
-    this->Hovered = false;
+void ekg_abstract_element::on_post_event(SDL_Event Event) {
+    this->hovered = false;
 }
 
-void EKG_AbstractElement::OnUpdate(const float &DeltaTicks) {
-
-}
-
-void EKG_AbstractElement::OnRender(const float &PartialTicks) {
+void ekg_abstract_element::on_update(const float &DeltaTicks) {
 
 }
 
-void EKG_AbstractElement::Scissor() {
+void ekg_abstract_element::on_render(const float &PartialTicks) {
 
 }
 
-void EKG_AbstractElement::Stack(EKG_Stack &Stack) {
-    if (Stack.Contains(this->Id)) {
+void ekg_abstract_element::scissor_sync() {
+
+}
+
+void ekg_abstract_element::push_children_ids_to_stack(ekg_stack &stack) {
+    if (stack.Contains(this->id)) {
         return;
     }
 
-    Stack.Put(this->Id);
+    stack.Put(this->id);
 
-    for (unsigned int Ids : this->Children.StackedIds) {
-        auto* Element = (EKG_AbstractElement*) EKG_CORE->GetElementById(Ids);
+    for (unsigned int Ids : this->children_stack.StackedIds) {
+        auto* Element = (ekg_abstract_element*) EKG_CORE->get_element_by_id(Ids);
 
         if (Element == NULL) {
             continue;
         }
 
-        Element->Stack(Stack);
+        Element->push_children_ids_to_stack(stack);
     }
 }
 
-bool EKG_AbstractElement::IsMaster() {
-    return !this->Children.StackedIds.empty();
+bool ekg_abstract_element::is_master() {
+    return !this->children_stack.StackedIds.empty();
 }
 
-void EKG_AbstractElement::SetScissor(int X, int Y, int W, int H) {
-    this->ScissorX = X;
-    this->ScissorY = Y;
-    this->ScissorW = W;
-    this->ScissorH = H;
+void ekg_abstract_element::set_scissor(int x, int y, int w, int h) {
+    this->scissor_x = x;
+    this->scissor_y = y;
+    this->scissor_w = w;
+    this->scissor_h = h;
 }
 
-int EKG_AbstractElement::GetScissorX() {
-    return this->ScissorX;
+int ekg_abstract_element::get_scissor_x() {
+    return this->scissor_x;
 }
 
-int EKG_AbstractElement::GetScissorY() {
-    return this->ScissorY;
+int ekg_abstract_element::get_scissor_y() {
+    return this->scissor_y;
 }
 
-int EKG_AbstractElement::GetScissorW() {
-    return this->ScissorW;
+int ekg_abstract_element::get_scissor_w() {
+    return this->scissor_w;
 }
 
-int EKG_AbstractElement::GetScissorH() {
-    return this->ScissorH;
+int ekg_abstract_element::get_scissor_h() {
+    return this->scissor_h;
 }
 
-bool EKG_AbstractElement::IsFingerOver(float X, float Y) {
-    bool Flag = this->Rect.CollideWithPoint(X, Y);
+bool ekg_abstract_element::collide_with_pos(float x, float y) {
+    bool Flag = this->rect.CollideWithPoint(x, y);
 
-    if (Flag && this->GetMasterId() != 0) {
-        auto* Element = EKG_CORE->GetElementById(this->GetMasterId());
+    if (Flag && this->get_master_id() != 0) {
+        auto* Element = EKG_CORE->get_element_by_id(this->get_master_id());
 
-        if (Element != NULL && !Element->IsFingerOver(X, Y)) {
+        if (Element != NULL && !Element->collide_with_pos(x, y)) {
             return false;
         }
     }
@@ -248,42 +240,42 @@ bool EKG_AbstractElement::IsFingerOver(float X, float Y) {
     return Flag;
 }
 
-void EKG_AbstractElement::Place(float X, float Y) {
-    if (this->GetMasterId() == 0) {
-        this->Rect.X = X;
-        this->Rect.Y = Y;
+void ekg_abstract_element::place(float x, float y) {
+    if (this->get_master_id() == 0) {
+        this->rect.X = x;
+        this->rect.Y = y;
     } else {
-        this->SyncX = X;
-        this->SyncY = Y;
+        this->sync_x = x;
+        this->sync_y = y;
 
-        this->Rect.X = this->ScaledX + this->SyncX;
-        this->Rect.Y = this->ScaledY + this->SyncY;
+        this->rect.X = this->scaled_x + this->sync_x;
+        this->rect.Y = this->scaled_y + this->sync_y;
     }
 }
 
-void EKG_AbstractElement::SyncPos() {
-    this->Place(this->SyncX, this->SyncY);
+void ekg_abstract_element::sync_pos() {
+    this->place(this->sync_x, this->sync_y);
 }
 
-void EKG_AbstractElement::SyncSize() {
-
-}
-
-EKG_AbstractElement::EKG_AbstractElement() {
+void ekg_abstract_element::sync_size() {
 
 }
 
-EKG_AbstractElement::~EKG_AbstractElement() {
+ekg_abstract_element::ekg_abstract_element() {
 
 }
 
-std::string EKG_AbstractElement::InfoClass() {
+ekg_abstract_element::~ekg_abstract_element() {
+
+}
+
+std::string ekg_abstract_element::info_class() {
     return "abstract";
 }
 
-void EKG_AbstractElement::Remove(unsigned int ElementId) {
-    if (this->Children.Contains(ElementId)) {
-        this->Children.Rem(ElementId);
-        this->OnChildKilled(ElementId);
+void ekg_abstract_element::remove(unsigned int element_id) {
+    if (this->children_stack.Contains(element_id)) {
+        this->children_stack.Rem(element_id);
+        this->on_parent_killed(element_id);
     }
 }

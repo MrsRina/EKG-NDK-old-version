@@ -3,7 +3,7 @@
  * @since 21/03/2022 at 21:05PM
  */
 #pragma once
-#include "EKG_includes.h"
+#include "ekg_includes.h"
 
 /**
  * Smooth animation.
@@ -20,7 +20,7 @@ float EKG_AnimationSmooth(float Duration, float Time);
  * @param StringTwo
  * @return
  */
-bool EKG_StringContains(const std::string &StringOne, const std::string &StringTwo);
+bool ekg_string_in(const std::string &StringOne, const std::string &StringTwo);
 
 /**
  * Min da value.
@@ -51,10 +51,10 @@ float EKG_Clampf(float V, float Min, float Max);
 void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top);
 
 /**
- * Send log to console (remember before call this, invoke EKG::Init() to prevent errors using this function)
+ * Send log to console (remember before call this, invoke ekg::init() to prevent errors using this function)
  * @param Log - The log.
  */
-void EKG_Log(const std::string &Log);
+void ekg_log(const std::string &Log);
 
 /**
  * Convert to a pattern design.
@@ -62,7 +62,7 @@ void EKG_Log(const std::string &Log);
  * @param Id - The id of some element.
  * @return [TAG-ID] pattern.
  */
-std::string EKG_Print(const std::string &Tag, unsigned int Id);
+std::string ekg_print(const std::string &Tag, unsigned int Id);
 
 /**
  * A lerp fuction.
@@ -81,9 +81,9 @@ struct EKG_Vec2d {
 };
 
 /**
- * Rect AABB.
+ * rect AABB.
  */
-struct EKG_Rect {
+struct ekg_rect {
     float X, Y, W, H;
 
     bool CollideWithPoint(float PointX, float PointY);
@@ -93,7 +93,7 @@ struct EKG_Rect {
 /**
  * Put ids in a stack.
  */
-struct EKG_Stack {
+struct ekg_stack {
     std::vector<unsigned int> StackedIds;
 
     bool Contains(unsigned int Id);
@@ -126,7 +126,7 @@ struct EKG_Color {
 /**
  * Theme colors for widget or config.
  */
-class EKG_ColorTheme {
+class ekg_color_theme {
 private:
     bool OutlineFrame;
     bool OutlineButton;
@@ -193,7 +193,7 @@ typedef struct EKG_Timing {
     void Start();
     void Stop();
     bool EndIf(float MS);
-} EKG_Timing;
+} ekg_timing;
 
 /**
  * An linear interpolation helper, used in UI animations.
@@ -206,17 +206,17 @@ struct EKG_Smooth {
 };
 
 /* Start of scissor functions. */
-void EKG_Scissor(int X, int Y, int W, int H);
-void EKG_EndScissor();
+void ekg_scissor(int X, int Y, int W, int H);
+void ekg_end_scissor();
 /* End of scissor functions. */
 
 /* Start of draw functions. */
-void EKG_DrawFilledShape(float X, float Y, float W, float H, const EKG_Color &Color);
-void EKG_DrawOutlineShape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color);
-void EKG_DrawFilledRect(const EKG_Rect &Rect, const EKG_Color &Color);
-void EKG_DrawOutlineRect(const EKG_Rect &Rect, float LineThickness, const EKG_Color &Color);
+void ekg_draw_filled_shape(float X, float Y, float W, float H, const EKG_Color &Color);
+void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color);
+void ekg_draw_filled_rect(const ekg_rect &Rect, const EKG_Color &Color);
+void ekg_draw_outline_rect(const ekg_rect &Rect, float LineThickness, const EKG_Color &Color);
 void EKG_StoreShape(float X, float Y, float W, float H);
 void EKG_StoreTextureCoordinates(float TextureX, float TextureY, float TextureW, float TextureH);
 void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color);
-void EKG_DrawTextureRect(const EKG_Rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color);
+void EKG_DrawTextureRect(const ekg_rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color);
 /* End of draw functions. */

@@ -3,83 +3,80 @@
  * @since 21/03/2022 at 21:05PM
  */
 #pragma once
-#include "EKG_includes.h"
-#include "EKG_abstract_ui_element.h"
-#include "EKG_shader.h"
-#include "EKG_tessellator.h"
+#include "ekg_includes.h"
+#include "ekg_abstract_ui_element.h"
+#include "ekg_shader.h"
+#include "ekg_tessellator.h"
 
 /**
- * The core of EKG, where everything is processed.
+ * The core of ekg, where everything is processed.
  */
-class EKG_Core {
+class ekg_core {
 protected:
     /* Buffers element used in context gui. */
-    std::vector<EKG_AbstractElement*> BufferUpdate, BufferCopy, BufferNew;
-    std::array<EKG_AbstractElement*, 256> BufferRender = {};
+    std::vector<ekg_abstract_element*> buffer_update, buffer_copy, buffer_new;
+    std::array<ekg_abstract_element*, 256> buffer_render = {};
 
-    uint8_t BufferSize;
-    bool ShouldSwapBuffers;
+    uint8_t buffer_size;
+    bool should_swap_buffers;
 
     /* Stacks. */
-    EKG_Stack StackedIdsSelected;
+    ekg_stack stack_ids_selected;
 
     /* Focused id & most high id to generate unique ids. */
-    unsigned int FocusedId, HighId = 1;
+    unsigned int focused_element_id, previous_id_used = 1;
 
     /* References. */
-    std::string FocusedTag, FocusedType;
+    std::string focused_element_tag, focused_element_info_class;
 
-    /* Stack control methods. */
-    void ReorderStack(unsigned int ElementId);
-    void RefreshStack();
-    void FreeStack();
-    void SwapBuffers();
+    /* Stack handler methods. */
+    void reorder_stack(unsigned int element_id);
+    void refresh_stack();
+    void free_stack();
+    void swap_stack();
 
     /* Environment. */
-    bool TaskBlocked, TaskRefresh, TaskReorder, TaskRefocus, TaskFree;
-    unsigned int IdFromTask;
+    bool task_blocked, task_refresh, task_reorder, task_refocus, task_free;
+    unsigned int id_from_task;
 public:
-    float PartialTicks;
-    float DeltaTicks;
+    ekg_core() {}
 
-    EKG_Core() {}
-
-    /* Start of managers and controllers to EKG. */
-    EKG_ShaderManager ShaderManager;
-    EKG_FontRenderer FontRenderer;
-    EKG_ColorTheme ColorTheme;
-    EKG_Timing* Timing;
+    /* Start of managers and controllers to ekg. */
+    ekg_shader_manager shader_manager;
+    ekg_font_renderer font_renderer;
+    ekg_color_theme color_theme;
+    ekg_timing* timing;
     /* End of managers and controllers. */
 
     /* Start of setters & getters. */
-    int GetSizeOfUpdateElements();
-    int GetSizeOfRenderElements();
-    unsigned int GetFocusedElementId();
+    int get_size_of_update_elements();
+    int get_size_of_render_elements();
+    unsigned int get_focused_element_id();
 
-    std::string GetFocusedTag();
-    std::string GetFocusedType();
+    std::string get_focused_element_tag();
+    std::string get_focused_element_info_class();
     /* End of setters & getters. */
 
     /* Start of important methods. */
-    void Init();
-    void Quit();
+    void init();
+    void quit();
 
-    void AddElement(EKG_AbstractElement* Element);
-    void RemoveElement(unsigned int ElementId);
+    void add_element_to_queue(ekg_abstract_element* element);
+    void remove_element_by_id(unsigned int element_id);
 
-    EKG_AbstractElement* GetElementById(unsigned int Id);
-    unsigned int NewId();
+    ekg_abstract_element* get_element_by_id(unsigned int Id);
+    unsigned int next_id();
 
-    void Sync(float X, float Y, float W, float H, const EKG_Stack &Stack);
-    void SyncScissor(EKG_AbstractElement* Element);
+    void sync_stack_scaled_metrics(float x, float y, float w, float h, const ekg_stack &stack);
+    void sync_scissor(ekg_abstract_element* element);
     /* End of important methods. */
 
     /* Start of concurrent methods. */
-    void Task(unsigned int Task, unsigned int Id = 0);
-    bool VerifyTask(unsigned int Task);
+    void add_task_to_queue(unsigned int task, unsigned int id = 0);
+    bool verify_task(unsigned int task);
 
-    void OnEvent(SDL_Event Event);
-    void OnUpdate(const float &DeltaTicks);
-    void OnRender(const float &PartialTicks);
+    void on_event(SDL_Event event);
+    void on_update(const float &delta_ticks);
+    void OnRender(const float &render_ticks);
     /* End of concurrent methods. */
 };
