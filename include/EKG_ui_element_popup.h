@@ -11,84 +11,80 @@
 #define EKG_UI_ELEMENT_POPUP_H
 
 /**
- * Name: popup
+ * name: popup
  * Type: Container
- * Description: List elements and make selectable
- * Features: Enable or disable elements
+ * Description: list elements and make selectable
+ * Features: enable or disable elements
  **/
 class ekg_ui_element_popup : public ekg_abstract_element {
 protected:
     /* Settings. */
-    std::vector<EKG_Data> List;
-    std::string Selected, Focused, Activy;
+    std::vector<ekg_data> list;
+    std::string selected, focused, activy;
 
     /* States. */
-    bool Pressed, Clicked, PopupMaster, Show;
+    bool pressed, clicked, is_master_popup, show;
 
     /* Metrics of popup & buttons. */
-    float MaximumHeight, MaximumWidth, TextOffset, TextScale;
+    float max_width, max_height, text_offset, text_scale;
 
     /* Animations. */
-    float LastTicks;
-    EKG_Smooth SmoothPressed;
+    float last_tick;
+    EKG_Smooth smooth_pressed;
 
     /* Help to return hovered components. */
-    EKG_Data GetHoveredComponent(float FX, float FY);
-
-    /* sync_stack_scaled_metrics menus hovering. */
-    bool IsUpdate(float FX, float FY);
+    ekg_data get_component_by_pos(float x, float y);
 public:
     /* Start of configurable methods. */
-    void Insert(const std::vector<std::string> &List);
-    void Delete(const std::string &Pattern);
-    void Disable(const std::string &Pattern);
-    void Enable(const std::string &Pattern);
+    void insert(const std::vector<std::string> &new_list);
+    void remove(const std::string &pattern);
+    void disable(const std::string &pattern);
+    void enable(const std::string &pattern);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
-    void SetOffsetText(float OffsetText);
-    float GetOffsetText();
+    void set_offset_text(float offset_text);
+    float get_offset_text();
 
-    void SetPressed(bool State);
-    bool IsPressed();
+    void set_press_state(bool state);
+    bool is_pressed();
 
-    void SetClicked(bool State);
-    bool IsClicked();
+    void set_click_state(bool state);
+    bool is_clicked();
 
-    void SetWidth(float Width);
-    void set_master_id(unsigned int Id);
+    void set_width(float width);
+    void set_master_id(unsigned int id);
 
-    void SetScale(float TextScale);
-    float GetScale();
+    void set_scale(float scale);
+    float get_scale();
 
-    std::vector<EKG_Data> &GetList();
+    std::vector<ekg_data> &get_list();
+    std::string &get_focused();
+    std::string &get_clicked();
 
-    std::string &GetFocused();
-    std::string &GetClicked();
+    void get_path(std::string &previous_path);
 
-    void GetPath(std::string &PreviousPath);
-
-    float GetMaximumWidth();
-    float GetMaximumHeight();
+    float get_max_width();
+    float get_max_height();
     /* End of setters & getters. */
 
     /* Start of action methods. */
-    void Place(ekg_ui_element_popup* Element);
-    void Place(float X, float Y, float BoundingX);
+    void place(ekg_ui_element_popup* element);
+    void place(float x, float y, float bounding_y);
     /* End of action methods. */
 
     /* Start of override methods. */
     std::string info_class();
-    void set_visibility_flag(unsigned int VisibilityFlag);
+    void set_visibility_flag(unsigned int flag);
 
     void kill();
-    void place(float X, float Y);
+    void place(float x, float y);
     void sync_size();
-    void on_pre_event(SDL_Event Event);
-    void on_event(SDL_Event Event);
-    void on_post_event(SDL_Event Event);
-    void on_update(const float &DeltaTicks);
-    void on_render(const float &PartialTicks);
+    void on_pre_event(SDL_Event event);
+    void on_event(SDL_Event event);
+    void on_post_event(SDL_Event event);
+    void on_update(const float &delta_ticks);
+    void on_render(const float &render_ticks);
     /* End of override methods. */
 };
 

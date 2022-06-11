@@ -34,7 +34,7 @@ private:
     GLuint VertexBuffer, ColorBuffer, VertexAttribute, ColorAttribute;
 
     /* Extra color field used to texture. */
-    EKG_Color TextureColor = EKG_Color(255, 255, 255, 255);
+    ekg_color TextureColor = ekg_color(255, 255, 255, 255);
 public:
     EKG_Tessellator() {}
 
@@ -45,7 +45,7 @@ public:
 
     /* Start of action methods. */
     void BindTexture(GLuint Id);
-    void BindTexture(const EKG_Data &Texture);
+    void BindTexture(const ekg_data &Texture);
     void NewDraw(int DrawType, int DrawSize);
     void Draw(int VertexLength, int MaterialLength, float VertexDataArray[VertexLength], float MaterialDataArray[MaterialLength]);
     /* End of actions methods. */
@@ -55,7 +55,7 @@ public:
     float GetTextureHeight();
 
     void SetTextureColor(unsigned int R, unsigned int G, unsigned int B, unsigned int A);
-    void SetTextureColor(EKG_Color Color);
+    void SetTextureColor(ekg_color Color);
     /* End of getters and setters. */
 };
 
@@ -90,8 +90,8 @@ public:
     void Reload();
     void Quit();
 
-    void DrawString(const std::string& String, float X, float Y, const EKG_Color &Color);
-    void DrawStringClamped(const std::string &String, float X, float Y, float W, const EKG_Color &Color);
+    void DrawString(const std::string& String, float X, float Y, const ekg_color &Color);
+    void DrawStringClamped(const std::string &String, float X, float Y, float W, const ekg_color &Color);
     /* End of main methods. */
 
     /* Start of setters and getters. */

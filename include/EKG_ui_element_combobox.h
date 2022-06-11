@@ -12,7 +12,7 @@
 #define EKG_UI_ELEMENT_COMBOBOX_H
 
 /**
- * Name: Combobox
+ * name: Combobox
  * Type: Widget
  * Description: A selection box with elements.
  * Features: Lists elements and set current.

@@ -1,242 +1,237 @@
 #include "ekg_ui_element_popup.h"
 #include "ekg.h"
 
-void ekg_ui_element_popup::Insert(const std::vector<std::string> &ToAddList) {
-    this->List.clear();
+void ekg_ui_element_popup::insert(const std::vector<std::string> &new_list) {
+    this->list.clear();
 
-    for (const std::string& String : ToAddList) {
-        if (String.empty()) {
+    for (const std::string& string : new_list) {
+        if (string.empty()) {
             continue;
         }
 
-        EKG_Data Component;
+        ekg_data component;
 
-        Component.Name = String;
-        Component.Tag = "1";
+        component.name = string;
+        component.tag = "1";
 
-        this->List.push_back(Component);
+        this->list.push_back(component);
     }
 }
 
-void ekg_ui_element_popup::Delete(const std::string &Pattern) {
-    std::vector<EKG_Data> NewList;
+void ekg_ui_element_popup::remove(const std::string &pattern) {
+    std::vector<ekg_data> new_list;
 
-    for (const EKG_Data &Components : this->List) {
-        if (ekg_string_in(Pattern, Components.Name)) {
+    for (const ekg_data &components : this->list) {
+        if (ekg_string_in(pattern, components.name)) {
             continue;
         }
 
-        NewList.push_back(Components);
+        new_list.push_back(components);
     }
 
-    bool ShouldSync = this->List.size() != NewList.size();
-    this->List = NewList;
+    bool should_sync = this->list.size() != new_list.size();
+    this->list = new_list;
 
-    if (ShouldSync) {
+    if (should_sync) {
         this->sync_size();
     }
 }
 
-void ekg_ui_element_popup::Disable(const std::string &Pattern) {
-    if (Pattern.empty()) {
+void ekg_ui_element_popup::disable(const std::string &pattern) {
+    if (pattern.empty()) {
         return;
     }
 
-    bool ShouldSync;
+    bool should_sync;
 
-    for (EKG_Data &Components : this->List) {
-        if (ekg_string_in(Pattern, Components.Name)) {
-            Components.Tag = "";
-            ShouldSync = true;
+    for (ekg_data &components : this->list) {
+        if (ekg_string_in(pattern, components.name)) {
+            components.tag = "";
+            should_sync = true;
         }
     }
 
-    if (ShouldSync) {
+    if (should_sync) {
         this->sync_size();
     }
 }
 
-void ekg_ui_element_popup::Enable(const std::string &Pattern) {
-    if (Pattern.empty()) {
+void ekg_ui_element_popup::enable(const std::string &pattern) {
+    if (pattern.empty()) {
         return;
     }
 
-    bool ShouldSync;
+    bool should_sync;
 
-    for (EKG_Data &Components : this->List) {
-        if (ekg_string_in(Pattern, Components.Name)) {
-            Components.Tag = "1";
-            ShouldSync = true;
+    for (ekg_data &components : this->list) {
+        if (ekg_string_in(pattern, components.name)) {
+            components.tag = "1";
+            should_sync = true;
         }
     }
 
-    if (ShouldSync) {
+    if (should_sync) {
         this->sync_size();
     }
 }
 
-void ekg_ui_element_popup::SetOffsetText(float OffsetText) {
-    this->TextOffset = OffsetText;
+void ekg_ui_element_popup::set_offset_text(float offset_text) {
+    this->text_offset = offset_text;
 }
 
-float ekg_ui_element_popup::GetOffsetText() {
-    return this->TextOffset;
+float ekg_ui_element_popup::get_offset_text() {
+    return this->text_offset;
 }
 
-void ekg_ui_element_popup::SetPressed(bool State) {
-    this->Pressed = State;
+void ekg_ui_element_popup::set_press_state(bool state) {
+    this->pressed = state;
 }
 
-bool ekg_ui_element_popup::IsPressed() {
-    return this->Pressed;
+bool ekg_ui_element_popup::is_pressed() {
+    return this->pressed;
 }
 
-void ekg_ui_element_popup::SetClicked(bool State) {
-    this->Clicked = State;
+void ekg_ui_element_popup::set_click_state(bool state) {
+    this->clicked = state;
 }
 
-bool ekg_ui_element_popup::IsClicked() {
-    return this->Clicked;
+bool ekg_ui_element_popup::is_clicked() {
+    return this->clicked;
 }
 
-void ekg_ui_element_popup::SetWidth(float Width) {
-    if (this->rect.W != Width) {
-        this->rect.W = Width;
+void ekg_ui_element_popup::set_width(float width) {
+    if (this->rect.W != width) {
+        this->rect.W = width;
         this->sync_size();
     }
 }
 
-std::vector<EKG_Data> &ekg_ui_element_popup::GetList() {
-    return this->List;
+std::vector<ekg_data> &ekg_ui_element_popup::get_list() {
+    return this->list;
 }
 
-std::string &ekg_ui_element_popup::GetFocused() {
-    return this->Focused;
+std::string &ekg_ui_element_popup::get_focused() {
+    return this->focused;
 }
 
-std::string &ekg_ui_element_popup::GetClicked() {
-    return this->Selected;
+std::string &ekg_ui_element_popup::get_clicked() {
+    return this->selected;
 }
 
 void ekg_ui_element_popup::sync_size() {
     ekg_abstract_element::sync_size();
-    this->MaximumHeight = 0.0F;
+    this->max_height = 0.0F;
 
-    for (EKG_Data &Components : this->List) {
+    for (ekg_data &components : this->list) {
         // It cost too many ticks (hardware) to get string height.
-        Components.DataHeight = EKG_CORE->font_renderer.GetStringHeight(Components.Name) + (this->TextScale * 2);
-        this->MaximumHeight += Components.DataHeight;
+        components.data_height = EKG_CORE->font_renderer.GetStringHeight(components.name) + (this->text_scale * 2);
+        this->max_height += components.data_height;
     }
 }
 
-void ekg_ui_element_popup::on_pre_event(SDL_Event Event) {
+void ekg_ui_element_popup::on_pre_event(SDL_Event event) {
     // There is no problem in finger pos out of master bound.
-    if (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION || Event.type == SDL_FINGERUP) {
-        float FX = Event.tfinger.x;
-        float FY = Event.tfinger.y;
+    if (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION || event.type == SDL_FINGERUP) {
+        float fx = event.tfinger.x;
+        float fy = event.tfinger.y;
 
-        ekg::scaled_finger_pos(FX, FY);
-        this->hovered = this->rect.CollideWithPoint(FX, FY);
+        ekg::scaled_finger_pos(fx, fy);
+        this->hovered = this->rect.CollideWithPoint(fx, fy);
     }
 }
 
-void ekg_ui_element_popup::on_event(SDL_Event Event) {
-    ekg_abstract_element::on_event(Event);
+void ekg_ui_element_popup::on_event(SDL_Event event) {
+    ekg_abstract_element::on_event(event);
 
-    switch (Event.type) {
+    switch (event.type) {
         case SDL_FINGERUP: {
-            float FX = Event.tfinger.x;
-            float FY = Event.tfinger.y;
+            float fx = event.tfinger.x;
+            float fy = event.tfinger.y;
 
-            ekg::scaled_finger_pos(FX, FY);
-            EKG_Data Component = this->GetHoveredComponent(FX, FY);
+            ekg::scaled_finger_pos(fx, fy);
+            ekg_data component = this->get_component_by_pos(fx, fy);
 
-            this->Selected = "";
+            this->selected = "";
 
-            if (this->Pressed && !this->Focused.empty() && this->Focused == Component.Name) {
-                this->Clicked = true;
-                this->Selected = this->Focused;
+            if (this->pressed && !this->focused.empty() && this->focused == component.name) {
+                this->clicked = true;
+                this->selected = this->focused;
             }
 
-            bool FingerNotHoveredMasterOrCurrentFocusedIsNotPopup =
-                    ekg::current_focused_type() != "popup";
+            bool flag = ekg::current_focused_type() != "popup";
 
-            if (!this->PopupMaster && this->get_master_id() != 0 && FingerNotHoveredMasterOrCurrentFocusedIsNotPopup) {
-                auto* Element = EKG_CORE->get_element_by_id(this->get_master_id());
-                FingerNotHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && !Element->collide_with_pos(
-                        FX, FY);
+            if (!this->is_master_popup && this->get_master_id() != 0 && flag) {
+                auto* element = EKG_CORE->get_element_by_id(this->get_master_id());
+                flag = element != NULL && !element->collide_with_pos(fx, fy);
             }
 
-            if (FingerNotHoveredMasterOrCurrentFocusedIsNotPopup || (!this->Focused.empty() && !this->hovered) || (!this->Selected.empty() && Component.Id == 0) || (EKG_CORE->get_element_by_id(
-                    Component.Id) == NULL && Component.Id != 0)) {
+            if (flag || (!this->focused.empty() && !this->hovered) || (!this->selected.empty() && component.Id == 0) || (EKG_CORE->get_element_by_id(component.Id) == NULL && component.Id != 0)) {
                 this->kill();
             }
 
-            if (!this->Focused.empty() && (Component.Name == this->Focused ||
-                    ekg::current_focused_type() == "popup") && Component.Id == 0) {
-                std::string Path = this->Focused;
-                this->GetPath(Path);
+            if (!this->focused.empty() && (component.name == this->focused || ekg::current_focused_type() == "popup") && component.Id == 0) {
+                std::string path = this->focused;
+                this->get_path(path);
 
                 // We use smart pointers instead directly pointers.
-                std::shared_ptr<void> P(new std::string(Path));
+                std::shared_ptr<void> pointer(new std::string(path));
 
                 // Send popup event using ekg events processor.
-                ekg::event::dispatch(ekg::event::POPUP, static_cast<void *>(P.get()), nullptr);
+                ekg::event::dispatch(ekg::event::POPUP, static_cast<void *>(pointer.get()), nullptr);
             }
 
-            this->Pressed = false;
-            this->Focused = "";
+            this->pressed = false;
+            this->focused = "";
 
             break;
         }
 
         case SDL_FINGERDOWN: {
-            float FX = Event.tfinger.x;
-            float FY = Event.tfinger.y;
+            float fx = event.tfinger.x;
+            float fy = event.tfinger.y;
 
-            ekg::scaled_finger_pos(FX, FY);
+            ekg::scaled_finger_pos(fx, fy);
 
             if (this->hovered) {
-                float Y = this->get_y();
-                float X, W, H;
+                float y = this->get_y();
+                float x, w, h;
 
-                EKG_Data Component;
-                Component.Name = "";
+                ekg_data component;
+                component.name = "";
 
-                for (const EKG_Data &Components : this->List) {
-                    X = this->get_x();
+                for (const ekg_data &components : this->list) {
+                    x = this->get_x();
 
-                    W = X + this->get_width();
-                    H = Y + Components.DataHeight;
+                    w = x + this->get_width();
+                    h = y + components.data_height;
 
-                    if (Components.Tag == "1" && FX > X && FX < W && FY > Y && FY < H) {
-                        Component = Components;
+                    if (components.tag == "1" && fx > x && fx < w && fy > y && fy < h) {
+                        component = components;
                         break;
                     }
 
-                    Y += Components.DataHeight;
+                    y += components.data_height;
                 }
 
-                this->Focused = Component.Name;
+                this->focused = component.name;
 
-                if (!this->Focused.empty()) {
-                    this->Pressed = true;
+                if (!this->focused.empty()) {
+                    this->pressed = true;
 
-                    if (Component.Id != 0) {
-                        auto* ElementOut = (ekg_ui_element_popup*) EKG_CORE->get_element_by_id(
-                                Component.Id);
+                    if (component.Id != 0) {
+                        auto element_out = (ekg_ui_element_popup*) EKG_CORE->get_element_by_id(component.Id);
 
-                        if (ElementOut != NULL) {
-                            ElementOut->set_visibility_flag(ekg::visibility::VISIBLE);
-                            ElementOut->Place(this->get_x() + this->get_width(), Y, this->get_x());
+                        if (element_out != NULL) {
+                            element_out->set_visibility_flag(ekg::visibility::VISIBLE);
+                            element_out->place(this->get_x() + this->get_width(), y, this->get_x());
 
-                            this->Activy = Component.Name;
+                            this->activy = component.name;
 
-                            for (const EKG_Data &Components : this->List) {
-                                auto *ElementIn = EKG_CORE->get_element_by_id(Components.Id);
+                            for (const ekg_data &components : this->list) {
+                                auto element_in = EKG_CORE->get_element_by_id(components.Id);
 
-                                if (ElementIn != NULL && ElementOut->get_id() != Components.Id) {
-                                    ElementIn->set_visibility_flag(ekg::visibility::INVISIBLE);
+                                if (element_in != NULL && element_out->get_id() != components.Id) {
+                                    element_in->set_visibility_flag(ekg::visibility::INVISIBLE);
                                 }
                             }
                         }
@@ -244,19 +239,17 @@ void ekg_ui_element_popup::on_event(SDL_Event Event) {
                 }
             }
 
-            bool FingerNotHoveredMasterOrCurrentFocusedIsNotPopup =
-                    ekg::current_focused_type() != "popup";
+            bool flag = ekg::current_focused_type() != "popup";
 
-            if (!this->PopupMaster && this->get_master_id() != 0 && FingerNotHoveredMasterOrCurrentFocusedIsNotPopup) {
-                auto* Element = EKG_CORE->get_element_by_id(this->get_master_id());
-                FingerNotHoveredMasterOrCurrentFocusedIsNotPopup = Element != NULL && !Element->collide_with_pos(
-                        FX, FY);
+            if (!this->is_master_popup && this->get_master_id() != 0 && flag) {
+                auto* element = EKG_CORE->get_element_by_id(this->get_master_id());
+                flag = element != NULL && !element->collide_with_pos(fx, fy);
             }
 
-            if (FingerNotHoveredMasterOrCurrentFocusedIsNotPopup) {
+            if (flag) {
                 this->kill();
-                this->Focused = "";
-                this->Pressed = false;
+                this->focused = "";
+                this->pressed = false;
             }
 
             break;
@@ -264,49 +257,47 @@ void ekg_ui_element_popup::on_event(SDL_Event Event) {
     }
 }
 
-void ekg_ui_element_popup::on_post_event(SDL_Event Event) {
-    ekg_abstract_element::on_post_event(Event);
+void ekg_ui_element_popup::on_post_event(SDL_Event event) {
+    ekg_abstract_element::on_post_event(event);
 }
 
-void ekg_ui_element_popup::on_update(const float &DeltaTicks) {
-    ekg_abstract_element::on_update(DeltaTicks);
+void ekg_ui_element_popup::on_update(const float &delta_ticks) {
+    ekg_abstract_element::on_update(delta_ticks);
 }
 
-void ekg_ui_element_popup::on_render(const float &PartialTicks) {
-    ekg_abstract_element::on_render(PartialTicks);
+void ekg_ui_element_popup::on_render(const float &render_ticks) {
+    ekg_abstract_element::on_render(render_ticks);
 
     // render only if is open.
-    if (this->Show) {
-        this->rect.H = EKG_AnimationSmooth(100, SDL_GetTicks() - this->LastTicks) * this->MaximumHeight;
-        this->SmoothPressed.NextFactory = !this->Focused.empty() ? EKG_CORE->color_theme.WidgetActivy[3] : 0;
-        this->SmoothPressed.Update(PartialTicks);
+    if (this->show) {
+        this->rect.H = EKG_AnimationSmooth(100, SDL_GetTicks() - this->last_tick) * this->max_height;
+        this->smooth_pressed.NextFactory = !this->focused.empty() ? EKG_CORE->color_theme.WidgetActivy[3] : 0;
+        this->smooth_pressed.Update(render_ticks);
 
         // Background container.
-        EKG_Color Color(EKG_CORE->color_theme.ContainerBackground);
-        ekg_draw_filled_rect(this->rect, Color);
+        ekg_color color(EKG_CORE->color_theme.ContainerBackground);
+        ekg_draw_filled_rect(this->rect, color);
 
         // Now reset color to activy in theme.
-        Color.Set(EKG_CORE->color_theme.WidgetActivy, SmoothPressed.Factory);
+        color.Set(EKG_CORE->color_theme.WidgetActivy, smooth_pressed.Factory);
 
         // We need calc a runtime height to render property the positions.
-        float FullHeight = this->get_y();
+        float full_height = this->get_y();
 
-        ekg_scissor((int) this->rect.X, (int) this->rect.Y, (int) this->rect.W, (int) this->rect.H);
+        ekg_scissor((int) this->rect.x, (int) this->rect.y, (int) this->rect.W, (int) this->rect.H);
 
         // Iterate all component data.
-        for (const EKG_Data &Components : this->List) {
+        for (const ekg_data &components : this->list) {
             // Background when is focused.
-            if (Components.Name == this->Focused) {
-                ekg_draw_filled_shape(this->get_x(), FullHeight, this->rect.W,
-                                      Components.DataHeight, Color);
+            if (components.name == this->focused) {
+                ekg_draw_filled_shape(this->get_x(), full_height, this->rect.W, components.data_height, color);
             }
 
             // Draw name of component.
-            EKG_CORE->font_renderer.DrawString(Components.Name,
-                                              this->get_x() + 2.0F + this->TextOffset, FullHeight + this->TextScale, Components.Tag != "1" ? EKG_CORE->color_theme.StringFadeColor : EKG_CORE->color_theme.StringColor);
+            EKG_CORE->font_renderer.DrawString(components.name, this->get_x() + 2.0F + this->text_offset, full_height + this->text_scale, components.tag != "1" ? EKG_CORE->color_theme.StringFadeColor : EKG_CORE->color_theme.StringColor);
 
             // update the height to the next element be rendered property.
-            FullHeight += Components.DataHeight;
+            full_height += components.data_height;
         }
 
         ekg_end_scissor();
@@ -316,76 +307,75 @@ void ekg_ui_element_popup::on_render(const float &PartialTicks) {
     }
 }
 
-EKG_Data ekg_ui_element_popup::GetHoveredComponent(float FX, float FY) {
-    float Y = this->get_y();
-    float X, W, H;
+ekg_data ekg_ui_element_popup::get_component_by_pos(float x, float y) {
+    float cy = this->get_y();
+    float cx, cw, ch;
 
-    for (const EKG_Data &Components : this->List) {
-        X = this->get_x();
+    for (const ekg_data &components : this->list) {
+        cx = this->get_x();
 
-        W = X + this->get_width();
-        H = Y + Components.DataHeight;
+        cw = cx + this->get_width();
+        ch = cy + components.data_height;
 
-        if (Components.Tag == "1" && FX > X && FX < W && FY > Y && FY < H) {
-            return Components;
+        if (components.tag == "1" && x > cx && x < cw && y > cy && y < ch) {
+            return components;
         }
 
-        Y += Components.DataHeight;
+        cy += components.data_height;
     }
 
-    EKG_Data Component;
-    Component.Name = "";
+    ekg_data Component;
+    Component.name = "";
 
     return Component;
 }
 
-void ekg_ui_element_popup::SetScale(float Scale) {
-    if (this->TextScale != Scale) {
-        this->TextScale = Scale;
+void ekg_ui_element_popup::set_scale(float scale) {
+    if (this->text_scale != scale) {
+        this->text_scale = scale;
         this->sync_size();
     }
 }
 
-float ekg_ui_element_popup::GetScale() {
-    return this->TextScale;
+float ekg_ui_element_popup::get_scale() {
+    return this->text_scale;
 }
 
-void ekg_ui_element_popup::Place(ekg_ui_element_popup* Popup) {
-    if (Popup == NULL || this->children_stack.Contains(Popup->get_id()) || Popup->get_id() ==
-                                                                           this->get_id()) {
+void ekg_ui_element_popup::place(ekg_ui_element_popup* element) {
+    if (element == NULL || this->children_stack.Contains(element->get_id()) || element->get_id() == this->get_id()) {
         return;
     }
 
-    bool Contains;
+    bool contains;
 
-    for (EKG_Data &Components : this->List) {
-        if (Components.Name == Popup->get_tag()) {
-            Components.Id = Popup->get_id();
-            Contains = true;
+    for (ekg_data &components : this->list) {
+        if (components.name == element->get_tag()) {
+            components.Id = element->get_id();
+            contains = true;
         }
     }
 
-    if (Contains) {
-        this->children_stack.Put(Popup->get_id());
+    if (contains) {
+        this->children_stack.Put(element->get_id());
 
-        Popup->set_master_id(this->get_id());
-        Popup->set_visibility_flag(ekg::visibility::INVISIBLE);
+        element->set_master_id(this->get_id());
+        element->set_visibility_flag(ekg::visibility::INVISIBLE);
     }
 }
 
-void ekg_ui_element_popup::place(float X, float Y) {
-    float FactoredX = X < 0 ? 0 : X;
-    float FactoredY = Y < 0 ? 0 : Y;
+void ekg_ui_element_popup::place(float x, float y) {
+    float factored_x = x < 0 ? 0 : x;
+    float factored_y = y < 0 ? 0 : y;
 
-    if (FactoredX + this->get_width() > ekg::screen_width) {
-        FactoredX = ekg::screen_width - this->get_width();
+    if (factored_x + this->get_width() > ekg::screen_width) {
+        factored_x = ekg::screen_width - this->get_width();
     }
 
-    if (FactoredY + this->MaximumHeight > ekg::screen_height) {
-        FactoredY = ekg::screen_height - this->MaximumHeight;
+    if (factored_y + this->max_height > ekg::screen_height) {
+        factored_y = ekg::screen_height - this->max_height;
     }
 
-    ekg_abstract_element::place(FactoredX, FactoredY);
+    ekg_abstract_element::place(factored_x, factored_y);
 }
 
 std::string ekg_ui_element_popup::info_class() {
@@ -393,26 +383,20 @@ std::string ekg_ui_element_popup::info_class() {
     return "popup";
 }
 
-void ekg_ui_element_popup::Place(float X, float Y, float BoundingX) {
-    float FactoredX = X < 0 ? 0 : X;
-    float FactoredY = Y < 0 ? 0 : Y;
+void ekg_ui_element_popup::place(float x, float y, float bounding_y) {
+    float factored_x = x < 0 ? 0 : x;
+    float factored_y = y < 0 ? 0 : y;
 
-    if (FactoredX + this->get_width() > ekg::screen_width) {
-        FactoredX = BoundingX - this->get_width();
+    if (factored_x + this->get_width() > ekg::screen_width) {
+        factored_x = bounding_y - this->get_width();
     }
 
-    if (FactoredY + this->MaximumHeight > ekg::screen_height) {
-        FactoredY = ekg::screen_height - this->MaximumHeight;
+    if (factored_y + this->max_height > ekg::screen_height) {
+        factored_y = ekg::screen_height - this->max_height;
     }
 
-    this->rect.X = (FactoredX);
-    this->rect.Y = FactoredY;
-}
-
-bool ekg_ui_element_popup::IsUpdate(float FX, float FY) {
-    return ekg::current_focused_type() == "popup" && ekg::current_focused_id() != 0 && (ekg::current_focused_id() == this->master_id ||
-            ekg::current_focused_id() == this->get_id() || this->children_stack.Contains(
-            ekg::current_focused_id()));
+    this->rect.x = factored_x;
+    this->rect.y = factored_y;
 }
 
 void ekg_ui_element_popup::kill() {
@@ -423,68 +407,68 @@ void ekg_ui_element_popup::kill() {
     ekg_abstract_element::kill();
 
     for (unsigned int IDs : this->children_stack.StackedIds) {
-        auto* Element = EKG_CORE->get_element_by_id(IDs);
+        auto* element = EKG_CORE->get_element_by_id(IDs);
 
-        if (Element != NULL) {
-            Element->kill();
+        if (element != NULL) {
+            element->kill();
         }
     }
 
     this->children_stack.StackedIds.clear();
 
-    if (this->get_master_id() != 0 && this->PopupMaster) {
-        auto* Element = EKG_CORE->get_element_by_id(this->get_master_id());
+    if (this->get_master_id() != 0 && this->is_master_popup) {
+        auto* element = EKG_CORE->get_element_by_id(this->get_master_id());
 
-        if (Element != NULL) {
-            Element->kill();
+        if (element != NULL) {
+            element->kill();
         }
     }
 }
 
-void ekg_ui_element_popup::GetPath(std::string &PreviousPath) {
-    PreviousPath = this->get_tag() + "|" + PreviousPath;
+void ekg_ui_element_popup::get_path(std::string &previous_path) {
+    previous_path = this->get_tag() + "|" + previous_path;
 
     if (this->get_master_id() != 0) {
-        auto* Element = (ekg_ui_element_popup*) ekg::find(this->get_master_id());
+        auto element = (ekg_ui_element_popup*) ekg::find(this->get_master_id());
 
-        if (Element != NULL) {
-            Element->GetPath(PreviousPath);
+        if (element != NULL) {
+            element->get_path(previous_path);
         }
     }
 }
 
-void ekg_ui_element_popup::set_master_id(unsigned int ElementMasterId) {
-    ekg_abstract_element::set_master_id(ElementMasterId);
+void ekg_ui_element_popup::set_master_id(unsigned int id) {
+    ekg_abstract_element::set_master_id(id);
 
     // We can use this as flag to prevent visual glitch.
-    this->PopupMaster = true;
+    this->is_master_popup = true;
 
     if (this->master_id != 0) {
-        auto* Element = EKG_CORE->get_element_by_id(ElementMasterId);
-        this->PopupMaster = Element != NULL && Element->info_class() == "popup";
+        auto* element = EKG_CORE->get_element_by_id(id);
+        this->is_master_popup = element != NULL && element->info_class() == "popup";
     }
 }
 
-float ekg_ui_element_popup::GetMaximumWidth() {
-    return this->MaximumWidth;
+float ekg_ui_element_popup::get_max_width() {
+    return this->max_width;
 }
 
-float ekg_ui_element_popup::GetMaximumHeight() {
-    return this->MaximumHeight;
+float ekg_ui_element_popup::get_max_height() {
+    return this->max_height;
 }
 
-void ekg_ui_element_popup::set_visibility_flag(unsigned int VisibilityFlag) {
-    if (VisibilityFlag == ekg::visibility::INVISIBLE) {
+void ekg_ui_element_popup::set_visibility_flag(unsigned int flag) {
+    if (flag == ekg::visibility::INVISIBLE) {
         this->rect.H = 0;
     }
 
-    bool Flag = (VisibilityFlag == ekg::visibility::VISIBLE);
+    bool flag_visible_true = (flag == ekg::visibility::VISIBLE);
 
-    if (this->Show != Flag) {
-        this->LastTicks = SDL_GetTicks();
+    if (this->show != flag_visible_true) {
+        this->last_tick = SDL_GetTicks();
         ekg_abstract_element::set_visibility_flag(ekg::visibility::INVISIBLE);
-        this->Show = Flag;
+        this->show = flag_visible_true;
     }
 
-    this->visible = VisibilityFlag;
+    this->visible = flag;
 }

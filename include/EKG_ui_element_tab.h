@@ -11,7 +11,7 @@
 #define EKG_UI_ELEMENT_TAB_H
 
 /**
- * Name: Tab
+ * name: Tab
  * Type: Container
  * Description: A container with frames.
  * Features: Lists elements and set current.
@@ -19,61 +19,61 @@
 class ekg_ui_element_tab : public ekg_ui_element_frame {
 protected:
     /* Settings. */
-    std::vector<EKG_Data> List;
-    std::string Focused, Activy;
-
-    /* States. */
-    bool Pressed;
+    std::vector<ekg_data> list;
+    std::string focused, activy;
 
     /* Metrics of tab & buttons. */
-    float MinimumWidth, MinimumHeight, BorderOffset, Size, TextOffset, TextScale, ButtonSize;
+    float border_offset, size, text_offset, text_scale, button_size;
 
     /* Configuration. */
-    unsigned int DockTab;
-    EKG_Smooth SmoothActivy;
+    unsigned int dock_tab;
+    EKG_Smooth smooth_activy;
 
-    EKG_Data GetComponentHovered(float FX, float FY);
-    void SyncLayout();
-    void SortCloseComponent();
+    /* Start of helper methods. */
+    ekg_data get_component_by_pos(float x, float y);
+
+    void sync_layout();
+    void sort_close_component();
+    /* End of helper methods. */
 public:
     /* Start of configurable methods. */
-    void Delete(const std::string &Pattern);
-    void Disable(const std::string &Pattern);
-    void Enable(const std::string &Pattern);
-    void TabSide(unsigned int Dock);
-    void Place(ekg_ui_element_frame* Frame);
-    void Open(const std::string &Name);
-    void Open(EKG_Data &Component);
+    void remove(const std::string &pattern);
+    void disable(const std::string &pattern);
+    void enable(const std::string &pattern);
+    void tab_side(unsigned int dock);
+    void place(ekg_ui_element_frame* frame);
+    void open(const std::string &name);
+    void open(ekg_data &component);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
-    void SetOffsetText(float OffsetText);
-    float GetOffsetText();
+    void set_offset_text(float offset);
+    float get_offset_text();
 
-    void SetScale(float Scale);
-    float GetScale();
+    void set_scale(float scale);
+    float get_scale();
 
-    float GetSize();
+    float get_size();
 
-    void SetBorderOffset(float Offset);
-    float GetBorderOffset();
+    void set_border_offset(float offset);
+    float get_border_offset();
 
-    std::vector<EKG_Data> &GetList();
+    void set_button_size(float size_val);
+    float get_button_size();
 
-    void SetButtonSize(float Size);
-    float GetButtonSize();
+    std::vector<ekg_data> &get_list();
     /* End of setters & getters. */
 
     /* Start of override methods. */
     std::string info_class();
-    void place(float X, float Y);
+    void place(float x, float y);
     void sync_size();
-    void on_parent_killed(unsigned int ChildElementId);
-    void on_pre_event(SDL_Event Event);
-    void on_event(SDL_Event Event);
-    void on_post_event(SDL_Event Event);
-    void on_update(const float &DeltaTicks);
-    void on_render(const float &PartialTicks);
+    void on_parent_killed(unsigned int element_id);
+    void on_pre_event(SDL_Event event);
+    void on_event(SDL_Event event);
+    void on_post_event(SDL_Event event);
+    void on_update(const float &delta_ticks);
+    void on_render(const float &render_ticks);
     /* End of override methods. */
 };
 

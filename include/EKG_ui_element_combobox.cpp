@@ -182,10 +182,10 @@ void ekg_ui_element_combobox::on_event(SDL_Event event) {
             if (this->pressed && this->hovered && ekg::current_focused_type() == "combobox" && this->children_stack.StackedIds.empty()) {
                 auto popup = ekg::Popup(this->get_tag() + "-combobox", ekg::NOPOS, ekg::NOPOS, this->popup_element_list);
 
-                popup->SetWidth(this->get_width());
+                popup->set_width(this->get_width());
                 popup->place(this->get_x(), this->get_y() + this->get_height());
                 popup->set_visibility_flag(ekg::visibility::VISIBLE);
-                popup->SetScale(this->text_scale);
+                popup->set_scale(this->text_scale);
                 popup->set_hover_state(true);
                 popup->set_master_id(this->get_id());
 
@@ -213,12 +213,12 @@ void ekg_ui_element_combobox::on_render(const float &render_ticks) {
     this->smooth_pressed.Update(render_ticks);
     this->smooth_pressed.NextFactory = this->pressed ? (float) EKG_CORE->color_theme.WidgetPressed[3] : 0;
 
-    // Enable scissor test and cut off the fragments.
+    // enable scissor test and cut off the fragments.
     ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(),
                 this->get_scissor_h());
 
     // Background
-    EKG_Color color(EKG_CORE->color_theme.WidgetBackground);
+    ekg_color color(EKG_CORE->color_theme.WidgetBackground);
     ekg_draw_filled_rect(this->rect, color);
 
     // border
@@ -233,7 +233,7 @@ void ekg_ui_element_combobox::on_render(const float &render_ticks) {
     }
 
     // String.
-    EKG_CORE->font_renderer.DrawString(this->current, this->rect.X + this->align_offset_text + this->offset_text, this->rect.Y + this->text_scale, EKG_CORE->color_theme.StringColor);
+    EKG_CORE->font_renderer.DrawString(this->current, this->rect.x + this->align_offset_text + this->offset_text, this->rect.y + this->text_scale, EKG_CORE->color_theme.StringColor);
 
     // End scissor.
     ekg_end_scissor();

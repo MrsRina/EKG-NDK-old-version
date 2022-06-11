@@ -306,11 +306,11 @@ void ekg_core::sync_scissor(ekg_abstract_element* element) {
     int W = element->get_scissor_w();
     int H = element->get_scissor_h();
 
-    // if (X < (int) element->get_X()) {
+    // if (x < (int) element->get_X()) {
     //     element->set_scissor((int) element->get_X(), element->get_scissor_y(), element->get_scissor_w(), element->get_scissor_h());
     // }
 
-    // if (Y < (int) element->get_y()) {
+    // if (y < (int) element->get_y()) {
     //     element->set_scissor(element->get_scissor_x(), (int) element->get_y(), element->get_scissor_w(), element->get_scissor_h());
     // }
 
@@ -325,11 +325,11 @@ void ekg_core::sync_scissor(ekg_abstract_element* element) {
     for (unsigned int Ids : element->GetChildren().StackedIds) {
         auto* Elements = (ekg_abstract_element*) this->get_element_by_id(Ids);
 
-        // if (X < (int) Elements->get_X()) {
+        // if (x < (int) Elements->get_X()) {
         //     Elements->set_scissor((int) Elements->get_X(), Elements->get_scissor_y(), Elements->get_scissor_w(), Elements->get_scissor_h());
         // }
 //
-        // if (Y < (int) element->get_y()) {
+        // if (y < (int) element->get_y()) {
         //     Elements->set_scissor(Elements->get_scissor_x(), (int) Elements->get_y(), Elements->get_scissor_w(), Elements->get_scissor_h());
         // }
 //

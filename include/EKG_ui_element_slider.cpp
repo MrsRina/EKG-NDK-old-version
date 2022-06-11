@@ -2,115 +2,115 @@
 #include "ekg.h"
 
 void ekg_ui_element_slider::sync_size() {
-    std::string StringValue = std::to_string(this->GetValue());
-    this->Format = StringValue.substr(0, StringValue.find('.') + 3);
+    std::string string_value = std::to_string(this->get_value());
+    this->format = string_value.substr(0, string_value.find('.') + 3);
 
-    float NameHeight = EKG_CORE->font_renderer.GetStringHeight(this->tag);
+    float name_height = EKG_CORE->font_renderer.GetStringHeight(this->tag);
 
-    this->LabelWidth = EKG_CORE->font_renderer.GetStringWidth(this->Format);
-    this->LabelHeight = EKG_CORE->font_renderer.GetStringHeight(this->Format);
+    this->text_width = EKG_CORE->font_renderer.GetStringWidth(this->format);
+    this->text_height = EKG_CORE->font_renderer.GetStringHeight(this->format);
 
-    this->BarRect[0] = 0;
-    this->BarRect[1] = 0;
+    this->bar_rect[0] = 0;
+    this->bar_rect[1] = 0;
 
     /*
      * 0 = Horizontal.
      * 1 = Vertical.
      */
-    switch (this->BarOrientation) {
+    switch (this->bar_orientation) {
         case 0: {
-            this->rect.W = this->Size;
-            this->rect.H = this->Scale + NameHeight + this->Scale;
+            this->rect.W = this->size;
+            this->rect.H = this->scale + name_height + this->scale;
 
-            this->BarRect[2] = ((float) this->rect.W) * ((float) this->Value - (float) this->Min) / ((float) this->Max - (float) this->Min);
-            this->BarRect[3] = this->rect.H;
+            this->bar_rect[2] = ((float) this->rect.W) * ((float) this->value - (float) this->min) / ((float) this->max - (float) this->min);
+            this->bar_rect[3] = this->rect.H;
             break;
         }
 
         case 1: {
-            this->rect.W = this->Scale + NameHeight + this->Scale;
-            this->rect.H = this->Size;
+            this->rect.W = this->scale + name_height + this->scale;
+            this->rect.H = this->size;
 
-            this->BarRect[2] = this->rect.W;
-            this->BarRect[3] = ((float) this->rect.H) * ((float) this->Value - (float) this->Min) / ((float) this->Max - (float) this->Min);
+            this->bar_rect[2] = this->rect.W;
+            this->bar_rect[3] = ((float) this->rect.H) * ((float) this->value - (float) this->min) / ((float) this->max - (float) this->min);
             break;
         }
     }
 
-    switch (this->LabelAlignDocking) {
+    switch (this->text_align_docking) {
         case ekg::dock::LEFT: {
-            this->LabelAlignX = 2.0F;
-            this->LabelAlignY = this->Scale;
+            this->text_align_x = 2.0F;
+            this->text_align_y = this->scale;
             break;
         }
 
         case ekg::dock::CENTER: {
-            if (this->BarOrientation == 0) {
-                this->LabelAlignX = (this->get_width() / 2.0F) - (this->LabelWidth / 2.0F);
-                this->LabelAlignY = this->Scale;
+            if (this->bar_orientation == 0) {
+                this->text_align_x = (this->get_width() / 2.0F) - (this->text_width / 2.0F);
+                this->text_align_y = this->scale;
             } else {
-                this->LabelAlignX = (this->get_width() / 2.0F) - (this->LabelWidth / 2.0F);
-                this->LabelAlignY = (this->get_height() / 2.0F) - (this->LabelHeight / 2.0F);
+                this->text_align_x = (this->get_width() / 2.0F) - (this->text_width / 2.0F);
+                this->text_align_y = (this->get_height() / 2.0F) - (this->text_height / 2.0F);
             }
             break;
         }
 
         case ekg::dock::RIGHT: {
-            this->LabelAlignX = this->get_width() - this->LabelWidth - 2.0F;
-            this->LabelAlignY = this->Scale;
+            this->text_align_x = this->get_width() - this->text_width - 2.0F;
+            this->text_align_y = this->scale;
             break;
         }
 
         case ekg::dock::TOP: {
-            this->LabelAlignX = (this->get_width() / 2.0F) - (this->LabelWidth / 2.0F);
-            this->LabelAlignY = 2.0F;
+            this->text_align_x = (this->get_width() / 2.0F) - (this->text_width / 2.0F);
+            this->text_align_y = 2.0F;
             break;
         }
 
         case ekg::dock::BOTTOM: {
-            this->LabelAlignX = (this->get_width() / 2.0F) - (this->LabelWidth / 2.0F);
-            this->LabelAlignY = this->get_height() - this->LabelHeight - 2.0F;
+            this->text_align_x = (this->get_width() / 2.0F) - (this->text_width / 2.0F);
+            this->text_align_y = this->get_height() - this->text_height - 2.0F;
             break;
         }
     }
 }
 
-void ekg_ui_element_slider::on_pre_event(SDL_Event Event) {
-    ekg_abstract_element::on_pre_event(Event);
+void ekg_ui_element_slider::on_pre_event(SDL_Event event) {
+    ekg_abstract_element::on_pre_event(event);
 }
 
-void ekg_ui_element_slider::on_event(SDL_Event Event) {
-    ekg_abstract_element::on_event(Event);
+void ekg_ui_element_slider::on_event(SDL_Event event) {
+    ekg_abstract_element::on_event(event);
 
-    switch (Event.type) {
+    switch (event.type) {
         case SDL_FINGERUP: {
-            this->Pressed = false;
-            this->Dragging = false;
+            this->pressed = false;
+            this->dragging = false;
             break;
         }
 
         default: {
-            if (this->Drag && (Event.type == SDL_FINGERDOWN || Event.type == SDL_FINGERMOTION)) {
-                float FX = Event.tfinger.x;
-                float FY = Event.tfinger.y;
+            if (this->drag && (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION)) {
+                float fx = event.tfinger.x;
+                float fy = event.tfinger.y;
 
-                ekg::scaled_finger_pos(FX, FY);
+                ekg::scaled_finger_pos(fx, fy);
 
-                if (!this->Dragging && this->hovered && Event.type == SDL_FINGERDOWN) {
+                if (!this->dragging && this->hovered && event.type == SDL_FINGERDOWN) {
                     ekg::task(ekg::task::BLOCKED);
 
-                    this->Pressed = true;
-                    this->Dragging = true;
+                    this->pressed = true;
+                    this->dragging = true;
                 }
 
-                if (this->Dragging && this->Pressed) {
+                if (this->dragging && this->pressed) {
                     ekg::task(ekg::task::BLOCKED);
 
-                    float Diff = (this->BarOrientation == 0 ? this->rect.W : this->rect.H);
-                    float FingerPosFactored = this->BarOrientation == 0 ? FX : FY;
+                    float diff = (this->bar_orientation == 0 ? this->rect.W : this->rect.H);
+                    float finger_pos_factored = this->bar_orientation == 0 ? fx : fy;
 
                     // Set bar progress.
-                    this->SyncBar(std::min(Diff, (float) std::max(0.0F, FingerPosFactored - (this->BarOrientation == 0 ? this->rect.X : this->rect.Y))));
+                    this->sync_bar(std::min(diff, (float) std::max(0.0F, finger_pos_factored - (this->bar_orientation == 0 ? this->rect.x : this->rect.y))));
                 }
             }
 
@@ -119,152 +119,150 @@ void ekg_ui_element_slider::on_event(SDL_Event Event) {
     }
 }
 
-void ekg_ui_element_slider::on_post_event(SDL_Event Event) {
-    ekg_abstract_element::on_post_event(Event);
+void ekg_ui_element_slider::on_post_event(SDL_Event event) {
+    ekg_abstract_element::on_post_event(event);
 }
 
-void ekg_ui_element_slider::on_update(const float &DeltaTicks) {
-    ekg_abstract_element::on_update(DeltaTicks);
+void ekg_ui_element_slider::on_update(const float &delta_ticks) {
+    ekg_abstract_element::on_update(delta_ticks);
 }
 
-void ekg_ui_element_slider::on_render(const float &PartialTicks) {
-    ekg_abstract_element::on_render(PartialTicks);
+void ekg_ui_element_slider::on_render(const float &render_ticks) {
+    ekg_abstract_element::on_render(render_ticks);
 
-    // Enable scissor test and cut off the fragments.
-    ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(),
-                this->get_scissor_h());
+    // enable scissor test and cut off the fragments.
+    ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(), this->get_scissor_h());
 
     // Background.
-    EKG_Color Color(EKG_CORE->color_theme.WidgetBackground);
-    ekg_draw_filled_rect(this->rect, Color);
+    ekg_color color(EKG_CORE->color_theme.WidgetBackground);
+    ekg_draw_filled_rect(this->rect, color);
 
     // Bar.
-    Color.Set(EKG_CORE->color_theme.WidgetActivy);
-    ekg_draw_filled_shape(this->get_x() + this->BarRect[0], this->get_y() + this->BarRect[1],
-                          this->BarRect[2], this->BarRect[3], Color);
+    color.Set(EKG_CORE->color_theme.WidgetActivy);
+    ekg_draw_filled_shape(this->get_x() + this->bar_rect[0], this->get_y() + this->bar_rect[1], this->bar_rect[2], this->bar_rect[3], color);
 
     if (EKG_CORE->color_theme.IsOutlineSliderEnabled()) {
         ekg_draw_outline_rect(this->rect, 1.5f, EKG_CORE->color_theme.StringColor);
     }
 
-    // Value.
-    if (this->LabelVisible) {
-        EKG_CORE->font_renderer.DrawString(this->Format, this->get_x() + this->LabelAlignX,
-                                          this->get_y() + this->LabelAlignY, EKG_CORE->color_theme.StringColor);
+    // value.
+    if (this->text_visible) {
+        EKG_CORE->font_renderer.DrawString(this->format, this->get_x() + this->text_align_x, this->get_y() + this->text_align_y, EKG_CORE->color_theme.StringColor);
     }
 
     // End scissor.
     ekg_end_scissor();
 }
 
-void ekg_ui_element_slider::Orientation(const std::string& Orientation) {
-    unsigned int Flag = Orientation == "Horizontal" ? 0 : 1;
+void ekg_ui_element_slider::orientation(const std::string& side) {
+    unsigned int flag = side == "Horizontal" ? 0 : 1;
 
-    if (this->BarOrientation != Flag) {
-        this->BarOrientation = Flag;
+    if (this->bar_orientation != flag) {
+        this->bar_orientation = flag;
         this->sync_size();
     }
 }
 
-void ekg_ui_element_slider::SetSize(float BarSize) {
-    if (this->Size != BarSize) {
-        this->Size = BarSize;
+void ekg_ui_element_slider::set_size(float bar_side) {
+    if (this->size != bar_side) {
+        this->size = bar_side;
         this->sync_size();
     }
 }
 
-float ekg_ui_element_slider::GetSize() {
-    return this->Size;
+float ekg_ui_element_slider::get_size() {
+    return this->size;
 }
 
-void ekg_ui_element_slider::SetMax(double Maximum) {
-    if (this->Max != Maximum) {
-        this->Max = Maximum;
+void ekg_ui_element_slider::set_max(double maximum) {
+    if (this->max != maximum) {
+        this->max = maximum;
         this->sync_size();
     }
 }
 
-double ekg_ui_element_slider::GetMax() {
-    return this->Max;
+double ekg_ui_element_slider::get_max() {
+    return this->max;
 }
 
-void ekg_ui_element_slider::SetMin(double Minimum) {
-    if (this->Min != Minimum) {
-        this->Min = Minimum;
+void ekg_ui_element_slider::set_min(double minimum) {
+    if (this->min != minimum) {
+        this->min = minimum;
         this->sync_size();
     }
 }
 
-double ekg_ui_element_slider::GetMin() {
-    return this->Min;
+double ekg_ui_element_slider::get_min() {
+    return this->min;
 }
 
-void ekg_ui_element_slider::SetValue(double Val) {
-    double ValueClampf = Val < this->Min ? this->Min : (Val > this->Max ? this->Max : Val);
+void ekg_ui_element_slider::set_value(double val) {
+    double value_clampf = val < this->min ? this->min : (val > this->max ? this->max : val);
 
-    if (this->Value != ValueClampf) {
-        this->Value = ValueClampf;
+    if (this->value != value_clampf) {
+        this->value = value_clampf;
         this->sync_size();
     }
 }
 
-double ekg_ui_element_slider::GetValue() {
-    return this->Value;
+double ekg_ui_element_slider::get_value() {
+    return this->value;
 }
 
-void ekg_ui_element_slider::SetScale(float Amount) {
-    if (this->Scale != Amount) {
-        this->Scale = Amount;
+void ekg_ui_element_slider::set_scale(float amount) {
+    if (this->scale != amount) {
+        this->scale = amount;
         this->sync_size();
     }
 }
 
 float ekg_ui_element_slider::GetScale() {
-    return this->Scale;
+    return this->scale;
 }
 
-void ekg_ui_element_slider::SyncBar(float PositionFactory) {
-    if (PositionFactory == 0) {
-        this->SetValue(this->GetMin());
+void ekg_ui_element_slider::sync_bar(float pos_factor) {
+    if (pos_factor == 0) {
+        this->set_value(this->get_min());
         return;
     }
 
-    float BarSizeFactor = this->BarOrientation == 0 ? this->rect.W : this->rect.H;
+    float bar_size_factory = this->bar_orientation == 0 ? this->rect.W : this->rect.H;
 
     // In this case we set the new value.
-    this->SetValue(((double) PositionFactory / (double) BarSizeFactor) * (this->Max - this->Min) + this->Min);
+    this->set_value(
+            ((double) pos_factor / (double) bar_size_factory) * (this->max - this->min) + this->min);
 }
 
-void ekg_ui_element_slider::Draggable(bool State) {
-    this->Drag = State;
+void ekg_ui_element_slider::draggable(bool state) {
+    this->drag = state;
 }
 
-void ekg_ui_element_slider::LabelAlign(unsigned int Docking) {
-    bool Flag = (Docking == ekg::dock::LEFT || Docking == ekg::dock::RIGHT || Docking == ekg::dock::CENTER || Docking == ekg::dock::TOP || Docking == ekg::dock::BOTTOM);
-    bool ShouldSync = this->LabelAlignDocking != Docking;
+void ekg_ui_element_slider::text_align(unsigned int docking) {
+    bool flag = (docking == ekg::dock::LEFT || docking == ekg::dock::RIGHT || docking == ekg::dock::CENTER || docking == ekg::dock::TOP || docking == ekg::dock::BOTTOM);
+    bool should_sync = this->text_align_docking != docking;
 
-    if (ShouldSync && Flag) {
-        this->LabelAlignDocking = Docking;
+    if (should_sync && flag) {
+        this->text_align_docking = docking;
         this->sync_size();
-    } else if (!Flag) {
+    } else if (!flag) {
         ekg_log(ekg_print(this->get_tag(), this->get_id()) +
                 " Incorrect label align: for horizontal docking (LEFT - CENTER - RIGHT), for vertical docking (TOP - CENTER - BOTTOM)");
 
-        ShouldSync = this->LabelAlignDocking != ekg::dock::CENTER;
-        this->LabelAlignDocking = ekg::dock::CENTER;
+        should_sync = this->text_align_docking != ekg::dock::CENTER;
+        this->text_align_docking = ekg::dock::CENTER;
     }
 }
 
-void ekg_ui_element_slider::LabelVisibility(bool LabelState) {
-    this->LabelVisible = LabelState;
+void ekg_ui_element_slider::text_visibility(bool visible) {
+    this->text_visible = visible;
 }
 
-void ekg_ui_element_slider::SetOffsetLabel(float Offset) {
-    this->OffsetLabel = Offset;
+void ekg_ui_element_slider::set_offset_text(float offset) {
+    this->offset_text = offset;
 }
 
-float ekg_ui_element_slider::GetOffsetLabel() {
-    return this->OffsetLabel;
+float ekg_ui_element_slider::get_offset_text() {
+    return this->offset_text;
 }
 
 std::string ekg_ui_element_slider::info_class() {

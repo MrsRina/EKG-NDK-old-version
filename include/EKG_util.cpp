@@ -89,7 +89,7 @@ void EKG_Ortho2D(float* Mat, float Left, float Right, float Bottom, float Top) {
     *Mat++ = (1.0f);
 }
 
-void ekg_draw_filled_shape(float X, float Y, float W, float H, const EKG_Color &Color) {
+void ekg_draw_filled_shape(float X, float Y, float W, float H, const ekg_color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6);
 
     float R = (float) Color.R / 255.0F;
@@ -151,7 +151,7 @@ void ekg_draw_filled_shape(float X, float Y, float W, float H, const EKG_Color &
     EKG_TESSELLATOR->Draw(18, 24, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
 }
 
-void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color) {
+void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickness, const ekg_color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_LINE_STRIP, 6);
     EKG_TESSELLATOR->SetTextureColor(Color);
 
@@ -209,23 +209,23 @@ void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickn
     EKG_TESSELLATOR->Draw(18, 24, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
 }
 
-void ekg_draw_filled_rect(const ekg_rect &Rect, const EKG_Color &Color) {
-    ekg_draw_filled_shape(Rect.X, Rect.Y, Rect.W, Rect.H, Color);
+void ekg_draw_filled_rect(const ekg_rect &Rect, const ekg_color &Color) {
+    ekg_draw_filled_shape(Rect.x, Rect.y, Rect.W, Rect.H, Color);
 }
 
-void ekg_draw_outline_rect(const ekg_rect &Rect, float LineThickness, const EKG_Color &Color) {
-    ekg_draw_outline_shape(Rect.X, Rect.Y, Rect.W, Rect.H, LineThickness, Color);
+void ekg_draw_outline_rect(const ekg_rect &Rect, float LineThickness, const ekg_color &Color) {
+    ekg_draw_outline_shape(Rect.x, Rect.y, Rect.W, Rect.H, LineThickness, Color);
 }
 
 void EKG_StoreShape(float X, float Y, float W, float H) {
 
 }
 
-void EKG_DrawTextureRect(const ekg_rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color) {
-    EKG_DrawTextureShape(Rect.X, Rect.Y, Rect.W, Rect.H, TextureX, TextureY, TextureW, TextureH, Texture, Color);
+void EKG_DrawTextureRect(const ekg_rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const ekg_data &Texture, const ekg_color &Color) {
+    EKG_DrawTextureShape(Rect.x, Rect.y, Rect.W, Rect.H, TextureX, TextureY, TextureW, TextureH, Texture, Color);
 }
 
-void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color) {
+void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const ekg_data &Texture, const ekg_color &Color) {
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6);
     EKG_TESSELLATOR->BindTexture(Texture);
     EKG_TESSELLATOR->SetTextureColor(Color);
@@ -300,71 +300,71 @@ float EKG_AnimationSmooth(float Duration, float Time) {
     return EKG_Clampf(6 * pow(Factor, 5) - (15 * pow(Factor, 4)) + (10 * pow(Factor, 3)), 0.0F, 1.0f);
 }
 
-float EKG_Color::GetRedf() {
+float ekg_color::GetRedf() {
     return (float) this->R / 255.0F;
 }
 
-float EKG_Color::GetGreenf() {
+float ekg_color::GetGreenf() {
     return (float) this->G / 255.0F;
 }
 
-float EKG_Color::GetBluef() {
+float ekg_color::GetBluef() {
     return (float) this->B / 255.0F;
 }
 
-float EKG_Color::GetAlphaf() {
+float ekg_color::GetAlphaf() {
     return (float) this->A / 255.0F;
 }
 
-EKG_Color::EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha) {
+ekg_color::ekg_color(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
     this->A = Alpha;
 }
 
-EKG_Color::EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue) {
+ekg_color::ekg_color(uint8_t Red, uint8_t Green, uint8_t Blue) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
     this->A = 255;
 }
 
-void EKG_Color::Set(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha) {
+void ekg_color::Set(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
     this->A = Alpha;
 }
 
-void EKG_Color::Set(uint8_t Red, uint8_t Green, uint8_t Blue) {
+void ekg_color::Set(uint8_t Red, uint8_t Green, uint8_t Blue) {
     this->R = Red;
     this->G = Green;
     this->B = Blue;
 }
 
-EKG_Color::EKG_Color(uint8_t Color[4]) {
+ekg_color::ekg_color(uint8_t Color[4]) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
     this->A = Color[3];
 }
 
-EKG_Color::EKG_Color(uint8_t Color[3], uint8_t Alpha) {
+ekg_color::ekg_color(uint8_t Color[3], uint8_t Alpha) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
     this->A = Alpha;
 }
 
-void EKG_Color::Set(uint8_t Color[4]) {
+void ekg_color::Set(uint8_t Color[4]) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
     this->A = Color[3];
 }
 
-void EKG_Color::Set(uint8_t Color[3], uint8_t Alpha) {
+void ekg_color::Set(uint8_t Color[3], uint8_t Alpha) {
     this->R = Color[0];
     this->G = Color[1];
     this->B = Color[2];
@@ -372,14 +372,14 @@ void EKG_Color::Set(uint8_t Color[3], uint8_t Alpha) {
 }
 
 bool ekg_rect::CollideWithPoint(float PointX, float PointY) {
-    return PointX > this->X && PointY > this->Y && PointX < this->X + this->W && PointY < this->Y + this->H;
+    return PointX > this->x && PointY > this->y && PointX < this->x + this->W && PointY < this->y + this->H;
 }
 
 bool ekg_rect::CollideWithRect(float RectX, float RectY, float RectW, float RectH) {
-    return this->X < RectX + RectW &&
-           this->X + this->W > RectX &&
-           this->Y < RectY + RectH &&
-           this->Y + this->H > RectY;
+    return this->x < RectX + RectW &&
+           this->x + this->W > RectX &&
+           this->y < RectY + RectH &&
+           this->y + this->H > RectY;
 }
 
 void ekg_color_theme::Frame(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {

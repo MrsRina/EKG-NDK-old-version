@@ -11,7 +11,7 @@
 #define EKG_UI_ELEMENT_SLIDER_H
 
 /**
- * Name: Slider
+ * name: Slider
  * Type: Widget
  * Description: Control a bar with value min & max.
  * Features: Set draggable or make a progress bar,
@@ -20,60 +20,60 @@
 class ekg_ui_element_slider : public ekg_abstract_element {
 protected:
     /* For render value. */
-    std::string Format;
+    std::string format;
 
     /* Settings. */
-    double Min, Max, Value;
+    double min, max, value;
 
     /* States. */
-    bool Pressed, Drag, Dragging, LabelVisible;
-    unsigned int BarOrientation;
+    bool pressed, drag, dragging, text_visible;
+    unsigned int bar_orientation;
 
     /* Bar metrics. */
-    float BarRect[4], Size, Scale;
+    float bar_rect[4], size, scale;
 
     /* Label metrics & docking of the label. */
-    float LabelAlignX, LabelAlignY, LabelWidth, LabelHeight, OffsetLabel, AlignLabel;
-    unsigned int LabelAlignDocking;
+    float text_align_x, text_align_y, text_width, text_height, offset_text, align_text;
+    unsigned int text_align_docking;
 
     /* update slider progress with a pos factory. */
-    void SyncBar(float PositionFactory);
+    void sync_bar(float pos_factor);
 public:
     /* Start of configurable methods. */
-    void Orientation(const std::string& Orientation);
-    void Draggable(bool State);
-    void LabelAlign(unsigned int Docking);
-    void LabelVisibility(bool LabelState);
+    void orientation(const std::string& side);
+    void draggable(bool state);
+    void text_align(unsigned int docking);
+    void text_visibility(bool visible);
     /* End of configurable methods. */
 
     /* Start of setters & getters. */
-    void SetOffsetLabel(float Offset);
-    float GetOffsetLabel();
+    void set_offset_text(float offset);
+    float get_offset_text();
 
-    void SetScale(float Amount);
+    void set_scale(float amount);
     float GetScale();
 
-    void SetSize(float BarSize);
-    float GetSize();
+    void set_size(float bar_side);
+    float get_size();
 
-    void SetMax(double Maximum);
-    double GetMax();
+    void set_max(double maximum);
+    double get_max();
 
-    void SetMin(double Minimum);
-    double GetMin();
+    void set_min(double minimum);
+    double get_min();
 
-    void SetValue(double Val);
-    double GetValue();
+    void set_value(double val);
+    double get_value();
     /* End of setters & getters. */
 
     /* Start of override methods. */
     std::string info_class();
     void sync_size();
-    void on_pre_event(SDL_Event Event);
-    void on_event(SDL_Event Event);
-    void on_post_event(SDL_Event Event);
-    void on_update(const float &DeltaTicks);
-    void on_render(const float &PartialTicks);
+    void on_pre_event(SDL_Event event);
+    void on_event(SDL_Event event);
+    void on_post_event(SDL_Event event);
+    void on_update(const float &delta_ticks);
+    void on_render(const float &render_ticks);
     /* End of override methods. */
 };
 

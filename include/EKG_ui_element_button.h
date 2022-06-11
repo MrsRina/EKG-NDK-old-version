@@ -11,7 +11,7 @@
 #define EKG_UI_ELEMENT_BUTTON_H
 
 /**
- * Name: button
+ * name: button
  * Type: Widget
  * Description: A normal button state & check.
  * Features: Check box or normal click.
@@ -23,7 +23,7 @@ protected:
     std::string button_mode;
 
     /* Checkbox texture, metrics. */
-    EKG_Data texture_box;
+    ekg_data texture_box;
     float box_rect[4], align_offset_text, align_offset_box, offset_text, offset_box, text_width, text_height, size;
     unsigned int align_text_docking, align_box_docking;
 
@@ -43,8 +43,8 @@ public:
     /* end of configurable methods. */
 
     /* Start of setters & getters. */
-    void set_box_texture(const EKG_Data &texture);
-    EKG_Data &get_check_box_texture();
+    void set_box_texture(const ekg_data &texture);
+    ekg_data &get_check_box_texture();
 
     void set_mode(const std::string& mode);
     std::string get_mode();

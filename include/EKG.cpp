@@ -307,8 +307,8 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * origin.W;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * origin.H;
 
-            x = origin.X + initial_offset_normal;
-            y = origin.Y + size_offset_normal;
+            x = origin.x + initial_offset_normal;
+            y = origin.y + size_offset_normal;
             w = origin.W - (initial_offset_normal * 2);
             h = origin.H - (size_offset_normal * 2);
             break;
@@ -320,8 +320,8 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * (division);
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * (division);
 
-            x = origin.X + initial_offset_normal;
-            y = origin.Y;
+            x = origin.x + initial_offset_normal;
+            y = origin.y;
             w = division - size_offset_normal;
             h = origin.H;
             break;
@@ -333,11 +333,11 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            y = origin.Y;
+            y = origin.y;
             h = origin.H;
 
             w = division - size_offset_normal;
-            x = origin.X + initial_offset_normal + origin.W - w;
+            x = origin.x + initial_offset_normal + origin.W - w;
             break;
         }
 
@@ -347,8 +347,8 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            x = origin.X;
-            y = origin.Y + initial_offset_normal;
+            x = origin.x;
+            y = origin.y + initial_offset_normal;
             w = origin.W;
             h = division - size_offset_normal;
             break;
@@ -360,11 +360,11 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            x = origin.X;
+            x = origin.x;
             w = origin.W;
 
             h = division - size_offset_normal;
-            y = origin.Y + initial_offset_normal + origin.H - h;
+            y = origin.y + initial_offset_normal + origin.H - h;
             break;
         }
 
@@ -373,7 +373,7 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            x = origin.X + (division / 2.0F) - initial_offset_normal;
+            x = origin.x + (division / 2.0F) - initial_offset_normal;
             w = division - size_offset_normal;
 
             // Center height segment code.
@@ -381,13 +381,13 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
-            y = origin.Y + (division / 2.0F) - initial_offset_normal;
+            y = origin.y + (division / 2.0F) - initial_offset_normal;
             w = division - size_offset_normal;
         }
     }
 
-    Rect.X = x;
-    Rect.Y = y;
+    Rect.x = x;
+    Rect.y = y;
     Rect.W = w;
     Rect.H = h;
 
@@ -453,13 +453,13 @@ ekg_ui_element_popup* ekg::Popup(const std::string &Name, float InitialPosX, flo
 
     Element->set_tag(Name);
     Element->set_id(EKG_CORE->next_id());
-    Element->SetScale(2);
+    Element->set_scale(2);
     Element->set_visibility_flag((InitialPosX != ekg::NOPOS && InitialPosY != ekg::NOPOS) ||
                                  (InitialPosX == ekg::ABSOLUTE && InitialPosY == ekg::ABSOLUTE)
                                  ? ekg::visibility::VISIBLE : ekg::visibility::INVISIBLE);
-    Element->SetWidth(125);
+    Element->set_width(125);
     Element->place(InitialPosX, InitialPosY);
-    Element->Insert(List);
+    Element->insert(List);
     Element->sync_size();
 
     EKG_CORE->add_element_to_queue(Element);
@@ -470,16 +470,16 @@ ekg_ui_element_slider* ekg::Slider(const std::string &Name, float Value, float M
     auto* Element = new ekg_ui_element_slider();
 
     Element->set_tag(Name);
-    Element->Orientation("Horizontal");
+    Element->orientation("Horizontal");
     Element->set_id(EKG_CORE->next_id());
-    Element->SetSize(125);
-    Element->SetScale(6);
-    Element->LabelAlign(ekg::dock::CENTER);
+    Element->set_size(125);
+    Element->set_scale(6);
+    Element->text_align(ekg::dock::CENTER);
     Element->set_visibility_flag(ekg::visibility::VISIBLE_ONCE);
     Element->place(10, 10);
-    Element->SetMin(Min);
-    Element->SetMax(Max);
-    Element->SetValue(Value);
+    Element->set_min(Min);
+    Element->set_max(Max);
+    Element->set_value(Value);
     Element->sync_size();
 
     EKG_CORE->add_element_to_queue(Element);
@@ -512,11 +512,11 @@ ekg_ui_element_tab *ekg::Tab(const std::string &Name) {
     Element->place(10, 10);
     Element->SetLimit(50, 50);
     Element->set_width(250);
-    Element->SetButtonSize(3);
-    Element->SetScale(3);
-    Element->SetBorderOffset(10);
+    Element->set_button_size(3);
+    Element->set_scale(3);
+    Element->set_border_offset(10);
     Element->set_height(250);
-    Element->TabSide(ekg::dock::TOP);
+    Element->tab_side(ekg::dock::TOP);
     Element->set_visibility_flag(ekg::visibility::VISIBLE);
     Element->sync_size();
 

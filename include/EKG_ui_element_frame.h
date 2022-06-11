@@ -11,7 +11,7 @@
 #define EKG_UI_ELEMENT_FRAME_H
 
 /**
- * Name: frame
+ * name: frame
  * Type: frame
  * Description: A master element to place others elements.
  * Features: Set draggable, resizable & add child (elements).
@@ -25,7 +25,7 @@ protected:
     bool dragging, pressed, free_drag_and_drop, alternative_alpha;
     int resizing;
 
-    /* Drag and resizable references. */
+    /* drag and resizable references. */
     float drag_x, drag_y, drag_w, drag_h, previous_x, previous_y, previous_w, previous_h;
 
     /* Limits of metric and offsets. */
@@ -33,7 +33,7 @@ protected:
 
     /* Design additional. */
     unsigned int alpha;
-    EKG_Color border = EKG_Color(255, 255, 255, 255);
+    ekg_color border = ekg_color(255, 255, 255, 255);
 public:
     /* Start of configurable methods. */
     void draggable(unsigned int area);
@@ -66,7 +66,7 @@ public:
     void SetLimit(float minimum_width, float minimum_height);
 
     void set_border_color(unsigned int r, unsigned int g, unsigned b, unsigned int a);
-    EKG_Color &get_border_color();
+    ekg_color &get_border_color();
 
     float get_min_width();
     float get_min_height();
@@ -76,11 +76,11 @@ public:
     std::string info_class();
     void place(float X, float Y);
     void sync_size();
-    void on_pre_event(SDL_Event Event);
-    void on_event(SDL_Event Event);
-    void on_post_event(SDL_Event Event);
-    void on_update(const float &DeltaTicks);
-    void on_render(const float &PartialTicks);
+    void on_pre_event(SDL_Event event);
+    void on_event(SDL_Event event);
+    void on_post_event(SDL_Event event);
+    void on_update(const float &delta_ticks);
+    void on_render(const float &render_ticks);
     /* End of override methods. */
 };
 

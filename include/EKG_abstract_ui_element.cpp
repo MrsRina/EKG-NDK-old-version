@@ -45,11 +45,11 @@ ekg_rect ekg_abstract_element::get_rect() {
 }
 
 float ekg_abstract_element::get_x() {
-    return this->rect.X;
+    return this->rect.x;
 }
 
 float ekg_abstract_element::get_y() {
-    return this->rect.Y;
+    return this->rect.y;
 }
 
 float ekg_abstract_element::get_width() {
@@ -242,14 +242,14 @@ bool ekg_abstract_element::collide_with_pos(float x, float y) {
 
 void ekg_abstract_element::place(float x, float y) {
     if (this->get_master_id() == 0) {
-        this->rect.X = x;
-        this->rect.Y = y;
+        this->rect.x = x;
+        this->rect.y = y;
     } else {
         this->sync_x = x;
         this->sync_y = y;
 
-        this->rect.X = this->scaled_x + this->sync_x;
-        this->rect.Y = this->scaled_y + this->sync_y;
+        this->rect.x = this->scaled_x + this->sync_x;
+        this->rect.y = this->scaled_y + this->sync_y;
     }
 }
 

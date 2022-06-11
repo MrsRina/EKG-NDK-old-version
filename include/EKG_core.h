@@ -23,7 +23,7 @@ protected:
     /* Stacks. */
     ekg_stack stack_ids_selected;
 
-    /* Focused id & most high id to generate unique ids. */
+    /* focused id & most high id to generate unique ids. */
     unsigned int focused_element_id, previous_id_used = 1;
 
     /* References. */

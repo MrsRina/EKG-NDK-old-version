@@ -23,16 +23,16 @@ float EKG_AnimationSmooth(float Duration, float Time);
 bool ekg_string_in(const std::string &StringOne, const std::string &StringTwo);
 
 /**
- * Min da value.
+ * min da value.
  * @param Min
- * @return Value.
+ * @return value.
  */
 float EKG_Min(float Min, float Value);
 
 /**
- * Max da value.
+ * max da value.
  * @param Max
- * @return Value.
+ * @return value.
  */
 float EKG_Max(float Value, float Max);
 
@@ -84,7 +84,7 @@ struct EKG_Vec2d {
  * rect AABB.
  */
 struct ekg_rect {
-    float X, Y, W, H;
+    float x, y, W, H;
 
     bool CollideWithPoint(float PointX, float PointY);
     bool CollideWithRect(float RectX, float RectY, float RectW, float RectH);
@@ -104,11 +104,11 @@ struct ekg_stack {
 /**
  * Color util.
  */
-struct EKG_Color {
-    EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
-    EKG_Color(uint8_t Red, uint8_t Green, uint8_t Blue);
-    EKG_Color(uint8_t Color[4]);
-    EKG_Color(uint8_t Color[3], uint8_t Alpha);
+struct ekg_color {
+    ekg_color(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
+    ekg_color(uint8_t Red, uint8_t Green, uint8_t Blue);
+    ekg_color(uint8_t Color[4]);
+    ekg_color(uint8_t Color[3], uint8_t Alpha);
 
     void Set(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
     void Set(uint8_t Red, uint8_t Green, uint8_t Blue);
@@ -157,8 +157,8 @@ public:
     uint8_t WidgetPressed[4];
     uint8_t WidgetActivy[4];
 
-    EKG_Color StringColor = EKG_Color(255, 255, 255);
-    EKG_Color StringFadeColor = EKG_Color(255, 255, 255, 150);
+    ekg_color StringColor = ekg_color(255, 255, 255);
+    ekg_color StringFadeColor = ekg_color(255, 255, 255, 150);
 
     void Init();
     void Quit();
@@ -176,10 +176,10 @@ public:
 /**
  * Save texture id, position or store into memory.
  */
-struct EKG_Data {
-    std::string Name, Tag;
+struct ekg_data {
+    std::string name, tag;
 
-    float DataX = 0.0F, DataY = 0.0F, DataWidth = 0.0F, DataHeight = 0.0F;
+    float data_x = 0.0F, DataY = 0.0F, data_width = 0.0F, data_height = 0.0F;
     unsigned int Id = 0;
 };
 
@@ -211,12 +211,12 @@ void ekg_end_scissor();
 /* End of scissor functions. */
 
 /* Start of draw functions. */
-void ekg_draw_filled_shape(float X, float Y, float W, float H, const EKG_Color &Color);
-void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickness, const EKG_Color &Color);
-void ekg_draw_filled_rect(const ekg_rect &Rect, const EKG_Color &Color);
-void ekg_draw_outline_rect(const ekg_rect &Rect, float LineThickness, const EKG_Color &Color);
+void ekg_draw_filled_shape(float X, float Y, float W, float H, const ekg_color &Color);
+void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickness, const ekg_color &Color);
+void ekg_draw_filled_rect(const ekg_rect &Rect, const ekg_color &Color);
+void ekg_draw_outline_rect(const ekg_rect &Rect, float LineThickness, const ekg_color &Color);
 void EKG_StoreShape(float X, float Y, float W, float H);
 void EKG_StoreTextureCoordinates(float TextureX, float TextureY, float TextureW, float TextureH);
-void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color);
-void EKG_DrawTextureRect(const ekg_rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const EKG_Data &Texture, const EKG_Color &Color);
+void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const ekg_data &Texture, const ekg_color &Color);
+void EKG_DrawTextureRect(const ekg_rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const ekg_data &Texture, const ekg_color &Color);
 /* End of draw functions. */

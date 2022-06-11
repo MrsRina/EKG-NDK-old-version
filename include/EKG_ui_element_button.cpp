@@ -1,7 +1,7 @@
 #include "ekg_ui_element_button.h"
 #include "ekg.h"
 
-void ekg_ui_element_button::set_box_texture(const EKG_Data &texture) {
+void ekg_ui_element_button::set_box_texture(const ekg_data &texture) {
     this->texture_box = texture;
 }
 
@@ -99,11 +99,11 @@ void ekg_ui_element_button::on_render(const float &render_ticks) {
     this->smooth_box_pressed.Update(render_ticks);
     this->smooth_box_activy.Update(render_ticks);
 
-    // Enable scissor test and cut off the fragments.
+    // enable scissor test and cut off the fragments.
     ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(), this->get_scissor_h());
 
     // Background
-    EKG_Color color(EKG_CORE->color_theme.WidgetBackground);
+    ekg_color color(EKG_CORE->color_theme.WidgetBackground);
     ekg_draw_filled_rect(this->rect, color);
 
     // border
@@ -134,13 +134,13 @@ void ekg_ui_element_button::on_render(const float &render_ticks) {
     }
 
     // String.
-    EKG_CORE->font_renderer.DrawString(this->tag, this->rect.X + this->align_offset_text + this->offset_text, this->rect.Y + this->size, EKG_CORE->color_theme.StringColor);
+    EKG_CORE->font_renderer.DrawString(this->tag, this->rect.x + this->align_offset_text + this->offset_text, this->rect.y + this->size, EKG_CORE->color_theme.StringColor);
 
     // End scissor.
     ekg_end_scissor();
 }
 
-EKG_Data &ekg_ui_element_button::get_check_box_texture() {
+ekg_data &ekg_ui_element_button::get_check_box_texture() {
     return this->texture_box;
 }
 

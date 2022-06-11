@@ -35,7 +35,7 @@ void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float VertexDat
                                     this->TextureColor.GetBluef(), this->TextureColor.GetAlphaf());
     }
 
-    // Enable vertex attribute for position color attribution.
+    // enable vertex attribute for position color attribution.
     glEnableVertexAttribArray(this->VertexAttribute);
     glEnableVertexAttribArray(this->ColorAttribute);
 
@@ -98,14 +98,14 @@ float EKG_Tessellator::GetTextureHeight() {
     return 0;
 }
 
-void EKG_Tessellator::BindTexture(const EKG_Data &Texture) {
-    this->TextureWidth = Texture.DataWidth;
-    this->TextureHeight = Texture.DataHeight;
+void EKG_Tessellator::BindTexture(const ekg_data &Texture) {
+    this->TextureWidth = Texture.data_width;
+    this->TextureHeight = Texture.data_height;
 
     this->BindTexture(Texture.Id);
 }
 
-void EKG_Tessellator::SetTextureColor(EKG_Color Color) {
+void EKG_Tessellator::SetTextureColor(ekg_color Color) {
     this->SetTextureColor(Color.R, Color.G, Color.B, Color.A);
 }
 
@@ -203,7 +203,7 @@ void ekg_font_renderer::Reload() {
     ekg_log("Font renderer generated bitmap ok.");
 }
 
-void ekg_font_renderer::DrawString(const std::string &String, float PositionX, float PositionY, const EKG_Color &Color) {
+void ekg_font_renderer::DrawString(const std::string &String, float PositionX, float PositionY, const ekg_color &Color) {
     const char* CharString = String.c_str();
     const int ConcurrentSize = (int) strlen(CharString);
 
@@ -288,7 +288,7 @@ void ekg_font_renderer::DrawString(const std::string &String, float PositionX, f
     delete[] MASK_QUAD_MATERIAL_COLOR;
 }
 
-void ekg_font_renderer::DrawStringClamped(const std::string &String, float PositionX, float PositionY, float W, const EKG_Color &Color) {
+void ekg_font_renderer::DrawStringClamped(const std::string &String, float PositionX, float PositionY, float W, const ekg_color &Color) {
     std::vector<GLfloat> VertexVector, TextureVector;
     FT_Vector PreviousCharVector;
 

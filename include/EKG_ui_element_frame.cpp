@@ -41,133 +41,133 @@ bool ekg_ui_element_frame::is_pressed() {
     return this->pressed;
 }
 
-void ekg_ui_element_frame::on_pre_event(SDL_Event Event) {
-    ekg_abstract_element::on_pre_event(Event);
+void ekg_ui_element_frame::on_pre_event(SDL_Event event) {
+    ekg_abstract_element::on_pre_event(event);
 }
 
-void ekg_ui_element_frame::on_event(SDL_Event Event) {
-    ekg_abstract_element::on_event(Event);
+void ekg_ui_element_frame::on_event(SDL_Event event) {
+    ekg_abstract_element::on_event(event);
 
-    switch (Event.type) {
+    switch (event.type) {
         case SDL_FINGERMOTION: {
-            float FX = Event.tfinger.x;
-            float FY = Event.tfinger.y;
+            float fx = event.tfinger.x;
+            float fy = event.tfinger.y;
 
-            ekg::scaled_finger_pos(FX, FY);
-            bool MovingEvent;
+            ekg::scaled_finger_pos(fx, fy);
+            bool moving_event;
 
             if (this->dragging) {
-                float X = FX - this->drag_x;
-                float Y = FY - this->drag_y;
-                float W = this->rect.W;
-                float H = this->rect.H;
+                float x = fx - this->drag_x;
+                float y = fy - this->drag_y;
+                float w = this->rect.W;
+                float h = this->rect.H;
 
                 if (this->get_master_id() != 0) {
                     if (!this->free_drag_and_drop) {
-                        if (X < 0) {
-                            X = 0;
+                        if (x < 0) {
+                            x = 0;
                         }
 
-                        if (Y < 0) {
-                            Y = 0;
+                        if (y < 0) {
+                            y = 0;
                         }
 
-                        if (X + W > this->scaled_width) {
-                            X = this->scaled_width - W;
+                        if (x + w > this->scaled_width) {
+                            x = this->scaled_width - w;
                         }
 
-                        if (Y + H > this->scale_height) {
-                            Y = this->scale_height - H;
+                        if (y + h > this->scale_height) {
+                            y = this->scale_height - h;
                         }
                     }
 
-                    this->sync_x = X;
-                    this->sync_y = Y;
+                    this->sync_x = x;
+                    this->sync_y = y;
 
                     this->sync_pos();
                 } else {
-                    this->rect.X = FX - this->drag_x;
-                    this->rect.Y = FY - this->drag_y;
+                    this->rect.x = fx - this->drag_x;
+                    this->rect.y = fy - this->drag_y;
                 }
 
-                MovingEvent = true;
+                moving_event = true;
                 ekg::task(ekg::task::BLOCKED);
             }
 
             if (this->resizing != 0) {
-                float X;
-                float Y;
-                float W;
-                float H;
+                float x;
+                float y;
+                float w;
+                float h;
 
                 if (this->resizing == ekg::dock::LEFT || this->resizing == ekg::dock::TOP) {
-                    float DragUpdateX = FX - this->drag_w;
-                    float DragUpdateY = FY - this->drag_h;
+                    float drag_next_x = fx - this->drag_w;
+                    float drag_next_y = fy - this->drag_h;
 
-                    float PredictionW = this->previous_w + (this->previous_x - DragUpdateX);
-                    float PredictionH = this->previous_h + (this->previous_y - DragUpdateY);
+                    float predict_w = this->previous_w + (this->previous_x - drag_next_x);
+                    float predict_h = this->previous_h + (this->previous_y - drag_next_y);
 
-                    X = PredictionW < (float) this->min_width ? this->previous_x + this->previous_w - (float) this->min_width : DragUpdateX;
-                    Y = PredictionH < (float) this->min_height ? this->previous_y + this->previous_h - (float) this->min_height : DragUpdateY;
+                    x = predict_w < (float) this->min_width ? this->previous_x + this->previous_w - (float) this->min_width : drag_next_x;
+                    y = predict_h < (float) this->min_height ? this->previous_y + this->previous_h - (float) this->min_height : drag_next_y;
 
                     if (this->get_master_id() == 0) {
-                        this->rect.X = X;
-                        this->rect.Y = Y;
+                        this->rect.x = x;
+                        this->rect.y = y;
                     } else {
-                        X -= this->scaled_x;
-                        Y -= this->scaled_y;
+                        x -= this->scaled_x;
+                        y -= this->scaled_y;
 
-                        if (X < 0) {
-                            X = 0;
+                        if (x < 0) {
+                            x = 0;
                         }
 
-                        if (Y < 0) {
-                            Y = 0;
+                        if (y < 0) {
+                            y = 0;
                         }
 
-                        this->sync_x = X;
-                        this->sync_y = Y;
+                        this->sync_x = x;
+                        this->sync_y = y;
 
                         this->sync_pos();
                     }
 
-                    // Diff DataWidth & DataHeight. Not prediction anymore, recycled.
-                    PredictionW = this->previous_w + (this->previous_x - this->rect.X);
-                    PredictionH = this->previous_h + (this->previous_y - this->rect.Y);
+                    // Diff data_width & data_height. Not prediction anymore, recycled.
+                    predict_w = this->previous_w + (this->previous_x - this->rect.x);
+                    predict_h = this->previous_h + (this->previous_y - this->rect.y);
 
-                    W = PredictionW < (float) this->min_width ? (float) this->min_width : PredictionW;
-                    H = PredictionH < (float) this->min_height ? (float) this->min_height : PredictionH;
+                    w = predict_w < (float) this->min_width ? (float) this->min_width : predict_w;
+                    h = predict_h < (float) this->min_height ? (float) this->min_height : predict_h;
 
-                    this->rect.W = W;
-                    this->rect.H = H;
+                    this->rect.W = w;
+                    this->rect.H = h;
                 } else {
-                    X = this->rect.X;
-                    Y = this->rect.Y;
+                    x = this->rect.x;
+                    y = this->rect.y;
 
-                    W = FX - this->drag_w;
-                    H = FY - this->drag_h;
+                    w = fx - this->drag_w;
+                    h = fy - this->drag_h;
 
                     if (this->get_master_id() != 0) {
-                        if (X + W > this->scaled_x + this->scaled_width) {
-                            W = this->scaled_x + this->scaled_width - X;
+                        if (x + w > this->scaled_x + this->scaled_width) {
+                            w = this->scaled_x + this->scaled_width - x;
                         }
 
-                        if (Y + H > this->scaled_y + this->scale_height) {
-                            H = this->scaled_y + this->scale_height - Y;
+                        if (y + h > this->scaled_y + this->scale_height) {
+                            h = this->scaled_y + this->scale_height - y;
                         }
 
                         this->sync_pos();
                     }
 
-                    this->rect.W = W < (float) this->min_width ? (float) this->min_width : W;
-                    this->rect.H = H < (float) this->min_height ? (float) this->min_height : H;
+                    this->rect.W = w < (float) this->min_width ? (float) this->min_width : w;
+                    this->rect.H = h < (float) this->min_height ? (float) this->min_height : h;
                 }
 
-                MovingEvent = true;
+                moving_event = true;
                 ekg::task(ekg::task::BLOCKED);
             }
 
-            if (MovingEvent && this->is_master()) {
+            if (moving_event && this->is_master()) {
                 this->sync_parents_metric();
             }
 
@@ -175,23 +175,23 @@ void ekg_ui_element_frame::on_event(SDL_Event Event) {
         }
 
         case SDL_FINGERDOWN: {
-            float FX = Event.tfinger.x;
-            float FY = Event.tfinger.y;
+            float fx = event.tfinger.x;
+            float fy = event.tfinger.y;
 
-            ekg::scaled_finger_pos(FX, FY);
+            ekg::scaled_finger_pos(fx, fy);
 
             if (this->hovered) {
                 if (this->flags_dock_draggable != 0 && !this->dragging && this->resizing == 0) {
-                    int CollidingDock = ekg::point_collide_dock(this->flags_dock_draggable, FX, FY, 0,
-                                                                this->drag_offset_normal, this->rect);
+                    int colliding_dock = ekg::point_collide_dock(this->flags_dock_draggable, fx, fy, 0,
+                                                                 this->drag_offset_normal, this->rect);
 
-                    if (CollidingDock != -1) {
+                    if (colliding_dock != -1) {
                         if (this->get_master_id() == 0) {
-                            this->drag_x = FX - this->rect.X;
-                            this->drag_y = FY - this->rect.Y;
+                            this->drag_x = fx - this->rect.x;
+                            this->drag_y = fy - this->rect.y;
                         } else {
-                            this->drag_x = FX - (this->rect.X - this->scaled_x);
-                            this->drag_y = FY - (this->rect.Y - this->scaled_y);
+                            this->drag_x = fx - (this->rect.x - this->scaled_x);
+                            this->drag_y = fy - (this->rect.y - this->scaled_y);
                         }
 
                         // Say true for dragging to the element.
@@ -201,27 +201,27 @@ void ekg_ui_element_frame::on_event(SDL_Event Event) {
                 }
 
                 if (this->flags_dock_resizable != -1 && this->resizing == 0 && !this->dragging) {
-                    int CollidingDock = ekg::point_collide_dock(this->flags_dock_resizable, FX, FY, 0,
-                                                                this->resize_offset_normal, this->rect);
+                    int colliding_dock = ekg::point_collide_dock(this->flags_dock_resizable, fx, fy, 0,
+                                                                 this->resize_offset_normal, this->rect);
 
-                    if (CollidingDock != -1) {
-                        if (CollidingDock == ekg::dock::LEFT || CollidingDock == ekg::dock::TOP) {
+                    if (colliding_dock != -1) {
+                        if (colliding_dock == ekg::dock::LEFT || colliding_dock == ekg::dock::TOP) {
                             // Its works like a drag.
-                            this->drag_w = FX - (this->rect.X);
-                            this->drag_h = FY - (this->rect.Y);
+                            this->drag_w = fx - (this->rect.x);
+                            this->drag_h = fy - (this->rect.y);
 
                             // Save to use after.
-                            this->previous_x = this->rect.X;
-                            this->previous_y = this->rect.Y;
+                            this->previous_x = this->rect.x;
+                            this->previous_y = this->rect.y;
                             this->previous_w = this->rect.W;
                             this->previous_h = this->rect.H;
                         } else {
-                            this->drag_w = FX - this->rect.W;
-                            this->drag_h = FY - this->rect.H;
+                            this->drag_w = fx - this->rect.W;
+                            this->drag_h = fy - this->rect.H;
                         }
 
                         // Say true for resizing to the element.
-                        this->resizing = CollidingDock;
+                        this->resizing = colliding_dock;
                         ekg::task(ekg::task::BLOCKED);
                     }
                 }
@@ -240,29 +240,29 @@ void ekg_ui_element_frame::on_event(SDL_Event Event) {
     }
 }
 
-void ekg_ui_element_frame::on_post_event(SDL_Event Event) {
-    ekg_abstract_element::on_post_event(Event);
+void ekg_ui_element_frame::on_post_event(SDL_Event event) {
+    ekg_abstract_element::on_post_event(event);
 }
 
-void ekg_ui_element_frame::on_update(const float &DeltaTicks) {
-    ekg_abstract_element::on_update(DeltaTicks);
+void ekg_ui_element_frame::on_update(const float &delta_ticks) {
+    ekg_abstract_element::on_update(delta_ticks);
 }
 
-void ekg_ui_element_frame::on_render(const float &PartialTicks) {
-    ekg_abstract_element::on_render(PartialTicks);
+void ekg_ui_element_frame::on_render(const float &render_ticks) {
+    ekg_abstract_element::on_render(render_ticks);
 
-    // Enable scissor test and cut off the fragments.
+    // enable scissor test and cut off the fragments.
     ekg_scissor(this->get_scissor_x(), this->get_scissor_y(), this->get_scissor_w(),
                 this->get_scissor_h());
 
     // Background.
-    EKG_Color Color(EKG_CORE->color_theme.FrameBackground);
+    ekg_color color(EKG_CORE->color_theme.FrameBackground);
 
     if (this->alternative_alpha) {
-        Color.A = this->alpha;
+        color.A = this->alpha;
     }
 
-    ekg_draw_filled_rect(this->rect, Color);
+    ekg_draw_filled_rect(this->rect, color);
 
     // border.
     if (EKG_CORE->color_theme.IsOutlineFrameEnabled()) {
@@ -271,8 +271,8 @@ void ekg_ui_element_frame::on_render(const float &PartialTicks) {
 
     // pressed state.
     if (this->dragging || this->resizing != 0) {
-        Color.Set(EKG_CORE->color_theme.FramePressed);
-        ekg_draw_filled_rect(this->rect, Color);
+        color.Set(EKG_CORE->color_theme.FramePressed);
+        ekg_draw_filled_rect(this->rect, color);
     }
 
     // End scissor.
@@ -284,7 +284,7 @@ void ekg_ui_element_frame::custom_alpha(unsigned int alpha255) {
     this->alpha = alpha255;
 }
 
-EKG_Color &ekg_ui_element_frame::get_border_color() {
+ekg_color &ekg_ui_element_frame::get_border_color() {
     return this->border;
 }
 
@@ -347,19 +347,19 @@ void ekg_ui_element_frame::sync_size() {
 }
 
 void ekg_ui_element_frame::SetLimit(float minimum_width, float minimum_height) {
-    float Diff = minimum_width < 10 ? 10 : minimum_width;
+    float diff = minimum_width < 10 ? 10 : minimum_width;
 
-    bool ShouldSyncPhase1 = this->min_width != Diff;
-    bool ShouldSyncPhase2;
+    bool should_sync_phase1 = this->min_width != diff;
+    bool should_sync_phase2;
 
-    this->min_width = Diff;
+    this->min_width = diff;
 
-    Diff = minimum_height < 10 ? 10 : minimum_height;
-    ShouldSyncPhase2 = this->min_height != Diff;
+    diff = minimum_height < 10 ? 10 : minimum_height;
+    should_sync_phase2 = this->min_height != diff;
 
-    this->min_height = Diff;
+    this->min_height = diff;
 
-    if (ShouldSyncPhase1 || ShouldSyncPhase2) {
+    if (should_sync_phase1 || should_sync_phase2) {
         this->sync_size();
     }
 }
@@ -387,6 +387,6 @@ void ekg_ui_element_frame::set_size(float width, float height) {
 
 void ekg_ui_element_frame::sync_parents_metric() {
     this->sync_size();
-    EKG_CORE->sync_stack_scaled_metrics(this->rect.X, this->rect.Y, this->rect.W, this->rect.H,
+    EKG_CORE->sync_stack_scaled_metrics(this->rect.x, this->rect.y, this->rect.W, this->rect.H,
                                         this->children_stack);
 }
