@@ -63,7 +63,7 @@ public:
     void set_height(float height);
 
     void set_size(float width, float height);
-    void SetLimit(float minimum_width, float minimum_height);
+    void set_limit(float minimum_width, float minimum_height);
 
     void set_border_color(unsigned int r, unsigned int g, unsigned b, unsigned int a);
     ekg_color &get_border_color();

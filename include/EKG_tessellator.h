@@ -31,7 +31,7 @@ private:
     GLint TextureId;
 
     /* VBOs id and attributes. */
-    GLuint VertexBuffer, ColorBuffer, VertexAttribute, ColorAttribute;
+    GLuint buffer_vertex, buffer_material_color, buffer_material, vertex_attribute, attribute_material;
 
     /* Extra color field used to texture. */
     ekg_color TextureColor = ekg_color(255, 255, 255, 255);
@@ -39,7 +39,7 @@ public:
     EKG_Tessellator() {}
 
     /* Start of main methods. */
-    void Init();
+    void init();
     void Quit();
     /* End of main methods. */
 

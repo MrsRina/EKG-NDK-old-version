@@ -26,7 +26,7 @@ public:
 
     /* Start of main connected methods. */
     unsigned int GetTessellatorShader();
-    unsigned int FindShader(const std::string &Shader);
+    unsigned int find_shader(const std::string &Shader);
     unsigned int LoadShader(const std::string &Name, const std::string &SourceVertexShader, const std::string &SourceFragmentShader);
     /* End of main connected methods. */
 };

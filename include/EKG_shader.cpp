@@ -123,7 +123,7 @@ void ekg_shader_manager::Quit() {
     // Nothing here.
 }
 
-unsigned int ekg_shader_manager::FindShader(const std::string &Shader) {
+unsigned int ekg_shader_manager::find_shader(const std::string &Shader) {
     unsigned int Id = this->ShaderList[Shader];
     return Id;
 }

@@ -19,20 +19,20 @@ void ekg_ui_element_slider::sync_size() {
      */
     switch (this->bar_orientation) {
         case 0: {
-            this->rect.W = this->size;
-            this->rect.H = this->scale + name_height + this->scale;
+            this->rect.w = this->size;
+            this->rect.h = this->scale + name_height + this->scale;
 
-            this->bar_rect[2] = ((float) this->rect.W) * ((float) this->value - (float) this->min) / ((float) this->max - (float) this->min);
-            this->bar_rect[3] = this->rect.H;
+            this->bar_rect[2] = ((float) this->rect.w) * ((float) this->value - (float) this->min) / ((float) this->max - (float) this->min);
+            this->bar_rect[3] = this->rect.h;
             break;
         }
 
         case 1: {
-            this->rect.W = this->scale + name_height + this->scale;
-            this->rect.H = this->size;
+            this->rect.w = this->scale + name_height + this->scale;
+            this->rect.h = this->size;
 
-            this->bar_rect[2] = this->rect.W;
-            this->bar_rect[3] = ((float) this->rect.H) * ((float) this->value - (float) this->min) / ((float) this->max - (float) this->min);
+            this->bar_rect[2] = this->rect.w;
+            this->bar_rect[3] = ((float) this->rect.h) * ((float) this->value - (float) this->min) / ((float) this->max - (float) this->min);
             break;
         }
     }
@@ -106,7 +106,7 @@ void ekg_ui_element_slider::on_event(SDL_Event event) {
                 if (this->dragging && this->pressed) {
                     ekg::task(ekg::task::BLOCKED);
 
-                    float diff = (this->bar_orientation == 0 ? this->rect.W : this->rect.H);
+                    float diff = (this->bar_orientation == 0 ? this->rect.w : this->rect.h);
                     float finger_pos_factored = this->bar_orientation == 0 ? fx : fy;
 
                     // Set bar progress.
@@ -226,7 +226,7 @@ void ekg_ui_element_slider::sync_bar(float pos_factor) {
         return;
     }
 
-    float bar_size_factory = this->bar_orientation == 0 ? this->rect.W : this->rect.H;
+    float bar_size_factory = this->bar_orientation == 0 ? this->rect.w : this->rect.h;
 
     // In this case we set the new value.
     this->set_value(

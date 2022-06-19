@@ -2,24 +2,58 @@
 #include "ekg_util.h"
 #include "ekg.h"
 
-void EKG_Tessellator::Init() {
-    unsigned int TessellatorShaderId = EKG_CORE->shader_manager.FindShader("Tessellator");
-    ekg_start_use_shader(TessellatorShaderId);
+void EKG_Tessellator::init() {
+    // Init arrays.
+    float mesh[18] = {
+            0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f
+    };
 
-    // Fetch attribute from shader with object buffer.
-    this->ColorAttribute = ekg_get_shader_attrib("Tessellator", TessellatorShaderId, "VertexColor");
-    this->VertexAttribute = ekg_get_shader_attrib("Tessellator", TessellatorShaderId,
-                                                  "VertexPosition");
+    float mesh_material[12] = {
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 0.0f
+    };
 
-    ekg_end_use_shader();
+    float mesh_material_color[24] {
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f
+    };
+
+    // Init buffers.
+    glGenBuffers(1, &this->buffer_vertex);
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffer_vertex);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 18, mesh, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glGenBuffers(1, &this->buffer_material);
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffer_material);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12, mesh_material, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glGenBuffers(1, &this->buffer_material_color);
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffer_material_color);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 24, mesh_material_color, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float VertexDataArray[VertexLength], float MaterialDataArray[MaterialLength]) {
-    unsigned int TessellatorShaderId = EKG_CORE->shader_manager.GetTessellatorShader();
+void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float* VertexDataArray, float* MaterialDataArray) {
+    unsigned int tessellator_shader = EKG_CORE->shader_manager.GetTessellatorShader();
 
     // Use object shader.
-    ekg_start_use_shader(TessellatorShaderId);
-    ekg_set_shader_uniform_bool(TessellatorShaderId, "ContainsTexture", this->ContainsTexture);
+    ekg_start_use_shader(tessellator_shader);
+    ekg_set_shader_uniform_bool(tessellator_shader, "ContainsTexture", this->ContainsTexture);
 
     // Call alpha channel.
     glEnable(GL_BLEND);
@@ -29,25 +63,29 @@ void EKG_Tessellator::Draw(int VertexLength, int MaterialLength, float VertexDat
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->TextureId);
 
-        ekg_set_shader_uniform_int(TessellatorShaderId, "TextureSampler", 0);
-        ekg_set_shader_uniform_vec4(TessellatorShaderId, "DirectVertexColor",
+        ekg_set_shader_uniform_int(tessellator_shader, "TextureSampler", 0);
+        ekg_set_shader_uniform_vec4(tessellator_shader, "DirectVertexColor",
                                     this->TextureColor.GetRedf(), this->TextureColor.GetGreenf(),
                                     this->TextureColor.GetBluef(), this->TextureColor.GetAlphaf());
     }
 
+    // Fetch attribute from shader with object buffer.
+    this->attribute_material = ekg_get_shader_attrib("Tessellator", tessellator_shader, "VertexColor");
+    this->vertex_attribute = ekg_get_shader_attrib("Tessellator", tessellator_shader, "VertexPosition");
+
     // enable vertex attribute for position color attribution.
-    glEnableVertexAttribArray(this->VertexAttribute);
-    glEnableVertexAttribArray(this->ColorAttribute);
+    glEnableVertexAttribArray(this->vertex_attribute);
+    glEnableVertexAttribArray(this->attribute_material);
 
     // Position buffer.
-    glBindBuffer(GL_ARRAY_BUFFER, this->VertexBuffer);
-    glVertexAttribPointer(this->VertexAttribute, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VertexLength, VertexDataArray, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffer_vertex);
+    glVertexAttribPointer(this->vertex_attribute, 3, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * VertexLength, VertexDataArray);
 
     // Color buffer.
-    glBindBuffer(GL_ARRAY_BUFFER, this->ColorBuffer);
-    glVertexAttribPointer(this->ColorAttribute, this->ContainsTexture ? 2 : 4, GL_FLOAT, GL_FALSE, 0, (void*) 0);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MaterialLength, MaterialDataArray, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, this->ContainsTexture ? this->buffer_material : this->buffer_material_color);
+    glVertexAttribPointer(this->attribute_material, this->ContainsTexture ? 2 : 4, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * MaterialLength, MaterialDataArray);
 
     // Draw arrays.
     glDrawArrays(this->RenderType, 0, this->BufferSize);
@@ -73,8 +111,8 @@ void EKG_Tessellator::SetTextureColor(unsigned int R, unsigned int G, unsigned i
 
 void EKG_Tessellator::Quit() {
     // Quit all buffers.
-    glDeleteBuffers(1, &this->VertexBuffer);
-    glDeleteBuffers(1, &this->ColorBuffer);
+    glDeleteBuffers(1, &this->buffer_vertex);
+    glDeleteBuffers(1, &this->buffer_material_color);
 }
 
 void EKG_Tessellator::BindTexture(GLuint Id) {
@@ -282,7 +320,7 @@ void ekg_font_renderer::DrawString(const std::string &String, float PositionX, f
     EKG_TESSELLATOR->NewDraw(GL_TRIANGLES, 6 * ConcurrentSize);
     EKG_TESSELLATOR->BindTexture(this->BitmapTextureId);
     EKG_TESSELLATOR->SetTextureColor(255 - Color.R, 255 - Color.G, 255 - Color.B, Color.A);
-    EKG_TESSELLATOR->Draw(VertexBufferSize, FragmentBufferSize, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
+    //EKG_TESSELLATOR->Draw(VertexBufferSize, FragmentBufferSize, MASK_QUAD_VERTEX, MASK_QUAD_MATERIAL_COLOR);
 
     delete[] MASK_QUAD_VERTEX;
     delete[] MASK_QUAD_MATERIAL_COLOR;

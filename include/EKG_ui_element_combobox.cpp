@@ -38,8 +38,8 @@ void ekg_ui_element_combobox::align_text(unsigned int dock) {
 }
 
 void ekg_ui_element_combobox::set_width(float width) {
-    if (this->rect.W != width) {
-        this->rect.W = width;
+    if (this->rect.w != width) {
+        this->rect.w = width;
         this->sync_size();
     }
 }
@@ -116,7 +116,7 @@ void ekg_ui_element_combobox::sync_size() {
     this->text_width = EKG_CORE->font_renderer.GetStringWidth(this->current);
     this->text_height = EKG_CORE->font_renderer.GetStringHeight(this->current);
 
-    this->rect.H = this->text_height + (this->text_scale * 2);
+    this->rect.h = this->text_height + (this->text_scale * 2);
 
     switch (this->align_text_docking) {
         case ekg::dock::LEFT: {
@@ -125,12 +125,12 @@ void ekg_ui_element_combobox::sync_size() {
         }
 
         case ekg::dock::RIGHT: {
-            this->align_offset_text = this->rect.W - this->text_width - 4.0f;
+            this->align_offset_text = this->rect.w - this->text_width - 4.0f;
             break;
         }
 
         case ekg::dock::CENTER: {
-            this->align_offset_text = (this->rect.W / 2) - (this->text_width / 2);
+            this->align_offset_text = (this->rect.w / 2) - (this->text_width / 2);
             break;
         }
     }

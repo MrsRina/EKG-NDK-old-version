@@ -205,14 +205,14 @@ void ekg_ui_element_button::sync_size() {
     this->text_width = EKG_CORE->font_renderer.GetStringWidth(this->tag);
     this->text_height = EKG_CORE->font_renderer.GetStringHeight(this->tag);
 
-    this->rect.H = this->size + this->text_height + this->size;
+    this->rect.h = this->size + this->text_height + this->size;
 
     /* After sync_stack_scaled_metrics minimal sizes of rect. */
     /* We need to sync_stack_scaled_metrics align text and box (if the mode is on). */
 
     if (this->box) {
         // The square of box.
-        float factor = !this->box_scaled ? this->text_height : (this->rect.H / 2) + ((this->rect.H / 4));
+        float factor = !this->box_scaled ? this->text_height : (this->rect.h / 2) + ((this->rect.h / 4));
 
         this->box_rect[2] = factor;
         this->box_rect[3] = factor;
@@ -224,12 +224,12 @@ void ekg_ui_element_button::sync_size() {
             }
 
             case ekg::dock::RIGHT: {
-                this->align_offset_box = this->rect.W - factor - (factor / 4);
+                this->align_offset_box = this->rect.w - factor - (factor / 4);
                 break;
             }
 
             case ekg::dock::CENTER: {
-                this->align_offset_box = (this->rect.W / 2) - (factor / 2);
+                this->align_offset_box = (this->rect.w / 2) - (factor / 2);
                 break;
             }
         }
@@ -242,12 +242,12 @@ void ekg_ui_element_button::sync_size() {
         }
 
         case ekg::dock::RIGHT: {
-            this->align_offset_text = this->rect.W - this->text_width - 4.0f;
+            this->align_offset_text = this->rect.w - this->text_width - 4.0f;
             break;
         }
 
         case ekg::dock::CENTER: {
-            this->align_offset_text = (this->rect.W / 2) - (this->text_width / 2);
+            this->align_offset_text = (this->rect.w / 2) - (this->text_width / 2);
             break;
         }
     }
@@ -255,7 +255,7 @@ void ekg_ui_element_button::sync_size() {
     // Now update the check box ret offset pos.
     if (this->box) {
         this->box_rect[0] = this->align_offset_box + this->offset_box;
-        this->box_rect[1] = this->box_scaled ? ((this->rect.H - this->box_rect[2]) / 2) : this->size;
+        this->box_rect[1] = this->box_scaled ? ((this->rect.h - this->box_rect[2]) / 2) : this->size;
 
         float factor = this->box_rect[2];
         float x = this->box_rect[0];
@@ -279,8 +279,8 @@ float ekg_ui_element_button::get_text_height() {
 }
 
 void ekg_ui_element_button::SetWidth(float Width) {
-    if (this->rect.W != Width) {
-        this->rect.W = Width;
+    if (this->rect.w != Width) {
+        this->rect.w = Width;
         this->sync_size();
     }
 }

@@ -210,11 +210,11 @@ void ekg_draw_outline_shape(float X, float Y, float W, float H, float LineThickn
 }
 
 void ekg_draw_filled_rect(const ekg_rect &Rect, const ekg_color &Color) {
-    ekg_draw_filled_shape(Rect.x, Rect.y, Rect.W, Rect.H, Color);
+    ekg_draw_filled_shape(Rect.x, Rect.y, Rect.w, Rect.h, Color);
 }
 
 void ekg_draw_outline_rect(const ekg_rect &Rect, float LineThickness, const ekg_color &Color) {
-    ekg_draw_outline_shape(Rect.x, Rect.y, Rect.W, Rect.H, LineThickness, Color);
+    ekg_draw_outline_shape(Rect.x, Rect.y, Rect.w, Rect.h, LineThickness, Color);
 }
 
 void EKG_StoreShape(float X, float Y, float W, float H) {
@@ -222,7 +222,7 @@ void EKG_StoreShape(float X, float Y, float W, float H) {
 }
 
 void EKG_DrawTextureRect(const ekg_rect &Rect, float TextureX, float TextureY, float TextureW, float TextureH, const ekg_data &Texture, const ekg_color &Color) {
-    EKG_DrawTextureShape(Rect.x, Rect.y, Rect.W, Rect.H, TextureX, TextureY, TextureW, TextureH, Texture, Color);
+    EKG_DrawTextureShape(Rect.x, Rect.y, Rect.w, Rect.h, TextureX, TextureY, TextureW, TextureH, Texture, Color);
 }
 
 void EKG_DrawTextureShape(float X, float Y, float W, float H, float TextureX, float TextureY, float TextureW, float TextureH, const ekg_data &Texture, const ekg_color &Color) {
@@ -371,15 +371,15 @@ void ekg_color::Set(uint8_t Color[3], uint8_t Alpha) {
     this->A = Alpha;
 }
 
-bool ekg_rect::CollideWithPoint(float PointX, float PointY) {
-    return PointX > this->x && PointY > this->y && PointX < this->x + this->W && PointY < this->y + this->H;
+bool ekg_rect::collide_with_point(float point_x, float point_y) {
+    return point_x > this->x && point_y > this->y && point_x < this->x + this->w && point_y < this->y + this->h;
 }
 
-bool ekg_rect::CollideWithRect(float RectX, float RectY, float RectW, float RectH) {
-    return this->x < RectX + RectW &&
-           this->x + this->W > RectX &&
-           this->y < RectY + RectH &&
-           this->y + this->H > RectY;
+bool ekg_rect::collide_with_shape(float rect_x, float rect_y, float rect_w, float rect_h) {
+    return this->x < rect_x + rect_w &&
+           this->x + this->w > rect_x &&
+           this->y < rect_y + rect_h &&
+           this->y + this->h > rect_y;
 }
 
 void ekg_color_theme::Frame(uint8_t Flag, uint8_t RedValue, uint8_t GreenValue, uint8_t BlueValue, uint8_t AlphaValue) {

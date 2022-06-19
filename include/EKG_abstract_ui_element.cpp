@@ -53,11 +53,11 @@ float ekg_abstract_element::get_y() {
 }
 
 float ekg_abstract_element::get_width() {
-    return this->rect.W;
+    return this->rect.w;
 }
 
 float ekg_abstract_element::get_height() {
-    return this->rect.H;
+    return this->rect.h;
 }
 
 void ekg_abstract_element::set_scaled(float x, float y, float width, float height) {
@@ -227,7 +227,7 @@ int ekg_abstract_element::get_scissor_h() {
 }
 
 bool ekg_abstract_element::collide_with_pos(float x, float y) {
-    bool Flag = this->rect.CollideWithPoint(x, y);
+    bool Flag = this->rect.collide_with_point(x, y);
 
     if (Flag && this->get_master_id() != 0) {
         auto* Element = EKG_CORE->get_element_by_id(this->get_master_id());

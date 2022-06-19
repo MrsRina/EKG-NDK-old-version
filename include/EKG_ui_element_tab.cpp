@@ -132,7 +132,7 @@ void ekg_ui_element_tab::on_render(const float &render_ticks) {
 
     switch (this->dock_tab) {
         case ekg::dock::BOTTOM: {
-            Y = this->get_y() + this->rect.W - this->min_height;
+            Y = this->get_y() + this->rect.w - this->min_height;
             break;
         }
     }
@@ -158,7 +158,7 @@ void ekg_ui_element_tab::on_render(const float &render_ticks) {
 }
 
 void ekg_ui_element_tab::set_button_size(float size_val) {
-    this->button_size = Size;
+    this->button_size = size_val;
 }
 
 float ekg_ui_element_tab::get_button_size() {
@@ -244,7 +244,7 @@ ekg_data ekg_ui_element_tab::get_component_by_pos(float x, float y) {
 
     switch (this->dock_tab) {
         case ekg::dock::BOTTOM: {
-            Y = this->rect.y + this->rect.H - this->min_height;
+            Y = this->rect.y + this->rect.h - this->min_height;
             break;
         }
     }

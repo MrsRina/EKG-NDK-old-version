@@ -178,7 +178,7 @@ float ekg::screen_height = 0.0F;
 
 void ekg::init() {
     EKG_CORE->init();
-    EKG_TESSELLATOR->Init();
+    EKG_TESSELLATOR->init();
 
     // Get device screen size.
     SDL_DisplayMode DisplayMode;
@@ -243,42 +243,42 @@ unsigned int ekg::point_collide_dock(unsigned int flags, float point_x, float po
 
     if (EKG_FlagContains(flags, DockType)) {
         DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
-        return DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
+        return DockRect.collide_with_point(point_x, point_y) ? DockType : DockColliding;
     }
 
     DockType = dock::TOP;
 
     if (EKG_FlagContains(flags, DockType)) {
         DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
-        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
+        DockColliding = DockRect.collide_with_point(point_x, point_y) ? DockType : DockColliding;
     }
 
     DockType = dock::BOTTOM;
 
     if (EKG_FlagContains(flags, DockType)) {
         DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
-        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
+        DockColliding = DockRect.collide_with_point(point_x, point_y) ? DockType : DockColliding;
     }
 
     DockType = dock::LEFT;
 
     if (EKG_FlagContains(flags, DockType)) {
         DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
-        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
+        DockColliding = DockRect.collide_with_point(point_x, point_y) ? DockType : DockColliding;
     }
 
     DockType = dock::RIGHT;
 
     if (EKG_FlagContains(flags, DockType)) {
         DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
-        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
+        DockColliding = DockRect.collide_with_point(point_x, point_y) ? DockType : DockColliding;
     }
 
     DockType = dock::CENTER;
 
     if (EKG_FlagContains(flags, DockType)) {
         DockRect = get_rect_dock(DockType, min_offset, max_offset, rect);
-        DockColliding = DockRect.CollideWithPoint(point_x, point_y) ? DockType : DockColliding;
+        DockColliding = DockRect.collide_with_point(point_x, point_y) ? DockType : DockColliding;
     }
 
     return DockColliding;
@@ -304,18 +304,18 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
 
     switch (dock) {
         case dock::FULL: {
-            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * origin.W;
-            size_offset_normal = size_offset == 0 ? size_offset : size_offset * origin.H;
+            initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * origin.w;
+            size_offset_normal = size_offset == 0 ? size_offset : size_offset * origin.h;
 
             x = origin.x + initial_offset_normal;
             y = origin.y + size_offset_normal;
-            w = origin.W - (initial_offset_normal * 2);
-            h = origin.H - (size_offset_normal * 2);
+            w = origin.w - (initial_offset_normal * 2);
+            h = origin.h - (size_offset_normal * 2);
             break;
         }
 
         case dock::LEFT: {
-            division = origin.W == 0 ? 0 : (origin.W / 2.0F);
+            division = origin.w == 0 ? 0 : (origin.w / 2.0F);
 
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * (division);
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * (division);
@@ -323,53 +323,53 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             x = origin.x + initial_offset_normal;
             y = origin.y;
             w = division - size_offset_normal;
-            h = origin.H;
+            h = origin.h;
             break;
         }
 
         case dock::RIGHT: {
-            division = origin.W == 0 ? 0 : (origin.W / 2.0F);
+            division = origin.w == 0 ? 0 : (origin.w / 2.0F);
 
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
             y = origin.y;
-            h = origin.H;
+            h = origin.h;
 
             w = division - size_offset_normal;
-            x = origin.x + initial_offset_normal + origin.W - w;
+            x = origin.x + initial_offset_normal + origin.w - w;
             break;
         }
 
         case dock::TOP: {
-            division = origin.H == 0 ? 0 : (origin.H / 2.0F);
+            division = origin.h == 0 ? 0 : (origin.h / 2.0F);
 
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
             x = origin.x;
             y = origin.y + initial_offset_normal;
-            w = origin.W;
+            w = origin.w;
             h = division - size_offset_normal;
             break;
         }
 
         case dock::BOTTOM: {
-            division = origin.H == 0 ? 0 : (origin.H / 2.0F);
+            division = origin.h == 0 ? 0 : (origin.h / 2.0F);
 
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
             x = origin.x;
-            w = origin.W;
+            w = origin.w;
 
             h = division - size_offset_normal;
-            y = origin.y + initial_offset_normal + origin.H - h;
+            y = origin.y + initial_offset_normal + origin.h - h;
             break;
         }
 
         case dock::CENTER: {
-            division = origin.W == 0 ? 0 : (origin.W / 2.0F);
+            division = origin.w == 0 ? 0 : (origin.w / 2.0F);
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
@@ -377,7 +377,7 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
             w = division - size_offset_normal;
 
             // Center height segment code.
-            division = origin.H == 0 ? 0 : (origin.H / 2.0F);
+            division = origin.h == 0 ? 0 : (origin.h / 2.0F);
             initial_offset_normal = initial_offset == 0 ? initial_offset : initial_offset * division;
             size_offset_normal = size_offset == 0 ? size_offset : size_offset * division;
 
@@ -388,8 +388,8 @@ ekg_rect ekg::get_rect_dock(unsigned int dock, float initial_offset, float size_
 
     Rect.x = x;
     Rect.y = y;
-    Rect.W = w;
-    Rect.H = h;
+    Rect.w = w;
+    Rect.h = h;
 
     return Rect;
 }
@@ -409,7 +409,7 @@ ekg::frame ekg::create_frame(const std::string &name) {
     element->set_tag(name);
     element->set_id(EKG_CORE->next_id());
     element->place(10, 10);
-    element->SetLimit(50, 50);
+    element->set_limit(50, 50);
     element->set_width(250);
     element->set_height(250);
     element->set_visibility_flag(ekg::visibility::VISIBLE);
@@ -510,7 +510,7 @@ ekg_ui_element_tab *ekg::Tab(const std::string &Name) {
     Element->set_tag(Name);
     Element->set_id(EKG_CORE->next_id());
     Element->place(10, 10);
-    Element->SetLimit(50, 50);
+    Element->set_limit(50, 50);
     Element->set_width(250);
     Element->set_button_size(3);
     Element->set_scale(3);
@@ -711,7 +711,7 @@ float ekg::frame::get_min_width() {
 }
 
 void ekg::frame::set_min_size(float min_width, float min_height) {
-    this->element->SetLimit(min_width, min_height);
+    this->element->set_limit(min_width, min_height);
 }
 
 void ekg::frame::place(unsigned int element_in_id, float x, float y) {

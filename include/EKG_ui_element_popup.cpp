@@ -100,8 +100,8 @@ bool ekg_ui_element_popup::is_clicked() {
 }
 
 void ekg_ui_element_popup::set_width(float width) {
-    if (this->rect.W != width) {
-        this->rect.W = width;
+    if (this->rect.w != width) {
+        this->rect.w = width;
         this->sync_size();
     }
 }
@@ -136,7 +136,7 @@ void ekg_ui_element_popup::on_pre_event(SDL_Event event) {
         float fy = event.tfinger.y;
 
         ekg::scaled_finger_pos(fx, fy);
-        this->hovered = this->rect.CollideWithPoint(fx, fy);
+        this->hovered = this->rect.collide_with_point(fx, fy);
     }
 }
 
@@ -270,7 +270,7 @@ void ekg_ui_element_popup::on_render(const float &render_ticks) {
 
     // render only if is open.
     if (this->show) {
-        this->rect.H = EKG_AnimationSmooth(100, SDL_GetTicks() - this->last_tick) * this->max_height;
+        this->rect.h = EKG_AnimationSmooth(100, SDL_GetTicks() - this->last_tick) * this->max_height;
         this->smooth_pressed.NextFactory = !this->focused.empty() ? EKG_CORE->color_theme.WidgetActivy[3] : 0;
         this->smooth_pressed.Update(render_ticks);
 
@@ -284,13 +284,13 @@ void ekg_ui_element_popup::on_render(const float &render_ticks) {
         // We need calc a runtime height to render property the positions.
         float full_height = this->get_y();
 
-        ekg_scissor((int) this->rect.x, (int) this->rect.y, (int) this->rect.W, (int) this->rect.H);
+        ekg_scissor((int) this->rect.x, (int) this->rect.y, (int) this->rect.w, (int) this->rect.h);
 
         // Iterate all component data.
         for (const ekg_data &components : this->list) {
             // Background when is focused.
             if (components.name == this->focused) {
-                ekg_draw_filled_shape(this->get_x(), full_height, this->rect.W, components.data_height, color);
+                ekg_draw_filled_shape(this->get_x(), full_height, this->rect.w, components.data_height, color);
             }
 
             // Draw name of component.
@@ -459,7 +459,7 @@ float ekg_ui_element_popup::get_max_height() {
 
 void ekg_ui_element_popup::set_visibility_flag(unsigned int flag) {
     if (flag == ekg::visibility::INVISIBLE) {
-        this->rect.H = 0;
+        this->rect.h = 0;
     }
 
     bool flag_visible_true = (flag == ekg::visibility::VISIBLE);

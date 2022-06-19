@@ -84,10 +84,10 @@ struct EKG_Vec2d {
  * rect AABB.
  */
 struct ekg_rect {
-    float x, y, W, H;
+    float x, y, w, h;
 
-    bool CollideWithPoint(float PointX, float PointY);
-    bool CollideWithRect(float RectX, float RectY, float RectW, float RectH);
+    bool collide_with_point(float point_x, float point_y);
+    bool collide_with_shape(float rect_x, float rect_y, float rect_w, float rect_h);
 };
 
 /**

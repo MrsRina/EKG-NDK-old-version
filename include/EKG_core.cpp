@@ -277,7 +277,7 @@ void ekg_core::sync_stack_scaled_metrics(float x, float y, float w, float h, con
         Element->sync_pos();
 
         auto PreviousVisibility = (ekg::visibility) Element->get_visibility_flag();
-        bool Visible = Element->get_rect().CollideWithRect(x, y, w, h);
+        bool Visible = Element->get_rect().collide_with_shape(x, y, w, h);
 
         if (PreviousVisibility == ekg::visibility::VISIBLE && !Visible) {
             Element->set_visibility_flag(ekg::visibility::LOW_PRIORITY);
@@ -314,11 +314,11 @@ void ekg_core::sync_scissor(ekg_abstract_element* element) {
     //     element->set_scissor(element->get_scissor_x(), (int) element->get_y(), element->get_scissor_w(), element->get_scissor_h());
     // }
 
-    // if (W < (int) element->get_width()) {
+    // if (w < (int) element->get_width()) {
     //     element->set_scissor(element->get_scissor_x(), element->get_scissor_y(), (int) element->get_width(), element->get_scissor_h());
     // }
 
-    // if (H < (int) element->get_height()) {
+    // if (h < (int) element->get_height()) {
     //     element->set_scissor(element->get_scissor_x(), element->get_scissor_y(), element->get_scissor_w(), (int) element->get_height());
     //}
 
@@ -333,11 +333,11 @@ void ekg_core::sync_scissor(ekg_abstract_element* element) {
         //     Elements->set_scissor(Elements->get_scissor_x(), (int) Elements->get_y(), Elements->get_scissor_w(), Elements->get_scissor_h());
         // }
 //
-        // if (W < (int) Elements->get_width()) {
+        // if (w < (int) Elements->get_width()) {
         //     Elements->set_scissor(Elements->get_scissor_x(), Elements->get_scissor_y(), (int) Elements->get_width(), Elements->get_scissor_h());
         // }
 //
-        // if (H < (int) Elements->get_height()) {
+        // if (h < (int) Elements->get_height()) {
         //     Elements->set_scissor(Elements->get_scissor_x(), Elements->get_scissor_y(), Elements->get_scissor_w(), (int) Elements->get_height());
         // }
     }

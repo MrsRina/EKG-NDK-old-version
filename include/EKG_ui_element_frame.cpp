@@ -59,8 +59,8 @@ void ekg_ui_element_frame::on_event(SDL_Event event) {
             if (this->dragging) {
                 float x = fx - this->drag_x;
                 float y = fy - this->drag_y;
-                float w = this->rect.W;
-                float h = this->rect.H;
+                float w = this->rect.w;
+                float h = this->rect.h;
 
                 if (this->get_master_id() != 0) {
                     if (!this->free_drag_and_drop) {
@@ -138,8 +138,8 @@ void ekg_ui_element_frame::on_event(SDL_Event event) {
                     w = predict_w < (float) this->min_width ? (float) this->min_width : predict_w;
                     h = predict_h < (float) this->min_height ? (float) this->min_height : predict_h;
 
-                    this->rect.W = w;
-                    this->rect.H = h;
+                    this->rect.w = w;
+                    this->rect.h = h;
                 } else {
                     x = this->rect.x;
                     y = this->rect.y;
@@ -159,8 +159,8 @@ void ekg_ui_element_frame::on_event(SDL_Event event) {
                         this->sync_pos();
                     }
 
-                    this->rect.W = w < (float) this->min_width ? (float) this->min_width : w;
-                    this->rect.H = h < (float) this->min_height ? (float) this->min_height : h;
+                    this->rect.w = w < (float) this->min_width ? (float) this->min_width : w;
+                    this->rect.h = h < (float) this->min_height ? (float) this->min_height : h;
                 }
 
                 moving_event = true;
@@ -213,11 +213,11 @@ void ekg_ui_element_frame::on_event(SDL_Event event) {
                             // Save to use after.
                             this->previous_x = this->rect.x;
                             this->previous_y = this->rect.y;
-                            this->previous_w = this->rect.W;
-                            this->previous_h = this->rect.H;
+                            this->previous_w = this->rect.w;
+                            this->previous_h = this->rect.h;
                         } else {
-                            this->drag_w = fx - this->rect.W;
-                            this->drag_h = fy - this->rect.H;
+                            this->drag_w = fx - this->rect.w;
+                            this->drag_h = fy - this->rect.h;
                         }
 
                         // Say true for resizing to the element.
@@ -328,11 +328,11 @@ float ekg_ui_element_frame::get_drag_offset() {
 }
 
 void ekg_ui_element_frame::set_width(float width) {
-    this->rect.W = width < this->min_width ? this->min_width : width;
+    this->rect.w = width < this->min_width ? this->min_width : width;
 }
 
 void ekg_ui_element_frame::set_height(float height) {
-    this->rect.H = height < this->min_height ? this->min_height : height;
+    this->rect.h = height < this->min_height ? this->min_height : height;
 }
 
 void ekg_ui_element_frame::place(float X, float Y) {
@@ -342,11 +342,11 @@ void ekg_ui_element_frame::place(float X, float Y) {
 void ekg_ui_element_frame::sync_size() {
     ekg_abstract_element::sync_size();
 
-    this->rect.W = this->rect.W < this->min_width ? this->min_width : this->rect.W;
-    this->rect.H = this->rect.H < this->min_height ? this->min_height : this->rect.H;
+    this->rect.w = this->rect.w < this->min_width ? this->min_width : this->rect.w;
+    this->rect.h = this->rect.h < this->min_height ? this->min_height : this->rect.h;
 }
 
-void ekg_ui_element_frame::SetLimit(float minimum_width, float minimum_height) {
+void ekg_ui_element_frame::set_limit(float minimum_width, float minimum_height) {
     float diff = minimum_width < 10 ? 10 : minimum_width;
 
     bool should_sync_phase1 = this->min_width != diff;
@@ -378,15 +378,15 @@ float ekg_ui_element_frame::get_min_height() {
 }
 
 void ekg_ui_element_frame::set_size(float width, float height) {
-    if (this->rect.W != width || this->rect.H != height) {
-        this->rect.W = width;
-        this->rect.H = height;
+    if (this->rect.w != width || this->rect.h != height) {
+        this->rect.w = width;
+        this->rect.h = height;
         this->sync_size();
     }
 }
 
 void ekg_ui_element_frame::sync_parents_metric() {
     this->sync_size();
-    EKG_CORE->sync_stack_scaled_metrics(this->rect.x, this->rect.y, this->rect.W, this->rect.H,
+    EKG_CORE->sync_stack_scaled_metrics(this->rect.x, this->rect.y, this->rect.w, this->rect.h,
                                         this->children_stack);
 }
